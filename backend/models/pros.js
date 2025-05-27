@@ -8,7 +8,7 @@ const prosSchema = mongoose.Schema({
     codePostal: Number,
 });
 
-const Pros = mongoose.model('pros', prosSchema);
+const Pro = mongoose.model('pros', prosSchema);
 
-module.exports = Pros;
+module.exports = Pro;
 
