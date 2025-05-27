@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userSchema = mongoose.Schema({
+const clientsSchema = mongoose.Schema({
     nom: String,
     prenom: String,
     email: String,
@@ -10,6 +10,6 @@ const userSchema = mongoose.Schema({
     token: String,
 });
 
-const User = mongoose.model('users', userSchema);
+const Client = mongoose.model('clients', clientsSchema);
 
-module.exports = User;
+module.exports = Client;
