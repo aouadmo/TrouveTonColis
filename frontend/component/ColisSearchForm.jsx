@@ -9,7 +9,7 @@ const ColisSearchForm = ({ onSearch }) => {
 
   const handleSearch = async () => {
     
-      const response = await fetch(`http://192.168.1.10:3000/colis/${trackingNumber}`); 
+      const response = await fetch(`http://192.168.1.10:3000/colis/search/${trackingNumber}`); 
       const data = await response.json();
 
       if (data.found) {
