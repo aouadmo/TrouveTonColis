@@ -8,3 +8,7 @@ Cécile : ajout des fichiers de schémas pros et clients
 
 27/05
 Création des routes users.js
+
+28/05
+Création des fichiers screens/ClientProfileScreen, ConnexionScreen, MyParcelsScreen, SearchScreen.
+Création du reducer user.js avec login et logout, ainsi que App.js.
