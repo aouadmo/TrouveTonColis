@@ -11,3 +11,4 @@ cecile :  (branche) création 2 route pour rch avec tracking number et parnom + 
 cecile :  (branche) création dossier components et un composant " ColisSearchForm.jsx "
 cecile : (branche) dev du fetch /colis/trackingNumber
 cecile : (branche) j'ai du toucher au app.js pour ajouter la connexion car je ne pouvais pas me co sinon dsl
+cecile : (branche) j'ai créer SearchScreen avec la recherche de colis, mon fetch fonctionne ok tester
