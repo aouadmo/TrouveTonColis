@@ -9,7 +9,7 @@ const Colis = require('../models/colis');
 
 
 // Route 1 : recherche par tracking number
-router.get('/:trackingNumber', async (req, res) => {
+router.get('/search/:trackingNumber', async (req, res) => {
     const colis = await Colis.findOne({ trackingNumber: req.params.trackingNumber });
 
     if (colis) {
@@ -21,7 +21,7 @@ router.get('/:trackingNumber', async (req, res) => {
 });
 
 //  Route 2 : recherche par nom et prénom 
-router.post('/:name', async (req, res) => {
+router.post('/search/name', async (req, res) => {
   const { nom, prenom } = req.body;
 
 
@@ -35,4 +35,5 @@ router.post('/:name', async (req, res) => {
 
   
 });
+
 module.exports = router;
