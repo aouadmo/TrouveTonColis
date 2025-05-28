@@ -1,7 +1,6 @@
 var express = require('express');
 var router = express.Router();
 
-require('../models/connection');
 const Client = require('../models/clients');
 const { checkBody } = require('../modules/checkBody');
 const uid2 = require('uid2');
