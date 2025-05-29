@@ -1,25 +1,26 @@
 import {
   View,
   KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
 export default function HomeScreen({ navigation }) {
-  const handleSubmit = () => {
+  const handleSignUp = () => {
     navigation.navigate('SignUpScreen');
+  };
+
+    const handleSearch = () => {
+    navigation.navigate('SearchScreen');
   };
 
   return (
     <KeyboardAvoidingView
       style={styles.container}
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       {/* Décoration style logo */}
       <View style={styles.circle} />
@@ -27,13 +28,23 @@ export default function HomeScreen({ navigation }) {
       <Text style={styles.title}>🎯 Bienvenue sur TTC</Text>
       <Text style={styles.subtitle}>L'application de gestion de colis</Text>
 
+      {/* bouton pour s'inscrire */}
       <TouchableOpacity
-        onPress={handleSubmit}
+        onPress={handleSignUp}
+        style={styles.button}
+        activeOpacity={0.8}>
+        <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+        <Text style={styles.textButton}> Inscription</Text>
+      </TouchableOpacity>
+
+      {/* bouton pour rechercher les colis */}
+            <TouchableOpacity
+        onPress={handleSearch}
         style={styles.button}
         activeOpacity={0.8}
       >
         <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-        <Text style={styles.textButton}> Inscription</Text>
+        <Text style={styles.textButton}> Rechercher les colis</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
