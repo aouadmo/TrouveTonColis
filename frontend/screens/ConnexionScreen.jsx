@@ -1,4 +1,4 @@
-import React, { useState} from "react";
+import React, { useState } from "react";
 import {
     Image,
     KeyboardAvoidingView,
@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useDispatch } from 'react-redux';
 
-export default function ConnexionScreen( navigation ) {
+export default function ConnexionScreen({ navigation }) {
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -19,7 +19,7 @@ export default function ConnexionScreen( navigation ) {
     };
 
     const handleSignUp = () => {
-        navigation.navigate('');
+        navigation.navigate('SignUpScreen');
     };
 
     return (
