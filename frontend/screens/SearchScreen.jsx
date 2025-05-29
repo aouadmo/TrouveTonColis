@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#ccc",
   },
   active: {
-    backgroundColor: "#ec6e5b",
+    backgroundColor: "#0F58B8",
   },
   switchText: {
     color: "#fff",
@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: "row",
     justifyContent: "center",
-    backgroundColor: "#ec6e5b",
+    backgroundColor: "blue",
     padding: 14,
     borderRadius: 10,
     alignItems: "center",
