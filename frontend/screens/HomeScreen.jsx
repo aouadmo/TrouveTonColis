@@ -6,7 +6,8 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native';
-import navigation from '../navigation'; // a verifier jeudi
+import React from 'react';
+
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
