@@ -33,7 +33,7 @@ export default function ConnexionScreen({ navigation }) {
 
     return (
         // Header à placer
-        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAvoidingView style={styles.container} >
             <Image style={styles.image} source={require('../assets/logo.jpg')} />
             <Text style={styles.title}>Trouve ton colis</Text>
 
