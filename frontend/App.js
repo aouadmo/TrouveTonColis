@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import SearchScreen from './screens/SearchScreen';
 import MyParcelsScreen from './screens/MyParcelsScreen';
 import ClientProfileScreen from './screens/ClientProfileScreen'
+import SignUpScreen from './screens/SignUpScreen';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { Provider } from 'react-redux';
@@ -15,7 +16,6 @@ import user from './reducers/user';
 import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 
-import SignUpScreen from './screens/SignUpScreen';
 
 const reducers = combineReducers({ user });
 const persistConfig = { key: 'user', storage: AsyncStorage };
@@ -63,8 +63,9 @@ export default function App() {
       <PersistGate persistor={persistor}>
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="Home" component={HomeScreen} />
+            <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+            <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
