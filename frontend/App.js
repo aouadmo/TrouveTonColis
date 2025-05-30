@@ -9,6 +9,7 @@ import SearchScreen from './screens/SearchScreen';
 import MyParcelsScreen from './screens/MyParcelsScreen';
 import ClientProfileScreen from './screens/ClientProfileScreen';
 import SignUpScreen from './screens/SignUpScreen';
+import ConnexionScreen from './screens/ConnexionScreen';
 
 //redux
 import { Provider } from 'react-redux';
@@ -68,6 +69,7 @@ export default function App() {
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
+            <Stack.Screen name="ConnexionScreen" component={ConnexionScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

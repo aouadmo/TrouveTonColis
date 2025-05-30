@@ -67,7 +67,7 @@ const SignUpScreen = () => {
       {/* Bouton (juste l'apparence) */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <FontAwesomeIcon icon={faUserPlus} size={20} color="#fff" />
-        <Text style={styles.buttonText}>  Créer un compte</Text>
+        <Text style={styles.buttonText}> Créer un compte </Text>
       </TouchableOpacity>
     </ScrollView>
   );

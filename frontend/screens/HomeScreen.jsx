@@ -14,8 +14,12 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('SignUpScreen');
   };
 
-    const handleSearch = () => {
+  const handleSearch = () => {
     navigation.navigate('SearchScreen');
+  };
+
+  const handleConnexion = () => {
+    navigation.navigate('ConnexionScreen');
   };
 
   return (
@@ -27,6 +31,7 @@ export default function HomeScreen({ navigation }) {
 
       <Text style={styles.title}>🎯 Bienvenue sur TTC</Text>
       <Text style={styles.subtitle}>L'application de gestion de colis</Text>
+      <Text style={styles.subtitle}>Voici le hub pour tester si votre page marche bien !</Text>
 
       {/* bouton pour s'inscrire */}
       <TouchableOpacity
@@ -38,13 +43,22 @@ export default function HomeScreen({ navigation }) {
       </TouchableOpacity>
 
       {/* bouton pour rechercher les colis */}
-            <TouchableOpacity
+      <TouchableOpacity
         onPress={handleSearch}
         style={styles.button}
         activeOpacity={0.8}
       >
         <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
         <Text style={styles.textButton}> Rechercher les colis</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        onPress={handleConnexion}
+        style={styles.button}
+        activeOpacity={0.8}
+      >
+        <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+        <Text style={styles.textButton}> Aller sur la page Connexion</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );
@@ -85,6 +99,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 10,
+    margin: 5,
   },
   textButton: {
     color: '#ffffff',

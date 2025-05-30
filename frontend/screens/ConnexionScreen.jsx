@@ -23,9 +23,25 @@ export default function ConnexionScreen({ navigation }) {
     };
 
     const handleLogin = () => {
-        dispatch(login(email));
-        setModalVisible(false);
-    };
+
+            fetch('http://localhost:3000/users/signin', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password }),
+            }).then(response => response.json())
+                .then(data => {
+                    if (data.result) {
+                        dispatch(login({ token: data.token, username: email }));
+                        setEmail('');
+                        setPassword('');
+                        setModalVisible(false);
+                        navigation.navigate('SearchScreen');
+                    } else {
+                        alert(data.error || "Connexion échouée.")
+                    }
+                })
+        };
+    
 
     const handleSignUp = () => {
         navigation.navigate('SignUpScreen');
@@ -34,7 +50,7 @@ export default function ConnexionScreen({ navigation }) {
     return (
         // Header à placer
         <KeyboardAvoidingView style={styles.container} >
-            <Image style={styles.image} source={require('../assets/logo.jpg')} />
+            {/* <Image style={styles.image} source={require('../assets/logo.jpg')} /> */}
             <Text style={styles.title}>Trouve ton colis</Text>
 
             <TouchableOpacity onPress={handleSignIn} style={styles.button} activeOpacity={0.8}>
@@ -45,20 +61,22 @@ export default function ConnexionScreen({ navigation }) {
             </TouchableOpacity>
 
             <Modal visible={modalVisible} transparent={true} animationType="slide" onRequestClose={() => setModalVisible(false)}>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Connexion</Text>
+                <KeyboardAvoidingView style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Connexion</Text>
 
-                    <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
-                    <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} style={styles.input} />
+                        <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
+                        <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} />
 
-                    <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
-                        <Text style={styles.textButton}>Se connecter</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
+                            <Text style={styles.textButton}>Se connecter</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.buttonCancel} activeOpacity={0.8}>
-                        <Text style={styles.textButton}>Annuler</Text>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.buttonCancel} activeOpacity={0.8}>
+                            <Text style={styles.textButton}>Annuler</Text>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardAvoidingView>
             </Modal>
         </KeyboardAvoidingView>
     );
