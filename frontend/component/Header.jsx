@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
 
 export default function Header() {
+  
   return (
     <View style={styles.container}>
       {/* Logo à gauche */}
