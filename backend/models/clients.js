@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
 
 const clientsSchema = mongoose.Schema({
+    client: [String],
     nom: String,
     prenom: String,
     email: String,
     password: String,
-    phone: Number,
-    client: Boolean,
     token: String,
+    phone: Number,
 });
 
 const Client = mongoose.model('clients', clientsSchema);
