@@ -2,10 +2,14 @@ import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-
+import { useDispatch } from "react-redux";
+import { login } from "../reducers/user";
+import { useNavigation } from "@react-navigation/native";
 
 const SignUpScreen = () => {
   const [userType, setUserType] = useState("client");
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
 
   const [form, setForm] = useState({
     nom: "",
@@ -24,8 +28,24 @@ const SignUpScreen = () => {
     setForm({ ...form, [key]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Formulaire soumis :", { ...form, type: userType });
+
+    const payload = {
+      ...form,
+      type: userType,
+    };
+
+    const response = await fetch('http://localhost:3000/users/signin', {
+      method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+    });
+
+    const data = await response.json();
+    if (response.ok && data.token) {
+      dispatch(login({token: data.token, role: userType}));
+    }
   };
 
   return (
@@ -108,7 +128,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    backgroundColor: "grey-dark",
+    backgroundColor: "#ec6e5b",
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 10,

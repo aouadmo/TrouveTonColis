@@ -6,18 +6,18 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 // les screens
 import HomeScreen from './screens/HomeScreen';
 import SearchScreen from './screens/SearchScreen';
-import MyParcelsScreen from './screens/MyParcelsScreen';
-import ClientProfileScreen from './screens/ClientProfileScreen';
 import SignUpScreen from './screens/SignUpScreen';
-import ConnexionScreen from './screens/ConnexionScreen';
 
 //redux
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user';
 import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import TabNavigationClient from './navigation/TabNavigationClient';
+import TabNavigationPro from './navigation/TabNavigationPro';
 
 const reducers = combineReducers({ user });
 const persistConfig = { key: 'user', storage: AsyncStorage };
@@ -32,45 +32,34 @@ const persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
-  return (
-    <Tab.Navigator screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
-        let iconName = '';
+function MainNavigation() {
+  const user = useSelector((state) => state.user.value);
 
-        if (route.name === 'Searchscreen') {
-          iconName = 'search';
-        } else if (route.name === 'MyParcelsScreen') {
-          iconName = 'dolly';
-        } else if (route.name === 'ClientProfileScreen') {
-          iconName = 'user';
-        }
-        {/*@ts-ignore */ }
-        return <FontAwesome name={iconName} size={size} color={color} />;
-      },
-      tabBarActiveTintColor: '#0F58B8',
-      tabBarInactiveTintColor: '#CDF4FF',
-      headerShown: false,
-    })}>
-      <Tab.Screen name="SearchScreen" component={SearchScreen} />
-      <Tab.Screen name="MyParcelsScreen" component={MyParcelsScreen} />
-      <Tab.Screen name="ClientProfileScreen" component={ClientProfileScreen} />
-    </Tab.Navigator>
-  );
-};
+  if (!user.token) {
+    // Si non connecté, on affiche ici les écrans publics
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="SearchScreen" component={SearchScreen} />
+        <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+      </Stack.Navigator>
+    );
+  }
+  if (user.role === 'client') {
+    return <TabNavigationClient />;
+  } else if (user.role === 'pro') {
+    return <TabNavigationPro />;
+  } else {
+    return null;
+  }
+}
 
 export default function App() {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <NavigationContainer>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="HomeScreen" component={HomeScreen} />
-            <Stack.Screen name="TabNavigator" component={TabNavigator} />
-            <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-            <Stack.Screen name="SearchScreen" component={SearchScreen} />
-            <Stack.Screen name="ConnexionScreen" component={ConnexionScreen} />
-          </Stack.Navigator>
+          <MainNavigation />
         </NavigationContainer>
       </PersistGate>
     </Provider>
