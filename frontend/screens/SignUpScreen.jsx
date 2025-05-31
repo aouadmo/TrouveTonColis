@@ -1,8 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
-
+import Header from "../components/Header.jsx";
 
 const SignUpScreen = () => {
   const [userType, setUserType] = useState("client");
@@ -30,6 +37,8 @@ const SignUpScreen = () => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
+      <Header />
+
       {/* Switch boutons */}
       <View style={styles.switchContainer}>
         <TouchableOpacity
@@ -47,27 +56,83 @@ const SignUpScreen = () => {
       </View>
 
       {/* Champs communs */}
-      <TextInput style={styles.input} placeholder="Nom" value={form.nom} onChangeText={(v) => handleChange("nom", v)} />
-      <TextInput style={styles.input} placeholder="Prénom" value={form.prenom} onChangeText={(v) => handleChange("prenom", v)} />
-      <TextInput style={styles.input} placeholder="Email" value={form.email} onChangeText={(v) => handleChange("email", v)} />
-      <TextInput style={styles.input} placeholder="Mot de passe" secureTextEntry value={form.password} onChangeText={(v) => handleChange("password", v)} />
-      <TextInput style={styles.input} placeholder="Téléphone" keyboardType="phone-pad" value={form.phone} onChangeText={(v) => handleChange("phone", v)} />
+      <TextInput
+        style={styles.input}
+        placeholder="Nom"
+        value={form.nom}
+        onChangeText={(v) => handleChange("nom", v)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Prénom"
+        value={form.prenom}
+        onChangeText={(v) => handleChange("prenom", v)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        value={form.email}
+        onChangeText={(v) => handleChange("email", v)}
+        keyboardType="email-address"
+        autoCapitalize="none"
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Mot de passe"
+        secureTextEntry
+        value={form.password}
+        onChangeText={(v) => handleChange("password", v)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Téléphone"
+        keyboardType="phone-pad"
+        value={form.phone}
+        onChangeText={(v) => handleChange("phone", v)}
+      />
 
       {/* Champs PRO */}
       {userType === "pro" && (
         <>
-          <TextInput style={styles.input} placeholder="Téléphone pro" value={form.phone2} onChangeText={(v) => handleChange("phone2", v)} />
-          <TextInput style={styles.input} placeholder="Nom du relais" value={form.nom_relais} onChangeText={(v) => handleChange("nom_relais", v)} />
-          <TextInput style={styles.input} placeholder="Adresse" value={form.adresse} onChangeText={(v) => handleChange("adresse", v)} />
-          <TextInput style={styles.input} placeholder="Ville" value={form.ville} onChangeText={(v) => handleChange("ville", v)} />
-          <TextInput style={styles.input} placeholder="Code Postal" keyboardType="numeric" value={form.codePostal} onChangeText={(v) => handleChange("codePostal", v)} />
+          <TextInput
+            style={styles.input}
+            placeholder="Téléphone pro"
+            value={form.phone2}
+            onChangeText={(v) => handleChange("phone2", v)}
+            keyboardType="phone-pad"
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Nom du relais"
+            value={form.nom_relais}
+            onChangeText={(v) => handleChange("nom_relais", v)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Adresse"
+            value={form.adresse}
+            onChangeText={(v) => handleChange("adresse", v)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Ville"
+            value={form.ville}
+            onChangeText={(v) => handleChange("ville", v)}
+          />
+          <TextInput
+            style={styles.input}
+            placeholder="Code Postal"
+            keyboardType="numeric"
+            value={form.codePostal}
+            onChangeText={(v) => handleChange("codePostal", v)}
+          />
         </>
       )}
 
-      {/* Bouton (juste l'apparence) */}
+      {/* Bouton soumettre */}
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <FontAwesomeIcon icon={faUserPlus} size={20} color="#fff" />
-        <Text style={styles.buttonText}> Créer un compte </Text>
+        <Text style={styles.buttonText}>Créer un compte</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -108,17 +173,19 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    backgroundColor: "grey-dark",
+    backgroundColor: "#6a0dad",
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 10,
     flexDirection: "row",
     alignItems: "center",
+    gap: 8,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "600",
     fontSize: 16,
+    marginLeft: 10,
   },
 });
 
