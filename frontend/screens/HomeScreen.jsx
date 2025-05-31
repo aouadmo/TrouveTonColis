@@ -14,10 +14,13 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('SignUpScreen');
   };
 
-    const handleSearch = () => {
+  const handleSearch = () => {
     navigation.navigate('SearchScreen');
   };
 
+  const gotocamerascreen = () => {
+    navigation.navigate('CameraScreen');
+  };
   return (
     <KeyboardAvoidingView
       style={styles.container}
@@ -38,13 +41,22 @@ export default function HomeScreen({ navigation }) {
       </TouchableOpacity>
 
       {/* bouton pour rechercher les colis */}
-            <TouchableOpacity
+      <TouchableOpacity
         onPress={handleSearch}
         style={styles.button}
         activeOpacity={0.8}
       >
         <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
         <Text style={styles.textButton}> Rechercher les colis</Text>
+      </TouchableOpacity>
+      {/* bouton pour scanner les colis */}
+      <TouchableOpacity
+        onPress={gotocamerascreen}
+        style={styles.button}
+        activeOpacity={0.8}
+      >
+        <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+        <Text style={styles.textButton}> Scanner les colis</Text>
       </TouchableOpacity>
     </KeyboardAvoidingView>
   );

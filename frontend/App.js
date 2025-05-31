@@ -9,6 +9,7 @@ import SearchScreen from './screens/SearchScreen';
 import MyParcelsScreen from './screens/MyParcelsScreen';
 import ClientProfileScreen from './screens/ClientProfileScreen';
 import SignUpScreen from './screens/SignUpScreen';
+import CameraScreen from './screens/CameraScreen';
 
 //redux
 import { Provider } from 'react-redux';
@@ -65,6 +66,7 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen name="CameraScreen" component={CameraScreen} />
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
