@@ -16,6 +16,7 @@ export default function ConnexionScreen({ navigation }) {
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [messageError, setMessageError] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleSignIn = () => {
@@ -23,9 +24,34 @@ export default function ConnexionScreen({ navigation }) {
     };
 
     const handleLogin = () => {
-        dispatch(login(email));
-        setModalVisible(false);
+        if (!email || !password) {
+            setMessageError("Veuillez remplir tous les champs.")
+            setTimeout(() => setMessageError(''), 5000);
+            return;
+        }
+
+        fetch('http://localhost:3000/users/signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        }).then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    dispatch(login({ token: data.token, email: email }));
+                    setModalVisible(false);
+                    setEmail('');
+                    setPassword('');
+                    setMessageError('');
+
+                    console.log("Connexion réussie, redirection vers SearchScreen");
+                    navigation.navigate('TabNavigator', { screen: 'SearchScreen' });
+                } else {
+                    setMessageError(data.error || "Connexion échouée.");
+                    setTimeout(() => setMessageError(''), 5000);
+                }
+            })
     };
+
 
     const handleSignUp = () => {
         navigation.navigate('SignUpScreen');
@@ -34,7 +60,7 @@ export default function ConnexionScreen({ navigation }) {
     return (
         // Header à placer
         <KeyboardAvoidingView style={styles.container} >
-            <Image style={styles.image} source={require('../assets/logo.jpg')} />
+            {/* <Image style={styles.image} source={require('../assets/logo.jpg')} /> */}
             <Text style={styles.title}>Trouve ton colis</Text>
 
             <TouchableOpacity onPress={handleSignIn} style={styles.button} activeOpacity={0.8}>
@@ -45,20 +71,22 @@ export default function ConnexionScreen({ navigation }) {
             </TouchableOpacity>
 
             <Modal visible={modalVisible} transparent={true} animationType="slide" onRequestClose={() => setModalVisible(false)}>
-                <View style={styles.modalContainer}>
-                    <Text style={styles.modalTitle}>Connexion</Text>
+                <KeyboardAvoidingView style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Connexion</Text>
+                        <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
+                        <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} />
 
-                    <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
-                    <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} style={styles.input} />
+                        <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
+                            {messageError ? (<Text style={styles.errorMessage}> Retentez votre chance ! {messageError} </Text>) : null}
+                            <Text style={styles.textButton}>Se connecter</Text>
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
-                        <Text style={styles.textButton}>Se connecter</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.buttonCancel} activeOpacity={0.8}>
-                        <Text style={styles.textButton}>Annuler</Text>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.buttonCancel} activeOpacity={0.8}>
+                            <Text style={styles.textButton}>Annuler</Text>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardAvoidingView>
             </Modal>
         </KeyboardAvoidingView>
     );
@@ -120,6 +148,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 10,
         padding: 20,
+    },
+    errorMessage: {
+        color: 'red',
+        marginBottom: 10,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
     modalTitle: {
         fontSize: 20,
