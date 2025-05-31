@@ -16,6 +16,7 @@ export default function ConnexionScreen({ navigation }) {
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [messageError, setMessageError] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleSignIn = () => {
@@ -23,25 +24,34 @@ export default function ConnexionScreen({ navigation }) {
     };
 
     const handleLogin = () => {
+        if (!email || !password) {
+            setMessageError("Veuillez remplir tous les champs.")
+            setTimeout(() => setMessageError(''), 5000);
+            return;
+        }
 
-            fetch('http://localhost:3000/users/signin', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password }),
-            }).then(response => response.json())
-                .then(data => {
-                    if (data.result) {
-                        dispatch(login({ token: data.token, username: email }));
-                        setEmail('');
-                        setPassword('');
-                        setModalVisible(false);
-                        navigation.navigate('SearchScreen');
-                    } else {
-                        alert(data.error || "Connexion échouée.")
-                    }
-                })
-        };
-    
+        fetch('http://localhost:3000/users/signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        }).then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    dispatch(login({ token: data.token, email: email }));
+                    setModalVisible(false);
+                    setEmail('');
+                    setPassword('');
+                    setMessageError('');
+
+                    console.log("Connexion réussie, redirection vers SearchScreen");
+                    navigation.navigate('TabNavigator', { screen: 'SearchScreen' });
+                } else {
+                    setMessageError(data.error || "Connexion échouée.");
+                    setTimeout(() => setMessageError(''), 5000);
+                }
+            })
+    };
+
 
     const handleSignUp = () => {
         navigation.navigate('SignUpScreen');
@@ -64,11 +74,11 @@ export default function ConnexionScreen({ navigation }) {
                 <KeyboardAvoidingView style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Connexion</Text>
-
                         <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
                         <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} />
 
                         <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
+                            {messageError ? (<Text style={styles.errorMessage}> Retentez votre chance ! {messageError} </Text>) : null}
                             <Text style={styles.textButton}>Se connecter</Text>
                         </TouchableOpacity>
 
@@ -138,6 +148,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         borderRadius: 10,
         padding: 20,
+    },
+    errorMessage: {
+        color: 'red',
+        marginBottom: 10,
+        textAlign: 'center',
+        fontWeight: 'bold',
     },
     modalTitle: {
         fontSize: 20,
