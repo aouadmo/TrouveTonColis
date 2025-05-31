@@ -1,121 +1,144 @@
-import React, { useState } from 'react';
-import { View, TextInput, Text, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useState } from "react";
+import {KeyboardAvoidingView, TextInput, StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
+    Modal,
+} from 'react-native';
 import { useDispatch } from 'react-redux';
-import { login } from '../reducers/userpro';
+import { login } from '../reducers/user';
 
-export default function ProSignupScreen({ navigation }) {
-  const dispatch = useDispatch();
+export default function ConnexionScreen({ navigation }) {
+    const dispatch = useDispatch();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [messageError, setMessageError] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
 
-  const [pro, setPro] = useState({
-    nomRelais: '',
-    prenom: '',
-    nom: '',
-    email: '',
-    emailConfirm: '',
-    password: '',
-    phone: '',
-    adresse: '',
-    ville: '',
-    codePostal: '',
-  });
+    const handleSignIn = () => {
+        setModalVisible(true);
+    };
 
-  const handleChange = (key, value) => {
-    setPro({ ...pro, [key]: value });
-  };
+    const handleLogin = () => {
+        if (!email || !password) {
+            setMessageError("Veuillez remplir tous les champs.")
+            setTimeout(() => setMessageError(''), 5000);
+            return;
+        }
 
-  const handleSubmit = () => {
-    if (pro.email !== pro.emailConfirm) {
-      alert("Les emails ne correspondent pas.");
-      return;
-    }
+        fetch('http://localhost:3000/pros/signin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        }).then(response => response.json())
+            .then(data => {
+                if (data.result) {
+                    dispatch(login({ token: data.token, email: email }));
+                    setModalVisible(false);
+                    setEmail('');
+                    setPassword('');
+                    setMessageError('');
+                    navigation.navigate('TabNavigator', { screen: 'TableauBord' });
+                } 
+            })
+    };
 
-    fetch('http://localhost:3000/pros/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(pro),
-    })
-      .then(res => res.json())
-      .then(data => {
-        if (data.result) {
-          dispatch(login({ token: data.token, email: pro.email }));
-          navigation.navigate('TableauBord');
-        } 
-      });
-  };
 
-  return (
-    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Inscription</Text>
+    const handleSignUp = () => {
+        navigation.navigate('SignUpProScreen');
+    };
 
-      <TextInput placeholder="Nom Point Relais" style={styles.input} onChangeText={val => handleChange('nomRelais', val)} />
-      
-      <View style={styles.row}>
-        <TextInput placeholder="First name" style={styles.inputHalf} onChangeText={val => handleChange('prenom', val)} />
-        <TextInput placeholder="Last name" style={styles.inputHalf} onChangeText={val => handleChange('nom', val)} />
-      </View>
+    return (
+        <KeyboardAvoidingView style={styles.container} >
+            <Text style={styles.title}>Trouve ton colis</Text>
+            <Modal visible={modalVisible} transparent={true} animationType="slide" onRequestClose={() => setModalVisible(false)}>
+                <KeyboardAvoidingView style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Connexion</Text>
+                        <TextInput placeholder="Email" value={email} onChangeText={setEmail} style={styles.input} />
+                        <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry={true} style={styles.input} />
 
-      <TextInput placeholder="E-mail"  style={styles.input} onChangeText={val => handleChange('email', val)} />
-      <TextInput placeholder="Confirmation E-mail"  style={styles.input} onChangeText={val => handleChange('emailConfirm', val)} />
-      <TextInput placeholder="Phone" keyboardType="phone-pad" style={styles.input} onChangeText={val => handleChange('phone', val)} />
-      <TextInput placeholder="Street" style={styles.input} onChangeText={val => handleChange('adresse', val)} />
+                        <TouchableOpacity onPress={handleLogin} style={styles.button} activeOpacity={0.8}>
+                            {messageError ? (<Text style={styles.errorMessage}> Retentez votre chance ! {messageError} </Text>) : null}
+                            <Text style={styles.textButton}>Se connecter</Text>
+                        </TouchableOpacity>
 
-      <View style={styles.row}>
-        <TextInput placeholder="City" style={styles.inputHalf} onChangeText={val => handleChange('ville', val)} />
-        <TextInput placeholder="Zip"  style={styles.inputHalf} onChangeText={val => handleChange('codePostal', val)} />
-      </View>
-
-      <TextInput placeholder="Mot de Passe" style={styles.input} onChangeText={val => handleChange('password', val)} />
-
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-        <Text style={styles.buttonText}>Inscription</Text>
-      </TouchableOpacity>
-    </ScrollView>
-    </KeyboardAvoidingView>
-  );
+                        <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.buttonCancel} activeOpacity={0.8}>
+                            <Text style={styles.textButton}>Annuler</Text>
+                        </TouchableOpacity>
+                    </View>
+                </KeyboardAvoidingView>
+            </Modal>
+        </KeyboardAvoidingView>
+    );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: '#FFF4ED',
-    flexGrow: 1,
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 20,
-    marginBottom: 15,
-    fontWeight: 'bold',
-    color: '#3D2C8D',
-  },
-  input: {
-    backgroundColor: '#F1E6DE',
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    height: 45,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  inputHalf: {
-    backgroundColor: '#F1E6DE',
-    borderRadius: 5,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-    height: 45,
-    width: '48%',
-  },
-  button: {
-    backgroundColor: '#4B1D9A',
-    paddingVertical: 12,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 15,
-  },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
+    container: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#fff",
+        paddingHorizontal: 20,
+    },
+    image: {
+        width: 100,
+        height: 100,
+        marginBottom: 20,
+    },
+    title: {
+        fontSize: 24,
+        marginBottom: 30,
+        fontWeight: "bold",
+    },
+    button: {
+        backgroundColor: "#2196F3",
+        padding: 12,
+        borderRadius: 8,
+        marginVertical: 10,
+        width: "100%",
+        alignItems: "center",
+    },
+    buttonCancel: {
+        backgroundColor: "#ccc",
+        padding: 12,
+        borderRadius: 8,
+        marginTop: 10,
+        width: "100%",
+        alignItems: "center",
+    },
+    textButton: {
+        color: "#fff",
+        fontWeight: "bold",
+    },
+    input: {
+        width: "100%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        padding: 10,
+        marginVertical: 10,
+        borderRadius: 5,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        backgroundColor: "rgba(0,0,0,0.5)",
+        paddingHorizontal: 20,
+    },
+    modalContent: {
+        backgroundColor: "#fff",
+        borderRadius: 10,
+        padding: 20,
+    },
+    errorMessage: {
+        color: 'red',
+        marginBottom: 10,
+        textAlign: 'center',
+        fontWeight: 'bold',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 15,
+    },
 });

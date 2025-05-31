@@ -10,6 +10,7 @@ import MyParcelsScreen from './screens/MyParcelsScreen';
 import ClientProfileScreen from './screens/ClientProfileScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import ConnexionScreen from './screens/ConnexionScreen';
+import SignUpProScreen from './screens/SingUpProScreen';
 
 //redux
 import { Provider } from 'react-redux';
