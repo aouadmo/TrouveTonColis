@@ -4,13 +4,12 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  Platform,
 } from 'react-native';
 
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
-import Header from '../component/Header';
+import Header from '../components/Header';
 
 export default function HomeScreen({ navigation }) {
   const handleSignUp = () => {
@@ -21,10 +20,9 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('SearchScreen');
   };
 
-  const handleConnexion = () => {
-    navigation.navigate('ConnexionScreen');
+  const gotocamerascreen = () => {
+    navigation.navigate('CameraScreen');
   };
-
   return (
     <View style={styles.wrapper}>
       <Header />
@@ -46,6 +44,7 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.textButton}> Inscription</Text>
         </TouchableOpacity>
 
+        {/* bouton pour rechercher les colis */}
         <TouchableOpacity
           onPress={handleSearch}
           style={styles.button}
@@ -54,14 +53,24 @@ export default function HomeScreen({ navigation }) {
           <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
           <Text style={styles.textButton}> Rechercher les colis</Text>
         </TouchableOpacity>
-
+        {/* bouton pour scanner les colis */}
         <TouchableOpacity
-          onPress={handleConnexion}
+          onPress={gotocamerascreen}
           style={styles.button}
           activeOpacity={0.8}
         >
           <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-          <Text style={styles.textButton}> Aller sur la page Connexion</Text>
+          <Text style={styles.textButton}> Scanner les colis</Text>
+        </TouchableOpacity>
+
+        {/* bouton pour scanner les colis */}
+        <TouchableOpacity
+          onPress={gotocamerascreen}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+          <Text style={styles.textButton}> Scanner les colis</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
@@ -115,3 +124,4 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
+

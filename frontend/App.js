@@ -10,6 +10,8 @@ import MyParcelsScreen from './screens/MyParcelsScreen';
 import ClientProfileScreen from './screens/ClientProfileScreen';
 import SignUpScreen from './screens/SignUpScreen';
 import ConnexionScreen from './screens/ConnexionScreen';
+import RelayInfoScreen from './screens/RelayInfoScreen';
+import CameraScreen from './screens/CameraScreen';
 
 //redux
 import { Provider } from 'react-redux';
@@ -70,6 +72,8 @@ export default function App() {
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
             <Stack.Screen name="ConnexionScreen" component={ConnexionScreen} />
+            <Stack.Screen name="CameraScreen" component={CameraScreen} />
+            <Stack.Screen name="RelayInfoScreen" component={RelayInfoScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>
