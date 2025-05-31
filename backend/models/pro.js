@@ -1,11 +1,16 @@
 const mongoose = require('mongoose');
 
 const prosSchema = mongoose.Schema({
-    client: { type: mongoose.Schema.Types.ObjectId, ref: 'clients' },
-    phone2: Number,
+    nom: String,
+    prenom: String,
+    email: String,
+    password: String,
+    phone: Number,
+    nomRelais: String,
     adresse: String,
     ville: String,
     codePostal: Number,
+    token: String,
 });
 
 const Pro = mongoose.model('pros', prosSchema);

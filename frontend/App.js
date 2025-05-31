@@ -9,6 +9,7 @@ import SearchScreen from './screens/SearchScreen';
 import MyParcelsScreen from './screens/MyParcelsScreen';
 import ClientProfileScreen from './screens/ClientProfileScreen';
 import SignUpScreen from './screens/SignUpScreen';
+import ConnexionScreen from './screens/ConnexionScreen';
 import CameraScreen from './screens/CameraScreen';
 
 //redux
@@ -38,11 +39,11 @@ const TabNavigator = () => {
       tabBarIcon: ({ color, size }) => {
         let iconName = '';
 
-        if (route.name === 'Search') {
+        if (route.name === 'Searchscreen') {
           iconName = 'search';
-        } else if (route.name === 'MyParcels') {
+        } else if (route.name === 'MyParcelsScreen') {
           iconName = 'dolly';
-        } else if (route.name === 'ClientProfile') {
+        } else if (route.name === 'ClientProfileScreen') {
           iconName = 'user';
         }
         {/*@ts-ignore */ }
@@ -66,10 +67,11 @@ export default function App() {
         <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
-            <Stack.Screen name="CameraScreen" component={CameraScreen} />
+            <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
-            <Stack.Screen name="TabNavigator" component={TabNavigator} />
+            <Stack.Screen name="ConnexionScreen" component={ConnexionScreen} />
+            <Stack.Screen name="CameraScreen" component={CameraScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </PersistGate>

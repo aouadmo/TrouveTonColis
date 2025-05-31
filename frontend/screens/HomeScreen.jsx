@@ -9,6 +9,8 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
+import Header from '../component/Header';
+
 export default function HomeScreen({ navigation }) {
   const handleSignUp = () => {
     navigation.navigate('SignUpScreen');
@@ -22,50 +24,66 @@ export default function HomeScreen({ navigation }) {
     navigation.navigate('CameraScreen');
   };
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-    >
-      {/* Décoration style logo */}
-      <View style={styles.circle} />
-
-      <Text style={styles.title}>🎯 Bienvenue sur TTC</Text>
-      <Text style={styles.subtitle}>L'application de gestion de colis</Text>
-
-      {/* bouton pour s'inscrire */}
-      <TouchableOpacity
-        onPress={handleSignUp}
-        style={styles.button}
-        activeOpacity={0.8}>
-        <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-        <Text style={styles.textButton}> Inscription</Text>
-      </TouchableOpacity>
-
-      {/* bouton pour rechercher les colis */}
-      <TouchableOpacity
-        onPress={handleSearch}
-        style={styles.button}
-        activeOpacity={0.8}
+    <View style={styles.wrapper}>
+      <Header />
+      <KeyboardAvoidingView
+        style={styles.container}
       >
-        <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-        <Text style={styles.textButton}> Rechercher les colis</Text>
-      </TouchableOpacity>
-      {/* bouton pour scanner les colis */}
-      <TouchableOpacity
-        onPress={gotocamerascreen}
-        style={styles.button}
-        activeOpacity={0.8}
-      >
-        <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-        <Text style={styles.textButton}> Scanner les colis</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+        <View style={styles.circle} />
+
+        <Text style={styles.title}>🎯 Bienvenue sur TTC</Text>
+        <Text style={styles.subtitle}>L'application de gestion de colis</Text>
+        <Text style={styles.subtitle}>Voici le hub pour tester si votre page marche bien !</Text>
+
+        <TouchableOpacity
+          onPress={handleSignUp}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+          <Text style={styles.textButton}> Inscription</Text>
+        </TouchableOpacity>
+
+        {/* bouton pour rechercher les colis */}
+        <TouchableOpacity
+          onPress={handleSearch}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+          <Text style={styles.textButton}> Rechercher les colis</Text>
+        </TouchableOpacity>
+        {/* bouton pour scanner les colis */}
+        <TouchableOpacity
+          onPress={gotocamerascreen}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+          <Text style={styles.textButton}> Scanner les colis</Text>
+        </TouchableOpacity>
+
+        {/* bouton pour scanner les colis */}
+        <TouchableOpacity
+          onPress={gotocamerascreen}
+          style={styles.button}
+          activeOpacity={0.8}
+        >
+          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+          <Text style={styles.textButton}> Scanner les colis</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  wrapper: {
     flex: 1,
     backgroundColor: '#ffffff',
+  },
+  container: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -88,7 +106,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#666',
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: 20,
   },
   button: {
     flexDirection: 'row',
@@ -97,6 +115,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 10,
+    marginVertical: 5,
   },
   textButton: {
     color: '#ffffff',
@@ -105,3 +124,4 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
 });
+
