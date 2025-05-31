@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { login } from '../reducers/user';
+import { login } from '../reducers/userpro';
 
 export default function ProSignupScreen({ navigation }) {
   const dispatch = useDispatch();
