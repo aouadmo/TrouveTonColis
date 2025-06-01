@@ -2,115 +2,86 @@ const express = require('express');
 const router = express.Router();
 const Colis = require('../models/colis');
 
+// 🔹 Données de test "fictives"
+const fakeColisList = [
+  {
+    trackingNumber: '1Ztrackdupontjean123',
+    nom: 'Dupont',
+    prenom: 'Jean',
+    relais: {
+      nom: 'point relais particulier de Cécile',
+      adresse: '84 rue Gambetta 45140 Saint-Jean-de-la-Ruelle',
+      horaires:
+        'Lundi au vendredi : 10h - 16h<br/>Mardi : 10h - 20h<br/>Samedi : 14h - 17h<br/><br/>Soir sur rendez-vous :<br/>Lundi, mercredi, jeudi de 21h45 à 22h',
+      infos:
+        'Prévenir par SMS 10 minutes avant d’arriver. ',
+    },
+  },
+  {
+    trackingNumber: '1Ztrackmartinclaire123',
+    nom: 'Martin',
+    prenom: 'Claire',
+    relais: {
+      nom: 'point relais particulier de Cécile',
+      adresse: '84 rue Gambetta 45140 Saint-Jean-de-la-Ruelle',
+      horaires:
+        'Lundi au vendredi : 10h - 16h<br/>Mardi : 10h - 20h<br/>Samedi : 14h - 17h<br/><br/>Soir sur rendez-vous :<br/>Lundi, mercredi, jeudi de 21h45 à 22h',
+      infos:
+        'Prévenir par SMS 10 minutes avant d’arriver.',
+    },
+  },
+  {
+    trackingNumber: '1Ztrackbernluc123',
+    nom: 'Bernard',
+    prenom: 'Luc',
+    relais: {
+      nom: 'point relais particulier de Cécile',
+      adresse: '84 rue Gambetta 45140 Saint-Jean-de-la-Ruelle',
+      horaires:
+        'Lundi au vendredi : 10h - 16h<br/>Mardi : 10h - 20h<br/>Samedi : 14h - 17h<br/><br/>Soir sur rendez-vous :<br/>Lundi, mercredi, jeudi de 21h45 à 22h',
+      infos:
+        'Prévenir par SMS 10 minutes avant d’arriver.',
+    },
+  },
+];
 
-// Route 1 : recherche par tracking number
+// 📦 Route 1 : recherche par numéro de suivi
 router.get('/search/:trackingNumber', async (req, res) => {
   const { trackingNumber } = req.params;
-
-  // 🔹 Colis de test "en dur"
-  const fakeColisList = [
-    {
-      trackingNumber: '1Ztrackdupontjean123',
-      nom: 'Dupont',
-      prenom: 'Jean',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta 45140 SJDLR',
-        horaires: 'Lundi au vendredi : 10h - 16h <br/> Samedi : 14h - 17h <br/> mardi : 10h - 20h',
-        infos: 'Prévenir 10 minutes avant d\'arriver. proccuration par sms puis venir avec les 2 pieces d\identité',
-      },
-    },
-    {
-      trackingNumber: '1Ztrackmartinclaire123',
-      nom: 'Martin',
-      prenom: 'Claire',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta 45140 SJDLR',
-        horaires: 'Lundi au vendredi : 10h - 16h <br/> Samedi : 14h - 17h <br/> mardi : 10h - 20h',
-        infos: 'Prévenir 10 minutes avant d\'arriver. proccuration par sms puis venir avec les 2 pieces d\identité',
-      },
-    },
-    {
-      trackingNumber: '1Ztrackbernluc123',
-      nom: 'Bernard',
-      prenom: 'Luc',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta 45140 SJDLR',
-        horaires: 'Lundi au vendredi : 10h - 16h <br/> Samedi : 14h - 17h <br/> mardi : 10h - 20h',
-        infos: 'Prévenir 10 minutes avant d\'arriver. proccuration par sms puis venir avec les 2 pieces d\identité',
-      },
-    },
-  ];
 
   const fakeMatch = fakeColisList.find((colis) => colis.trackingNumber === trackingNumber);
   if (fakeMatch) {
     return res.json({ found: true, colis: fakeMatch, message: 'Colis fictif bien livré' });
   }
+    const colis = await Colis.findOne({ trackingNumber });
+    if (colis) {
+      return res.json({ found: true, colis, message: 'Colis trouvé dans MongoDB' });
+    } else {
+      return res.status(404).json({ found: false, message: 'Colis pas encore arrivé' });
+    }
 
-  // 🔹 Si pas trouvé dans les faux colis, on cherche dans la base Mongo
-  const colis = await Colis.findOne({ trackingNumber });
-
-  if (colis) {
-    res.json({ found: true, colis, message: 'Colis bien livré (MongoDB)' });
-  } else {
-    res.status(404).json({ message: 'Colis pas encore arrivé' });
-  }
 });
 
-//  Route 2 : recherche par nom et prénom 
+// 👤 Route 2 : recherche par nom et prénom
 router.post('/search/name', async (req, res) => {
-  const { nom, prenom } = req.body;
+  const nom = req.body.nom?.trim();
+  const prenom = req.body.prenom?.trim();
 
-  // 🔹 Colis fictifs
-  const fakeColisList = [
-    {
-      trackingNumber: '1Ztrackdupontjean123',
-      nom: 'Dupont',
-      prenom: 'Jean',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta45000 Orléans',
-        horaires: 'Tous les jours : 10h - 16h',
-        infos: 'Procuration acceptée avec copie de pièce d\'identité.',
-      },
-    },
-    {
-      trackingNumber: '1Ztrackmartinclaire123',
-      nom: 'Martin',
-      prenom: 'Claire',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta45000 Orléans',
-        horaires: 'Tous les jours : 10h - 16h',
-        infos: 'Procuration acceptée avec copie de pièce d\'identité.',
-      },
-    },
-    {
-      trackingNumber: '1Ztrackbernluc123',
-      nom: 'Bernard',
-      prenom: 'Luc',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta45000 Orléans',
-        horaires: 'Tous les jours : 10h - 16h',
-        infos: 'Procuration acceptée avec copie de pièce d\'identité.',
-      },
-    },
-  ];
-
+  // 🔹 Colis fictifs (comparaison insensible à la casse + trim)
   const matchedFake = fakeColisList.filter(colis =>
-    colis.nom.toLowerCase() === nom.toLowerCase() &&
-    colis.prenom.toLowerCase() === prenom.toLowerCase()
+    colis.nom.toLowerCase().trim() === nom.toLowerCase() &&
+    colis.prenom.toLowerCase().trim() === prenom.toLowerCase()
   );
 
   if (matchedFake.length > 0) {
     return res.json({ found: true, colis: matchedFake, message: 'Colis fictifs trouvés' });
   }
 
-  // 🔹 Sinon, chercher dans la base Mongo
-  const colis = await Colis.find({ nom, prenom });
+  // 🔹 Recherche MongoDB insensible à la casse avec regex
+  const colis = await Colis.find({
+    nom: { $regex: `^${nom}$`, $options: 'i' },
+    prenom: { $regex: `^${prenom}$`, $options: 'i' },
+  });
 
   if (colis.length > 0) {
     res.json({ found: true, colis, message: 'Colis trouvés' });
@@ -118,4 +89,5 @@ router.post('/search/name', async (req, res) => {
     res.status(404).json({ found: false, message: 'Aucun colis à ce nom' });
   }
 });
+
 module.exports = router;
