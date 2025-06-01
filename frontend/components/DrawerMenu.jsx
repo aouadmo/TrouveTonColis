@@ -16,8 +16,8 @@ export default function CustomDrawerContent({ navigation }) {
   };
   const handleSendEmail = () => {
     const email = 'support@trouvetoncolis.fr';
-    const subject = 'Bug signalé depuis l’application';
-    const body = 'Bonjour, je souhaite signaler un bug concernant : ';
+    const subject = 'message depuis l’application';
+    const body = 'Bonjour, je souhaite vous contacter concernant : ';
     const url = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     Linking.openURL(url);
   };
