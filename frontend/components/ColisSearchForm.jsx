@@ -1,3 +1,4 @@
+// ColisSearchForm.jsx
 import React, { useState } from "react";
 import {
   View,
@@ -24,13 +25,17 @@ const ColisSearchForm = () => {
     let data;
 
     try {
+      // Nettoyage des entrées utilisateur
       if (searchMode === "tracking") {
-        response = await fetch(`http://192.168.1.10:3000/colis/search/${trackingNumber}`);
+        const cleanedTracking = trackingNumber.trim();
+        response = await fetch(`http://192.168.1.10:3000/colis/search/${cleanedTracking}`);
       } else {
+        const cleanedNom = nom.trim().toLowerCase();
+        const cleanedPrenom = prenom.trim().toLowerCase();
         response = await fetch("http://192.168.1.10:3000/colis/search/name", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nom, prenom }),
+          body: JSON.stringify({ nom: cleanedNom, prenom: cleanedPrenom }),
         });
       }
 
@@ -44,7 +49,6 @@ const ColisSearchForm = () => {
         setResult("❌ Aucun colis trouvé.");
         setColisTrouves([]);
       }
-
     } catch (error) {
       setResult("❌ Erreur lors de la recherche.");
       setColisTrouves([]);
@@ -53,39 +57,38 @@ const ColisSearchForm = () => {
 
   return (
     <View style={styles.container}>
-
-      {/* Choix mode */}
+      {/* Onglets de recherche */}
       <View style={styles.switchContainer}>
         <TouchableOpacity
           style={[styles.switchButton, searchMode === "tracking" && styles.active]}
           onPress={() => {
             setSearchMode("tracking");
-            setResult("");
-            setColisTrouves([]);
-            setTrackingNumber(""); // facultatif mais propre
+            setTrackingNumber("");
             setNom("");
             setPrenom("");
+            setResult("");
+            setColisTrouves([]);
           }}
-                  >
+        >
           <Text style={styles.switchText}>Numéro de suivi</Text>
         </TouchableOpacity>
+
         <TouchableOpacity
           style={[styles.switchButton, searchMode === "name" && styles.active]}
           onPress={() => {
             setSearchMode("name");
-            setResult("");
-            setColisTrouves([]);
-            setTrackingNumber(""); // facultatif
+            setTrackingNumber("");
             setNom("");
             setPrenom("");
+            setResult("");
+            setColisTrouves([]);
           }}
-                    
         >
           <Text style={styles.switchText}>Nom + Prénom</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Champs selon le mode */}
+      {/* Champs de recherche */}
       {searchMode === "tracking" ? (
         <TextInput
           style={styles.input}
@@ -110,22 +113,23 @@ const ColisSearchForm = () => {
         </>
       )}
 
+      {/* Bouton de recherche */}
       <TouchableOpacity style={styles.button} onPress={handleSearch}>
         <FontAwesomeIcon icon={faSearch} size={20} color="#fff" />
         <Text style={styles.buttonText}>  Rechercher</Text>
       </TouchableOpacity>
 
+      {/* Message résultat */}
       {result && <Text style={styles.result}>{result}</Text>}
 
+      {/* Liste des colis */}
       {colisTrouves.length > 0 && colisTrouves.map((colis, index) => (
         <View key={index} style={styles.colisCard}>
           <Text style={styles.colisText}>📦 {colis.trackingNumber}</Text>
           <Text style={styles.colisText}>👤 {colis.nom} {colis.prenom}</Text>
           <TouchableOpacity
             style={styles.relayButton}
-            onPress={() => navigation.navigate("RelayInfoScreen", {
-              relais: colis.relais
-            })}
+            onPress={() => navigation.navigate("RelayInfoScreen", { relais: colis.relais })}
           >
             <Text style={styles.relayButtonText}>Voir les infos du point relais</Text>
           </TouchableOpacity>
@@ -139,12 +143,6 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     alignItems: "center",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    textAlign: "center",
-    marginBottom: 20,
   },
   switchContainer: {
     flexDirection: "row",
