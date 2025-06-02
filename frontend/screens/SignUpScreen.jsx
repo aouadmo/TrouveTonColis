@@ -9,11 +9,15 @@ import {
 } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import { useDispatch } from "react-redux";
+import { login } from "../reducers/user";
+import { useNavigation } from "@react-navigation/native";
 import Header from "../components/Header.jsx";
 
 const SignUpScreen = () => {
   const [userType, setUserType] = useState("client");
-
+  const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [form, setForm] = useState({
     nom: "",
     prenom: "",
@@ -31,9 +35,58 @@ const SignUpScreen = () => {
     setForm({ ...form, [key]: value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     console.log("Formulaire soumis :", { ...form, type: userType });
+
+    const url = userType === 'client' ? 'http://192.168.1.191:3000/users/signup' : 'http://192.168.1.191:3000/pros/signup';
+    console.log(url);
+    const payload = userType === 'client' ?
+      {
+        nom: form.nom,
+        prenom: form.prenom,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+
+      } : {
+        nom: form.nom,
+        prenom: form.prenom,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+        phone2: form.phone2,
+        nomRelais: form.nom_relais,
+        adresse: form.adresse,
+        ville: form.ville,
+        codePostal: form.codePostal,
+      };
+      
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      
+      
+    const data = await response.json();
+    console.log(data);
+    if (response.ok && data.token) {
+      dispatch(login({ token: data.token, role: userType }));
+      // navigation.reset sert à vider l'historique afin que si l'utilisateur utilise le bouton retour, qu'il reste dans la route nommée
+      if (userType === "client") {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'TabNavigationClient' }],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'TabNavigationPro' }],
+        });
+      }
+    }
   };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
@@ -173,7 +226,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 20,
-    backgroundColor: "#6a0dad",
+    backgroundColor: "#ec6e5b",
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 10,

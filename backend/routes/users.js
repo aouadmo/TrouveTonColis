@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt');
 router.post('/signup', (req, res) => {
   const { nom, prenom, email, password, phone, client } = req.body;
 
-  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone', 'client'])) {
+  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone'])) {
     res.json({ result: false, error: 'Tous les champs sont requis.' });
     return;
   }
