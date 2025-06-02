@@ -7,7 +7,6 @@ import {
   ScrollView,
   Linking
 } from 'react-native';
-import { DrawerContentScrollView } from '@react-navigation/drawer';
 import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
 
 export default function CustomDrawerContent({ navigation }) {
