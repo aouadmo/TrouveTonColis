@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import {KeyboardAvoidingView, TextInput, StyleSheet,
-    Text,
-    TouchableOpacity,
-    View,
-    Modal,
-} from 'react-native';
+import {KeyboardAvoidingView, TextInput, StyleSheet,Text,TouchableOpacity,View,Modal} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/user';
 
@@ -12,7 +7,6 @@ export default function ConnexionScreen({ navigation }) {
     const dispatch = useDispatch();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [messageError, setMessageError] = useState('');
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleSignIn = () => {
@@ -21,8 +15,6 @@ export default function ConnexionScreen({ navigation }) {
 
     const handleLogin = () => {
         if (!email || !password) {
-            setMessageError("Veuillez remplir tous les champs.")
-            setTimeout(() => setMessageError(''), 5000);
             return;
         }
 
@@ -37,16 +29,11 @@ export default function ConnexionScreen({ navigation }) {
                     setModalVisible(false);
                     setEmail('');
                     setPassword('');
-                    setMessageError('');
                     navigation.navigate('TabNavigator', { screen: 'TableauBord' });
                 } 
             })
     };
 
-
-    const handleSignUp = () => {
-        navigation.navigate('SignUpProScreen');
-    };
 
     return (
         <KeyboardAvoidingView style={styles.container} >
