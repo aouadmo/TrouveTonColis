@@ -12,10 +12,12 @@ var colisRouter = require('./routes/colis');
 var usersRouter = require('./routes/users');
 var app = express();
 const cors = require('cors');
+const fileUpload = require('express-fileupload');
+app.use(fileUpload());
 app.use(cors());
 app.use(logger('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
