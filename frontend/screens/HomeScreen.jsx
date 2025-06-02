@@ -9,7 +9,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
 
-import Header from '../component/Header';
+import Header from '../components/Header';
 
 export default function HomeScreen({ navigation }) {
   const handleSignUp = () => {
