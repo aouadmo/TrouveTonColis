@@ -10,7 +10,6 @@ const SignUpScreen = () => {
   const [userType, setUserType] = useState("client");
   const dispatch = useDispatch();
   const navigation = useNavigation();
-
   const [form, setForm] = useState({
     nom: "",
     prenom: "",
@@ -31,22 +30,55 @@ const SignUpScreen = () => {
   const handleSubmit = async () => {
     console.log("Formulaire soumis :", { ...form, type: userType });
 
-    const payload = {
-      ...form,
-      type: userType,
-    };
+    const url = userType === 'client' ? 'http://192.168.1.191:3000/users/signup' : 'http://192.168.1.191:3000/pros/signup';
+    console.log(url);
+    const payload = userType === 'client' ?
+      {
+        nom: form.nom,
+        prenom: form.prenom,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
 
-    const response = await fetch('http://localhost:3000/users/signin', {
-      method: "POST",
+      } : {
+        nom: form.nom,
+        prenom: form.prenom,
+        email: form.email,
+        password: form.password,
+        phone: form.phone,
+        phone2: form.phone2,
+        nomRelais: form.nom_relais,
+        adresse: form.adresse,
+        ville: form.ville,
+        codePostal: form.codePostal,
+      };
+      
+      const response = await fetch(url, {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-    });
-
+      });
+      
+      
     const data = await response.json();
+    console.log(data);
     if (response.ok && data.token) {
-      dispatch(login({token: data.token, role: userType}));
+      dispatch(login({ token: data.token, role: userType }));
+      // navigation.reset sert à vider l'historique afin que si l'utilisateur utilise le bouton retour, qu'il reste dans la route nommée
+      if (userType === "client") {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'TabNavigationClient' }],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'TabNavigationPro' }],
+        });
+      }
     }
   };
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

@@ -42,6 +42,8 @@ function MainNavigation() {
         <Stack.Screen name="HomeScreen" component={HomeScreen} />
         <Stack.Screen name="SearchScreen" component={SearchScreen} />
         <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+        <Stack.Screen name="TabNavigationClient" component={TabNavigationClient} />
+        <Stack.Screen name="TabNavigationPro" component={TabNavigationPro} />
       </Stack.Navigator>
     );
   }
