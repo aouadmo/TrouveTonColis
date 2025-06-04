@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { Text } from 'react-native';
 
 // Navigation drawer personnalisé
 import DrawerNavigator from './navigation/DrawerNavigator';
@@ -24,10 +24,11 @@ import TabNavigationClient from './navigation/TabNavigationClient';
 import TabNavigationPro from './navigation/TabNavigationPro';
 
 const reducers = combineReducers({ user });
-const persistConfig = { key: 'user', storage: AsyncStorage };
+const persistConfig = { key: 'root', storage: AsyncStorage };
+const persistedReducer = persistReducer(persistConfig, reducers)
 
 const store = configureStore({
-  reducer: persistReducer(persistConfig, reducers),
+  reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),
 });
@@ -68,9 +69,9 @@ function MainNavigation() {
 export default function App() {
   return (
     <Provider store={store}>
-      <PersistGate persistor={persistor}>
+      <PersistGate loading={<Text>Chargement...</Text>} persistor={persistor}>
         <NavigationContainer>
-            <MainNavigation />
+          <MainNavigation />
         </NavigationContainer>
       </PersistGate>
     </Provider>

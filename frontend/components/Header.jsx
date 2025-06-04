@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,25 @@ import {
 } from 'react-native';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import { useSelector, useDispatch } from 'react-redux'; // à effacer quand plus besoin
+import { logout } from '../reducers/user'; // à effacer quand plus besoin
+import ModalSignIn from './ModalSignIn';
 
 // Composant d’en-tête utilisé sur toutes les pages
 function Header() {
+  const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
   const route = useRoute();
-const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name); // au lieu de 'HomeScreen' Vérifie si on est sur la page d’accueil
+  const dispatch = useDispatch(); // à effacer quand plus besoin
+
+  const user = useSelector((state) => state.user.value); // à effacer quand plus besoin
+
+  const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name); // au lieu de 'HomeScreen' Vérifie si on est sur la page d’accueil
+
+  const handleLogout = () => {
+    dispatch(logout());
+    navigation.navigate('Drawer', {screen: 'HomeScreen' });
+  };
 
   return (
     <SafeAreaView style={styles.safeContainer}>
@@ -32,7 +45,7 @@ const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(rout
         )}
 
         {/* Logo cliquable + titre, permet de revenir à l’accueil */}
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Drawer', {screen: 'HomeScreen'})}>
           <View style={styles.centerBox}>
             <Image
               source={require('../assets/logoTTC_sansTexte.png')}
@@ -44,17 +57,27 @@ const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(rout
         </TouchableOpacity>
 
         {/* À droite : bouton de connexion uniquement visible sur l’accueil */}
-        {isMenuScreen ? (
+        {route.name === 'SearchScreen' && user.token ? (
           <View style={styles.iconBox}>
-            <TouchableOpacity onPress={() => navigation.navigate('ConnexionScreen')}>
+            <TouchableOpacity onPress={handleLogout}>
+              <FontAwesome5 name="sign-out-alt" size={24} color="#e74c3c" />
+            </TouchableOpacity>
+            <Text style={styles.hint}>Déconnexion</Text>
+          </View>
+        ) : isMenuScreen && !user.token ? (
+          <View style={styles.iconBox}>
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
               <FontAwesome name="user-circle-o" size={28} color="#555" />
             </TouchableOpacity>
             <Text style={styles.hint}>Connexion</Text>
           </View>
         ) : (
-          <View style={{ width: 28 }} />  // Garde l’alignement visuel à droite
+          <View style={{ width: 28 }} />
         )}
       </View>
+
+      {/* Modal de connexion */}
+      <ModalSignIn visible={modalVisible} onClose={() => setModalVisible(false)} />
     </SafeAreaView>
   );
 }

@@ -48,7 +48,7 @@ router.post('/signin', (req, res) => {
 
   Client.findOne({ email }).then(data => {
     if (data && bcrypt.compareSync( password, data.password)) {
-      res.json({ result: true, token: data.token });
+      res.json({ result: true, token: data.token, email: data.email, role: data.client[0] });
     } else {
       res.json({ result: false, error: 'Utilisateur ou mot de passe incorrect.' });
     }
