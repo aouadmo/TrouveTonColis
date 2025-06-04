@@ -7,7 +7,6 @@ import AuthentNavigation from './AuthentNavigation';
 
 export default function Navigation() {
   const { token, isPro } = useSelector(state => state.user.value);
-
   return (
     <NavigationContainer> {!token ? (<AuthentNavigation />) : isPro ? (<ProNavigation />) : (<ClientNavigation />)}</NavigationContainer>
   );

@@ -4,7 +4,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 // les screens
-import HomeScreen from '../screens/HomeScreen';
+import DrawerNavigator from '../navigation/DrawerNavigator';
 import SearchScreen from '../screens/SearchScreen';
 import MyParcelsScreen from '../screens/MyParcelsScreen';
 import ClientProfileScreen from '../screens/ClientProfileScreen';
@@ -62,14 +62,12 @@ export default function App() {
   return (
     <Provider store={store}>
       <PersistGate persistor={persistor}>
-        <NavigationContainer>
           <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="HomeScreen" component={HomeScreen} />
+            <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
             <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
             <Stack.Screen name="SearchScreen" component={SearchScreen} />
           </Stack.Navigator>
-        </NavigationContainer>
       </PersistGate>
     </Provider>
   );
