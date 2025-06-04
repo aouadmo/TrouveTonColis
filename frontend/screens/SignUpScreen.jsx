@@ -39,7 +39,7 @@ const SignUpScreen = () => {
   const handleSubmit = async () => {
     console.log("Formulaire soumis :", { ...form, type: userType });
 
-    const url = userType === 'client' ? 'http://192.168.1.191:3000/users/signup' : 'http://192.168.1.191:3000/pros/signup';
+    const url = userType === 'client' ? 'http://192.168.1.191:3000/users/signup' : 'http://192.168.1.191:3000/pros/signup'; // <--- IP à modifier si besoin
     console.log(url);
     const payload = userType === 'client' ?
       {
@@ -77,12 +77,12 @@ const SignUpScreen = () => {
       if (userType === "client") {
         navigation.reset({
           index: 0,
-          routes: [{ name: 'TabNavigationClient' }],
+          routes: [{ name: 'SearchScreen' }],
         });
       } else {
         navigation.reset({
           index: 0,
-          routes: [{ name: 'TabNavigationPro' }],
+          routes: [{ name: 'TableauBordScreen' }],
         });
       }
     }

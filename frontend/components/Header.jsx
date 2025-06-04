@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ function Header() {
   const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name); // au lieu de 'HomeScreen' Vérifie si on est sur la page d’accueil
   const [modalVisible, setModalVisible] = useState(false);
 
+
   return (
     <SafeAreaView style={styles.safeContainer}>
       <View style={styles.container}>
@@ -34,7 +35,7 @@ function Header() {
         )}
 
         {/* Logo cliquable + titre, permet de revenir à l’accueil */}
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
+        <TouchableOpacity onPress={() => navigation.navigate('Drawer', { screen: 'HomeScreen' })}>
           <View style={styles.centerBox}>
             <Image
               source={require('../assets/logoTTC_sansTexte.png')}
@@ -48,7 +49,7 @@ function Header() {
         {/* À droite : bouton de connexion uniquement visible sur l’accueil */}
         {isMenuScreen ? (
           <View style={styles.iconBox}>
-            <TouchableOpacity onPress={() => setModalVisible(true)}> 
+            <TouchableOpacity onPress={() => setModalVisible(true)}>
               <FontAwesome name="user-circle-o" size={28} color="#555" />
             </TouchableOpacity>
             <Text style={styles.hint}>Connexion</Text>
@@ -61,6 +62,8 @@ function Header() {
     </SafeAreaView>
   );
 }
+
+
 
 const styles = StyleSheet.create({
   safeContainer: {

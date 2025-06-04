@@ -12,6 +12,8 @@ export default function SignInModal({ visible, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  
+
   const handleLogin = async () => {
     setLoading(true);
     setError('');

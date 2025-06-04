@@ -49,6 +49,7 @@ router.post('/signin', (req, res) => {
       res.status(200).json({ result: true, token: data.token, userId: data._id });
     } else {
       res.status(401).json({ result: false, error: 'Utilisateur ou mot de passe incorrect.' });
+      //res.json({ result: true, token: data.token });
     }
   });
 });

@@ -23,37 +23,37 @@ const reducers = combineReducers({ user });
 const persistConfig = { key: 'user', storage: AsyncStorage };
 
 const store = configureStore({
-reducer: persistReducer(persistConfig, reducers),
-middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
+  reducer: persistReducer(persistConfig, reducers),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
 });
 const persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const TabNavigator = () => {
-return (
-<Tab.Navigator screenOptions={({ route }) => ({
-  tabBarIcon: ({ color, size }) => {
-    let iconName = '';
-      if (route.name === 'TableauBord') {
-        iconName = 'dashboard';
-       } else if (route.name === 'MonStock') {
-        iconName = 'box-check';
+  return (
+    <Tab.Navigator screenOptions={({ route }) => ({
+      tabBarIcon: ({ color, size }) => {
+        let iconName = '';
+        if (route.name === 'TableauBord') {
+          iconName = 'dashboard';
+        } else if (route.name === 'MonStock') {
+          iconName = 'box-check';
         } else if (route.name === 'ProfilPro') {
-        iconName = 'user';
-      }
-    {/*@ts-ignore */ }
-    return <FontAwesome name={iconName} size={size} color={color} />;
-  },
-   tabBarActiveTintColor: '#4F378A',
-   tabBarInactiveTintColor: '#CDF4FF',
-   headerShown: false,
-})}>
-  <Tab.Screen name="TableauBord" component={TableauBordScreen} />
-  <Tab.Screen name="MonStockScreen" component={MonStockScreen} />
-  <Tab.Screen name="ProfilProScreen" component={ProfilProScreen} />
-</Tab.Navigator>
-);
+          iconName = 'user';
+        }
+        {/*@ts-ignore */ }
+        return <FontAwesome name={iconName} size={size} color={color} />;
+      },
+      tabBarActiveTintColor: '#4F378A',
+      tabBarInactiveTintColor: '#CDF4FF',
+      headerShown: false,
+    })}>
+      <Tab.Screen name="TableauBord" component={TableauBordScreen} />
+      <Tab.Screen name="MonStockScreen" component={MonStockScreen} />
+      <Tab.Screen name="ProfilProScreen" component={ProfilProScreen} />
+    </Tab.Navigator>
+  );
 };
 export default function App() {
 return (
