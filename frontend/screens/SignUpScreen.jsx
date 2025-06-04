@@ -82,7 +82,7 @@ const SignUpScreen = () => {
       } else {
         navigation.navigate({
           index: 0,
-          routes: ['TabNavigator', { screen: 'TableauBord' }],
+          routes: ['TabNavigatorPro', { screen: 'TableauBord' }],
         });
       }
     }
