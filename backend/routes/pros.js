@@ -23,6 +23,7 @@ router.post('/signup', (req, res) => {
         nom: req.body.nom,
         prenom: req.body.prenom,
         email: req.body.email,
+        emailConfirm: req.body.emailConfirm,
         password: hash,
         phone: req.body.phone,
         nomRelais: req.body.nomRelais,
