@@ -14,7 +14,7 @@ import Header from '../components/Header';
 export default function HomeScreen({ navigation }) {
   // Redirections vers les différentes pages
   const handleSignUp = () => {
-    navigation.navigate('SignUpScreen');
+    navigation.navigate('SignUpProScreen');
   };
 
   const handleSearch = () => {

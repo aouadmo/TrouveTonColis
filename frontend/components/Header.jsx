@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
@@ -11,12 +11,14 @@ import {
 } from 'react-native';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
+import SignInModal from './SignInModal';;
 
 // Composant d’en-tête utilisé sur toutes les pages
 function Header() {
   const navigation = useNavigation();
   const route = useRoute();
-const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name); // au lieu de 'HomeScreen' Vérifie si on est sur la page d’accueil
+  const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name); // au lieu de 'HomeScreen' Vérifie si on est sur la page d’accueil
+  const [modalVisible, setModalVisible] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeContainer}>
@@ -46,7 +48,7 @@ const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(rout
         {/* À droite : bouton de connexion uniquement visible sur l’accueil */}
         {isMenuScreen ? (
           <View style={styles.iconBox}>
-            <TouchableOpacity onPress={() => navigation.navigate('ConnexionScreen')}>
+            <TouchableOpacity onPress={() => setModalVisible(true)}> 
               <FontAwesome name="user-circle-o" size={28} color="#555" />
             </TouchableOpacity>
             <Text style={styles.hint}>Connexion</Text>
@@ -55,6 +57,7 @@ const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(rout
           <View style={{ width: 28 }} />  // Garde l’alignement visuel à droite
         )}
       </View>
+      <SignInModal visible={modalVisible} onClose={() => setModalVisible(false)} />
     </SafeAreaView>
   );
 }

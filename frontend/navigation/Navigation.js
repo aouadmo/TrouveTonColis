@@ -3,16 +3,14 @@ import { useSelector } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import ProNavigation from './ProNavigation';
 import ClientNavigation from './ClientNavigation';
-import AuthentNavigation from './AuthentNavigation'; // Écrans avant connexion
+import AuthentNavigation from './AuthentNavigation';
 
 export default function Navigation() {
-    // Récupération du token et du rôle pro ou client depuis Redux
-  const { token, isPro } = useSelector(state => state.user);
+  const { token, isPro } = useSelector(state => state.user.value);
 
   return (
-    <NavigationContainer>
-      {!token ? ( <AuthentNavigation />) : isPro ? (<ProNavigation />) : (<ClientNavigation />)}
-    </NavigationContainer>
+    <NavigationContainer> {!token ? (<AuthentNavigation />) : isPro ? (<ProNavigation />) : (<ClientNavigation />)}</NavigationContainer>
   );
-};
+}
+
 
