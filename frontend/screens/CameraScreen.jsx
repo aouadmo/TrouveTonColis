@@ -1,60 +1,119 @@
-import React, { useState } from "react";
-import { Text, View, StyleSheet, Button } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { StyleSheet, TouchableOpacity, View, Text, Button, SafeAreaView } from "react-native";
+import { CameraView, CameraType, FlashMode, Camera } from "expo-camera";
+import { useDispatch } from "react-redux";
+import { addPhoto } from "../reducers/user";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useIsFocused } from "@react-navigation/native";
+
+const BACKEND_ADDRESS = "http://192.168.209.102:3000/colis";
 
 export default function CameraScreen() {
-  const [ocrResult, setOcrResult] = useState(null); 
-  const [error, setError] = useState(null); 
-  const [loading, setLoading] = useState(false); 
+	const dispatch = useDispatch();
+	const isFocused = useIsFocused();
 
-  async function testOCR() {
-    setLoading(true); 
-    setError(null); 
-    try {
-      const response = await fetch("http://192.168.209.102:3000/ocr", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          imageUrl:
-            "https://help.oxatis.com/servlet/rtaImage?eid=ka05p000000MyYn&feoid=00N0N00000HIW66&refid=0EM0N000001jy74" /* or base64 string */,
-        }),
-      });
+	// Reference to the camera
+	const cameraRef = useRef<CameraView | null>(null);
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
+	// Permission hooks
+	const [hasPermission, setHasPermission] = useState(false);
+	const [facing, setFacing] = useState("back");
+	const [flashStatus, setFlashStatus] = useState("off");
 
-      const data = await response.json();
-      setOcrResult(data); 
-      console.log("OCR Result:", data);
-    } catch (error) {
-      console.error("Error testing OCR:", error);
-      setError(error.message); 
-    } finally {
-      setLoading(false);
-    }
-  }
+	// Effect hook to check permission upon each mount
+	useEffect(() => {
+		(async () => {
+			const result = await Camera.requestCameraPermissionsAsync();
+			setHasPermission(result && result?.status === "granted");
+		})();
+	}, []);
 
-  return (
-    <View style={styles.container}>
-      <Button title="Run OCR" onPress={testOCR} disabled={loading} />
-      {loading && <Text>Loading...</Text>}
-      {error && <Text style={styles.error}>Error: {error}</Text>}
-      {ocrResult && (
-        <Text>OCR Result: {JSON.stringify(ocrResult)}</Text>
-      )}
-    </View>
-  );
+	// Conditions to prevent more than 1 camera component to run in the bg
+	if (!hasPermission || !isFocused) {
+		return <View />;
+	}
+
+	// Functions to toggle camera facing and flash status
+	const toggleCameraFacing = () => {
+		setFacing((current) => (current === "back" ? "front" : "back"));
+	};
+
+	const toggleFlashStatus = () => {
+		setFlashStatus((current) => (current === "off" ? "on" : "off"));
+	};
+
+	// Function to take a picture and save it to the reducer store
+	const takePicture = async () => {
+		const photo = await cameraRef.current?.takePictureAsync({ quality: 0.3 });
+		const formData = new FormData();
+		const uri = photo?.uri;
+
+		formData.append("url", {
+			uri: uri,
+			name: "photo.jpg",
+			type: "image/jpeg",
+		});
+
+		fetch(`${BACKEND_ADDRESS}/ocr`, {
+			method: "POST",
+			body: formData,
+		})
+			.then((response) => response.json())
+			.then((data) => {
+				data.result && dispatch(addPhoto(data.url));
+			});
+	};
+
+	return (
+		<CameraView style={styles.camera} facing={facing} flash={flashStatus} ref={(ref) => (cameraRef.current = ref)}>
+			{/* Top container with the setting buttons */}
+
+			<SafeAreaView style={styles.settingContainer}>
+				<TouchableOpacity style={styles.settingButton} onPress={toggleFlashStatus}>
+					<FontAwesome name="flash" size={25} color={flashStatus === "on" ? "#e8be4b" : "white"} />
+				</TouchableOpacity>
+				<TouchableOpacity style={styles.settingButton} onPress={toggleCameraFacing}>
+					<FontAwesome name="rotate-right" size={25} color="white" />
+				</TouchableOpacity>
+			</SafeAreaView>
+
+			{/* Bottom container with the snap button */}
+			<View style={styles.snapContainer}>
+				<TouchableOpacity style={styles.snapButton} onPress={takePicture}>
+					<FontAwesome name="circle-thin" size={95} color="white" />
+				</TouchableOpacity>
+			</View>
+		</CameraView>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  error: {
-    color: "red",
-  },
+	camera: {
+		flex: 1,
+		justifyContent: "space-between",
+	},
+	settingContainer: {
+		flexDirection: "row",
+		justifyContent: "space-between",
+		alignItems: "center",
+		marginHorizontal: 20,
+	},
+	settingButton: {
+		width: 40,
+		aspectRatio: 1,
+		alignItems: "center",
+		justifyContent: "center",
+	},
+	snapContainer: {
+		flexDirection: "row",
+		justifyContent: "center",
+		alignItems: "center",
+		marginBottom: 20,
+	},
+	snapButton: {
+		width: 100,
+		aspectRatio: 1,
+		alignItems: "center",
+		justifyContent: "center",
+	},
 });
