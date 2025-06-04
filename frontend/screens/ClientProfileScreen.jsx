@@ -1,17 +1,29 @@
 import React from "react";
 import {
-    Image,
-    KeyboardAvoidingView,
-    TextInput,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
+  View, 
+  Image,
+  KeyboardAvoidingView,
+  TextInput,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
 } from 'react-native';
+import Header from '../components/Header.jsx';
 
 export default function ClientProfileScreen() {
-    return (
-        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+  return (
+    <View style={{ flex: 1 }}>
+      <Header />
+      <KeyboardAvoidingView style={styles.container}>
         <Text>Page ClientProfileScreen</Text>
-        </KeyboardAvoidingView>
-    );
+      </KeyboardAvoidingView>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+});

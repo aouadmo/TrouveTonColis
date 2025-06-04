@@ -10,7 +10,7 @@ import {
 
 export default function MyParcelsScreen() {
     return (
-        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <KeyboardAvoidingView style={styles.container}>
         <Text>Page MyParcelsScreen</Text>
         </KeyboardAvoidingView>
     );
