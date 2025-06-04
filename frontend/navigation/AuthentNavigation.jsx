@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 // Les Écrans
 import HomeScreen from '../screens/HomeScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-import SignUpProScreen from '../screens/SingUpProScreen';
+import SignUpProScreen from '../screens/SignUpProScreen';
 import SearchScreen from '../screens/SearchScreen';
 
 const Stack = createNativeStackNavigator();
