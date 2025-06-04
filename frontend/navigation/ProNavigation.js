@@ -7,7 +7,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 //Les Écrans
 import HomeScreen from '../screens/HomeScreen';
 import DrawerNavigator from './DrawerNavigator';
-import SingUpProScreen from '../screens/SingUpProScreen';
+import SignUpProScreen from '../screens/SignUpProScreen';
 import MonStockScreen from '../screens/MonStockScreen';
 import TableauBordScreen from '../screens/TableauBordScreen';
 import ProfilProScreen from '../screens/ProfilProScreen';
@@ -18,10 +18,10 @@ import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import user from '../reducers/user';
 import { persistStore, persistReducer } from 'redux-persist';
 import { PersistGate } from 'redux-persist/integration/react';
-import storage from 'redux-persist/lib/storage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const reducers = combineReducers({ user });
-const persistConfig = { key: 'user', storage };
+const persistConfig = { key: 'user', storage: AsyncStorage };
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
@@ -31,7 +31,7 @@ const persistor = persistStore(store);
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigatorPro = () => {
   return (
     <Tab.Navigator screenOptions={({ route }) => ({
       tabBarIcon: ({ color, size }) => {
@@ -62,8 +62,8 @@ export default function App() {
       <PersistGate persistor={persistor}>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="Drawer" component={DrawerNavigator} />
-          <Stack.Screen name="TabNavigator" component={TabNavigator} />
-          <Stack.Screen name="SignUpProScreen" component={SingUpProScreen} />
+          <Stack.Screen name="TabNavigatorPro" component={TabNavigatorPro} />
+          <Stack.Screen name="SignUpProScreen" component={SignUpProScreen} />
         </Stack.Navigator>
       </PersistGate>
     </Provider>

@@ -72,17 +72,17 @@ const SignUpScreen = () => {
     const data = await response.json();
     console.log(data);
     if (response.ok && data.token) {
-      dispatch(login({ token: data.token, role: userType }));
+      dispatch(login({ token: data.token, isPro: userType }));
       // navigation.reset sert à vider l'historique afin que si l'utilisateur utilise le bouton retour, qu'il reste dans la route nommée
       if (userType === "client") {
-        navigation.reset({
+        navigation.navigate({
           index: 0,
-          routes: [{ name: 'SearchScreen' }],
+          routes: ['TabNavigator', { screen: 'SearchScreen' }],
         });
       } else {
-        navigation.reset({
+        navigation.navigate({
           index: 0,
-          routes: [{ name: 'TableauBordScreen' }],
+          routes: ['TabNavigator', { screen: 'TableauBord' }],
         });
       }
     }
