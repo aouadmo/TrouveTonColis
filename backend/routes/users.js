@@ -39,21 +39,20 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/signin', (req, res) => {
-  const { email, password } = req.body;
-
+  const password = req.body.password;
   if (!checkBody(req.body, ['email', 'password'])) {
-    res.json({ result: false, error: 'Tous les champs doivent être remplit.' });
-    return;
+    return res.status(400).json({ result: false, error: 'Tous les champs doivent être remplis.' });
   }
 
-  Client.findOne({ email }).then(data => {
-    if (data && bcrypt.compareSync( password, data.password)) {
-      res.json({ result: true, token: data.token });
+  Client.findOne({ email: req.body.email }).then(data => {
+    if (data && bcrypt.compareSync(password, data.password)) {
+      res.status(200).json({ result: true, token: data.token, userId: data._id });
     } else {
-      res.json({ result: false, error: 'Utilisateur ou mot de passe incorrect.' });
+      res.status(401).json({ result: false, error: 'Utilisateur ou mot de passe incorrect.' });
     }
   });
 });
+
 
 router.get('/client/:token', (req, res) => {
   Client.findOne({ token: req.params.token }).then(data => {
