@@ -48,7 +48,6 @@ const SignUpScreen = () => {
         email: form.email,
         password: form.password,
         phone: form.phone,
-
       } : {
         nom: form.nom,
         prenom: form.prenom,
@@ -75,18 +74,18 @@ const SignUpScreen = () => {
       dispatch(login({ token: data.token, isPro: userType }));
       // navigation.reset sert à vider l'historique afin que si l'utilisateur utilise le bouton retour, qu'il reste dans la route nommée
       if (userType === "client") {
-        navigation.navigate({
-          index: 0,
-          routes: ['TabNavigator', { screen: 'SearchScreen' }],
-        });
+        navigation.reset({
+            index: 0,
+            routes: [{ name: "TabNavigator", params: { screen: "SearchScreen" } }],
+          });
       } else {
-        navigation.navigate({
-          index: 0,
-          routes: ['TabNavigatorPro', { screen: 'TableauBord' }],
-        });
-      }
+         navigation.reset({
+            index: 0,
+            routes: [{ name: "TabNavigatorPro", params: { screen: "TableauBord" } }],
+          });
+      };
     }
-  };
+  }
 
 
   return (
