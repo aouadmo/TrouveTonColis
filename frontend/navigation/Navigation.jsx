@@ -11,5 +11,3 @@ export default function Navigation() {
     <NavigationContainer> {!token ? (<AuthentNavigation />) : isPro ? (<ProNavigation />) : (<ClientNavigation />)}</NavigationContainer>
   );
 }
-
-

@@ -10,8 +10,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faUserPlus, faBarcode } from '@fortawesome/free-solid-svg-icons';
 
 import Header from '../components/Header';
+import { useSelector } from 'react-redux';
 
 export default function HomeScreen({ navigation }) {
+const { token } = useSelector(state => state.user.value);
+
   // Redirections vers les différentes pages
   const handleSignUp = () => {
     navigation.navigate('SignUpScreen');
@@ -49,15 +52,19 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
 
         {/* Bouton 2 : Créer un compte */}
-        <Text style={styles.buttonDescription}>📝 Créez un compte client ou pro</Text>
-        <TouchableOpacity
-          onPress={handleSignUp}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-          <Text style={styles.textButton}>Inscription</Text>
-        </TouchableOpacity>
+        {token && (
+          <>
+            <Text style={styles.buttonDescription}>📝 Créez un compte client ou pro</Text>
+            <TouchableOpacity
+              onPress={handleSignUp}
+              style={styles.button}
+              activeOpacity={0.8}
+            >
+              <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+              <Text style={styles.textButton}>Inscription</Text>
+            </TouchableOpacity>
+          </>
+        )}
 
         {/* Bouton 3 : Scanner un colis */}
         <Text style={styles.buttonDescription}>📷 Scannez vos colis pour les enregistrer</Text>

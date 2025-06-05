@@ -37,7 +37,7 @@ const TabNavigator = () => {
       tabBarIcon: ({ color, size }) => {
         let iconName = '';
 
-        if (route.name === 'Searchscreen') {
+        if (route.name === 'SearchScreen') {
           iconName = 'search';
         } else if (route.name === 'MyParcelsScreen') {
           iconName = 'dolly';
