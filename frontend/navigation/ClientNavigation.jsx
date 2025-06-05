@@ -23,7 +23,8 @@ const persistConfig = { key: 'user', storage: AsyncStorage };
 
 const store = configureStore({
   reducer: persistReducer(persistConfig, reducers),
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: {ignoredActions: ['persist/PERSIST'],} 
+  }),
 });
 
 const persistor = persistStore(store);
