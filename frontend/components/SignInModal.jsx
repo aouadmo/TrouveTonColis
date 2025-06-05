@@ -17,16 +17,18 @@ export default function SignInModal({ visible, onClose }) {
   const handleLogin = async () => {
     setLoading(true);
     setError('');
-
+  
     try {
       let response = await fetch('http://10.0.2.2:3000/pros/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
+  
+      let data = await response.json(); // attente retour fetch
+      console.log('Réponse Pro :', data);
+  
+      if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: true }));
         onClose();
         navigation.navigate('TabNavigatorPro', { screen: 'TableauBord' });
@@ -38,18 +40,22 @@ export default function SignInModal({ visible, onClose }) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
+  
+      data = await response.json(); // attente réponse fetch
+      console.log('Réponse Client :', data);
+  
+      if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: false }));
         onClose();
-        navigation.navigate('TabNavigator', { screen: 'SearchScreen' });
+        navigation.navigate('TabNavigator', { screen: 'MyParcelsScreen' });
         return;
-      } else {
-        setError('Email ou mot de passe incorrect');
       }
+  
+      // Erreur renvoyée par le backend
+      setError(data.error || 'Email ou mot de passe incorrect');
+  
     } catch (error) {
-      console.error(error);
+      console.error('Erreur attrapée dans le catch :', error);
       setError('Erreur de connexion');
     } finally {
       setLoading(false);

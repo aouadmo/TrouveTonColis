@@ -15,3 +15,14 @@ export default function MyParcelsScreen() {
         </KeyboardAvoidingView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: '#FFF4ED', // couleur de fond si tu veux respecter ta charte
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+    },
+  });
+  
