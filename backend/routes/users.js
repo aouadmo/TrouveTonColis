@@ -10,7 +10,7 @@ const bcrypt = require('bcrypt');
 router.post('/signup', (req, res) => {
   const { nom, prenom, email, password, phone, client } = req.body;
 
-  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone', 'client'])) {
+  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone'])) {
     res.json({ result: false, error: 'Tous les champs sont requis.' });
     return;
   }
@@ -48,7 +48,7 @@ router.post('/signin', (req, res) => {
 
   Client.findOne({ email }).then(data => {
     if (data && bcrypt.compareSync( password, data.password)) {
-      res.json({ result: true, token: data.token });
+      res.json({ result: true, token: data.token, email: data.email, role: data.client[0] });
     } else {
       res.json({ result: false, error: 'Utilisateur ou mot de passe incorrect.' });
     }

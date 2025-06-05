@@ -49,61 +49,24 @@ router.get('/search/:trackingNumber', async (req, res) => {
   if (fakeMatch) {
     return res.json({ found: true, colis: fakeMatch, message: 'Colis fictif bien livré' });
   }
+    const colis = await Colis.findOne({ trackingNumber });
+    if (colis) {
+      return res.json({ found: true, colis, message: 'Colis trouvé dans MongoDB' });
+    } else {
+      return res.status(404).json({ found: false, message: 'Colis pas encore arrivé' });
+    }
 
-  // 🔹 Si pas trouvé dans les faux colis, on cherche dans la base Mongo
-  const colis = await Colis.findOne({ trackingNumber });
-
-  if (colis) {
-    res.json({ found: true, colis, message: 'Colis bien livré (MongoDB)' });
-  } else {
-    res.status(404).json({ message: 'Colis pas encore arrivé' });
-  }
 });
 
-//  Route 2 : recherche par nom et prénom 
+// 👤 Route 2 : recherche par nom et prénom
 router.post('/search/name', async (req, res) => {
-  const { nom, prenom } = req.body;
+  const nom = req.body.nom?.trim();
+  const prenom = req.body.prenom?.trim();
 
-  // 🔹 Colis fictifs
-  const fakeColisList = [
-    {
-      trackingNumber: '1Ztrackdupontjean123',
-      nom: 'Dupont',
-      prenom: 'Jean',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta45000 Orléans',
-        horaires: 'Tous les jours : 10h - 16h',
-        infos: 'Procuration acceptée avec copie de pièce d\'identité.',
-      },
-    },
-    {
-      trackingNumber: '1Ztrackmartinclaire123',
-      nom: 'Martin',
-      prenom: 'Claire',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta45000 Orléans',
-        horaires: 'Tous les jours : 10h - 16h',
-        infos: 'Procuration acceptée avec copie de pièce d\'identité.',
-      },
-    },
-    {
-      trackingNumber: '1Ztrackbernluc123',
-      nom: 'Bernard',
-      prenom: 'Luc',
-      relais: {
-        nom: 'Chez cécile',
-        adresse: '84 rue gambetta45000 Orléans',
-        horaires: 'Tous les jours : 10h - 16h',
-        infos: 'Procuration acceptée avec copie de pièce d\'identité.',
-      },
-    },
-  ];
-
+  // 🔹 Colis fictifs (comparaison insensible à la casse + trim)
   const matchedFake = fakeColisList.filter(colis =>
-    colis.nom.toLowerCase() === nom.toLowerCase() &&
-    colis.prenom.toLowerCase() === prenom.toLowerCase()
+    colis.nom.toLowerCase().trim() === nom.toLowerCase() &&
+    colis.prenom.toLowerCase().trim() === prenom.toLowerCase()
   );
 
   if (matchedFake.length > 0) {
