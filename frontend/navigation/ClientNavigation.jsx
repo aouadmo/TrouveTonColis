@@ -1,74 +1,53 @@
-import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-// les screens
+// Les écrans
 import DrawerNavigator from './DrawerNavigator';
 import SearchScreen from '../screens/SearchScreen';
 import MyParcelsScreen from '../screens/MyParcelsScreen';
 import ClientProfileScreen from '../screens/ClientProfileScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 
-//redux
-import { Provider } from 'react-redux';
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import user from '../reducers/user';
-import { persistStore, persistReducer } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const reducers = combineReducers({ user });
-const persistConfig = { key: 'user', storage: AsyncStorage };
-
-const store = configureStore({
-  reducer: persistReducer(persistConfig, reducers),
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: false }),
-});
-
-const persistor = persistStore(store);
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigatorClient = () => {
   return (
-    <Tab.Navigator screenOptions={({ route }) => ({
-      tabBarIcon: ({ color, size }) => {
-        let iconName = '';
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: ({ color, size }) => {
+          let iconName = '';
 
-        if (route.name === 'Searchscreen') {
-          iconName = 'search';
-        } else if (route.name === 'MyParcelsScreen') {
-          iconName = 'dolly';
-        } else if (route.name === 'ClientProfileScreen') {
-          iconName = 'user';
-        }
-        {/*@ts-ignore */ }
-        return <FontAwesome name={iconName} size={size} color={color} />;
-      },
-      tabBarActiveTintColor: '#0F58B8',
-      tabBarInactiveTintColor: '#CDF4FF',
-      headerShown: false,
-    })}>
-      <Tab.Screen name="SearchScreen" component={SearchScreen} />
-      <Tab.Screen name="MyParcelsScreen" component={MyParcelsScreen} />
-      <Tab.Screen name="ClientProfileScreen" component={ClientProfileScreen} />
+          if (route.name === 'MesColis') {
+            iconName = 'dolly';
+          } else if (route.name === 'Search') {
+            iconName = 'search';
+          } else if (route.name === 'ProfilClient') {
+            iconName = 'user';
+          }
+
+          return <FontAwesome name={iconName} size={size} color={color} />;
+        },
+        tabBarActiveTintColor: '#0F58B8',
+        tabBarInactiveTintColor: '#CDF4FF',
+        headerShown: false,
+      })}
+    >
+      <Tab.Screen name="ProfilClient" component={ClientProfileScreen} options={{ title: 'Profil' }} />
+      <Tab.Screen name="Search" component={SearchScreen} options={{ title: 'Rechercher' }} />
+      <Tab.Screen name="MesColis" component={MyParcelsScreen} options={{ title: 'Mes colis' }} />
     </Tab.Navigator>
   );
 };
 
-export default function App() {
+export default function ClientNavigation() {
   return (
-    <Provider store={store}>
-      <PersistGate persistor={persistor}>
-          <Stack.Navigator screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
-            <Stack.Screen name="TabNavigator" component={TabNavigator} />
-            <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-            <Stack.Screen name="SearchScreen" component={SearchScreen} />
-          </Stack.Navigator>
-      </PersistGate>
-    </Provider>
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="Drawer" component={DrawerNavigator} />
+      <Stack.Screen name="TabClient" component={TabNavigatorClient} />
+      <Stack.Screen name="SignUp" component={SignUpScreen} />
+    </Stack.Navigator>
   );
 }

@@ -7,9 +7,19 @@ import AuthentNavigation from './AuthentNavigation';
 
 export default function Navigation() {
   const { token, isPro } = useSelector(state => state.user.value);
+
+  // 🔥 CHANGEMENT ICI : key pour forcer NavigationContainer à se recharger si token change
+  const navKey = token ? (isPro ? 'pro' : 'client') : 'auth';
+
   return (
-    <NavigationContainer> {!token ? (<AuthentNavigation />) : isPro ? (<ProNavigation />) : (<ClientNavigation />)}</NavigationContainer>
+    <NavigationContainer key={navKey}>
+      {!token ? (
+        <AuthentNavigation />
+      ) : isPro ? (
+        <ProNavigation />
+      ) : (
+        <ClientNavigation />
+      )}
+    </NavigationContainer>
   );
 }
-
-

@@ -11,8 +11,24 @@ import { faSearch, faUserPlus, faBarcode } from '@fortawesome/free-solid-svg-ico
 
 import Header from '../components/Header';
 
+import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+
 export default function HomeScreen({ navigation }) {
-  // Redirections vers les différentes pages
+  const { token, isPro } = useSelector(state => state.user.value);
+
+  // ✅ Redirection automatique si connecté
+  useEffect(() => {
+    if (token !== null && isPro !== null) {
+      navigation.reset({
+        index: 0,
+        routes: [
+          { name: isPro ? 'TabPro' : 'TabClient' },
+        ],
+      });
+    }
+  }, [token, isPro]);
+
   const handleSignUp = () => {
     navigation.navigate('SignUpScreen');
   };
@@ -29,7 +45,6 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.wrapper}>
       <Header />
       <KeyboardAvoidingView style={styles.container}>
-        {/* Texte d’accueil */}
         <View style={styles.textContainer}>
           <Text style={styles.title}>🎯 Bienvenue sur TTC</Text>
           <Text style={styles.subtitle}>L’application simple et rapide pour vos colis</Text>
@@ -37,35 +52,20 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.paragraphe}>📦 Points relais et clients, tout le monde est le bienvenu !</Text>
         </View>
 
-        {/* Bouton 1 : Rechercher un colis */}
         <Text style={styles.buttonDescription}>🔍 Consultez si votre colis est arrivé</Text>
-        <TouchableOpacity
-          onPress={handleSearch}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity onPress={handleSearch} style={styles.button} activeOpacity={0.8}>
           <FontAwesomeIcon icon={faSearch} size={18} color="#fff" />
           <Text style={styles.textButton}>Rechercher un colis</Text>
         </TouchableOpacity>
 
-        {/* Bouton 2 : Créer un compte */}
         <Text style={styles.buttonDescription}>📝 Créez un compte client ou pro</Text>
-        <TouchableOpacity
-          onPress={handleSignUp}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity onPress={handleSignUp} style={styles.button} activeOpacity={0.8}>
           <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
           <Text style={styles.textButton}>Inscription</Text>
         </TouchableOpacity>
 
-        {/* Bouton 3 : Scanner un colis */}
         <Text style={styles.buttonDescription}>📷 Scannez vos colis pour les enregistrer</Text>
-        <TouchableOpacity
-          onPress={gotocamerascreen}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
+        <TouchableOpacity onPress={gotocamerascreen} style={styles.button} activeOpacity={0.8}>
           <FontAwesomeIcon icon={faBarcode} size={18} color="#fff" />
           <Text style={styles.textButton}>Scanner un colis</Text>
         </TouchableOpacity>
@@ -74,7 +74,6 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
-// Styles visuels pour le layout et les composants
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -93,26 +92,26 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: '#4F378A',
     textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 14,
-    color: '#5E4AE3',
+    color: '#4F378A',
     textAlign: 'center',
     fontWeight: '500',
     marginBottom: 12,
   },
   paragraphe: {
     fontSize: 12,
-    color: '#666',
+    color: '#4F378A',
     textAlign: 'center',
     marginBottom: 5,
   },
   buttonDescription: {
     fontSize: 12,
-    color: '#888',
+    color: '#4F378A',
     marginTop: 20,
     marginBottom: 6,
     textAlign: 'center',
@@ -120,7 +119,7 @@ const styles = StyleSheet.create({
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#5E4AE3',
+    backgroundColor: '#4F89E6',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 12,
