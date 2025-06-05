@@ -1,8 +1,7 @@
 import React from "react";
-import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 //Les Écrans
 import DrawerNavigator from './DrawerNavigator';
@@ -43,7 +42,7 @@ const TabNavigator = () => {
           iconName = 'user';
         }
         {/*@ts-ignore */ }
-        return <FontAwesome name={iconName} size={size} color={color} />;
+        return <FontAwesome5 name={iconName} size={size} color={color} />;
       },
       tabBarActiveTintColor: '#4F378A',
       tabBarInactiveTintColor: '#CDF4FF',
@@ -56,16 +55,15 @@ const TabNavigator = () => {
   );
 };
 export default function App() {
-return (
-
-<Provider store={store}>
-  <PersistGate persistor={persistor}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
-        <Stack.Screen name="TabNavigator" component={TabNavigator} />
-        <Stack.Screen name = "SignUpProScreen" component={SingUpProScreen}/>
-      </Stack.Navigator>
-  </PersistGate>
-</Provider>
-);
+  return (
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+          <Stack.Screen name="TabNavigator" component={TabNavigator} />
+          <Stack.Screen name="SignUpProScreen" component={SingUpProScreen} />
+        </Stack.Navigator>
+      </PersistGate>
+    </Provider>
+  );
 }
