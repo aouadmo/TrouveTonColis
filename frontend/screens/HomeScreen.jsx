@@ -10,7 +10,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faUserPlus, faBarcode } from '@fortawesome/free-solid-svg-icons';
 
 import Header from '../components/Header';
-import { navigate } from '../navigation/NavigationRef';
+import { navigate } from '../navigation/navigationRef';
 import { useSelector } from 'react-redux';
 
 export default function HomeScreen({ }) {
