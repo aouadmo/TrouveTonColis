@@ -43,7 +43,7 @@ export default function DrawerNavigator() {
         options={{ title: 'FAQ' }}
       />
 
-      {/* <Drawer.Screen
+      <Drawer.Screen
         name="SignUpScreen"
         component={SignUpScreen}
         options={{ title: 'Inscription' }}
@@ -59,7 +59,7 @@ export default function DrawerNavigator() {
         name="CameraScreen"
         component={CameraScreen}
         options={{ title: 'Prenez vos plus belles photos !' }}
-      /> */}
+      />
     </Drawer.Navigator>
   );
 }
