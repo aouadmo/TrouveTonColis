@@ -75,7 +75,7 @@ const SignUpScreen = () => {
           index: 0,
           routes: [{ name: "TabNavigator", params: { screen: "TableauBord" } }],
         });
-      }
+      }      
     }
   };
 
