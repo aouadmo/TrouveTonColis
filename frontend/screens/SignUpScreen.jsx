@@ -68,14 +68,15 @@ const SignUpScreen = () => {
       if (userType === "client") {
         navigation.reset({
           index: 0,
-          routes: [{ name: "SearchScreen" }],
+          routes: [{ name: "ClientProfileScreen" }],
         });
       } else {
         navigation.reset({
           index: 0,
           routes: [{ name: "TabNavigator", params: { screen: "TableauBord" } }],
         });
-      }      
+        
+      }
     }
   };
 

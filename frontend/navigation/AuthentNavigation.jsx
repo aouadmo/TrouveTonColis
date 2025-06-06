@@ -9,7 +9,8 @@ import DrawerNavigator from './DrawerNavigator';
 
 const Stack = createNativeStackNavigator();
 
-export default function AuthentNavigation() {
+export default function AuthentNavigator() {
+    // Écrans disponibles avant la connexion (publics)
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
