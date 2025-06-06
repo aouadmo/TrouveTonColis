@@ -20,7 +20,7 @@ export default function SignInModal({ visible, onClose }) {
   
     try {
       // Test connexion Pro
-      let response = await fetch('http://192.168.1.157:3006/pros/signin', {
+      let response = await fetch('http://192.168.1.157:3000/pros/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -37,7 +37,7 @@ export default function SignInModal({ visible, onClose }) {
       }
   
       // Test Connexion Client
-      response = await fetch('http://192.168.1.157:3006/users/signin', {
+      response = await fetch('http://192.168.1.157:3000/users/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

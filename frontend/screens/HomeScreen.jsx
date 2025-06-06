@@ -1,11 +1,4 @@
-import {
-  View,
-  KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
-
+import {View, KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity,} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faUserPlus, faBarcode } from '@fortawesome/free-solid-svg-icons';
 

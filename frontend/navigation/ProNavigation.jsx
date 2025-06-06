@@ -6,7 +6,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 //Les Écrans
 import DrawerNavigator from './DrawerNavigator';
-import SingUpProScreen from '../screens/SignUpProScreen';
+import SingUpScreen from '../screens/SignUpScreen';
 import MonStockScreen from '../screens/MonStockScreen';
 import TableauBordScreen from '../screens/TableauBordScreen';
 import ProfilProScreen from '../screens/ProfilProScreen';
@@ -62,7 +62,7 @@ return (
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
         <Stack.Screen name="TabNavigator" component={TabNavigator} />
-        <Stack.Screen name = "SignUpProScreen" component={SingUpProScreen}/>
+        <Stack.Screen name = "SignUpScreen" component={SingUpScreen}/>
       </Stack.Navigator>
   </PersistGate>
 </Provider>
