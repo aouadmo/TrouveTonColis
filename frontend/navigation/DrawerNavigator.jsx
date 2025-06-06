@@ -4,10 +4,10 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 // Écrans visibles dans le menu
 import HomeScreen from '../screens/HomeScreen';
 import HistoireRelais from '../screens/HistoireRelais';
+import FAQScreen from '../screens/FAQScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import SearchScreen from '../screens/SearchScreen';
 import CameraScreen from '../screens/CameraScreen';
-import FAQScreen from '../screens/FAQScreen';
 
 // Menu customisé
 import CustomDrawer from '../components/DrawerMenu';
@@ -33,7 +33,7 @@ export default function DrawerNavigator() {
         options={{ title: 'C’est quoi un point relais ?' }}
       />
       <Drawer.Screen
-        name="FAQScreen"
+        name="FAQ"
         component={FAQScreen}
         options={{ title: 'FAQ' }}
       />

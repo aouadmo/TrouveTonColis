@@ -21,12 +21,7 @@ export default function SignInModal({ visible, onClose }) {
     setError('');
   
     try {
-<<<<<<< HEAD
       let response = await fetch('http://192.168.1.254:3000/pros/signin', {
-=======
-      // Test connexion Pro
-      let response = await fetch('http://192.168.1.157:3000/pros/signin', {
->>>>>>> 9b18bde7644c12ce54683dcc5ddc4dc91cc20aeb
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -40,16 +35,9 @@ export default function SignInModal({ visible, onClose }) {
         onClose();
         navigation.navigate('TabNavigatorPro', { screen: 'TableauBord' });
         return;
-<<<<<<< HEAD
        }
 
       response = await fetch('http://192.168.1.254:3000/users/signin', {
-=======
-      }
-  
-      // Test Connexion Client
-      response = await fetch('http://192.168.1.157:3000/users/signin', {
->>>>>>> 9b18bde7644c12ce54683dcc5ddc4dc91cc20aeb
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),

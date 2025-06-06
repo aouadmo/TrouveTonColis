@@ -10,29 +10,10 @@ import MyParcelsScreen from '../screens/MyParcelsScreen';
 import ClientProfileScreen from '../screens/ClientProfileScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 
-//redux
-import { Provider } from 'react-redux';
-import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import user from '../reducers/user';
-import { persistStore, persistReducer } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
-const reducers = combineReducers({ user });
-const persistConfig = { key: 'user', storage: AsyncStorage };
-
-const store = configureStore({
-  reducer: persistReducer(persistConfig, reducers),
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware({ serializableCheck: {ignoredActions: ['persist/PERSIST'],} 
-  }),
-});
-
-const persistor = persistStore(store);
-
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigatorClient = () => {
+const TabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -64,9 +45,10 @@ const TabNavigatorClient = () => {
 export default function ClientNavigation() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Drawer" component={DrawerNavigator} />
-      <Stack.Screen name="TabClient" component={TabNavigatorClient} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+      <Stack.Screen name="TabNavigator" component={TabNavigator} />
+      <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+      <Stack.Screen name="SearchScreen" component={SearchScreen} />
     </Stack.Navigator>
   );
 }

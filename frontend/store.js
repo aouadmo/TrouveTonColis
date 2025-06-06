@@ -18,9 +18,9 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({
+  getDefaultMiddleware({
       serializableCheck: {
-        // 👇 Ignore les actions persist
+        // Ignore les actions de redux-persist
         ignoredActions: ['persist/PERSIST'],
       },
     }),

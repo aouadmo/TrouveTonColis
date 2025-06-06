@@ -1,8 +1,10 @@
-import {View, KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity,} from 'react-native';
+import React, { useState, useEffect } from "react";
+import {View, KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, Platform} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faUserPlus, faBarcode } from '@fortawesome/free-solid-svg-icons';
 
 import Header from '../components/Header';
+import { navigate } from '../navigation/navigationRef';
 import { useSelector } from 'react-redux';
 
 export default function HomeScreen({ navigation }) {
@@ -19,9 +21,9 @@ export default function HomeScreen({ navigation }) {
     }
   }, [token, isPro]);
 
-  const handleSignUp = () => navigation.navigate('SignUpScreen');
-  const handleSearch = () => navigation.navigate('SearchScreen');
-  const gotocamerascreen = () => navigation.navigate('CameraScreen');
+  const handleSignUp = () => navigate('SignUpScreen');
+  const handleSearch = () => navigate('SearchScreen');
+  const gotocamerascreen = () => navigate('CameraScreen');
 
   return (
     <View style={styles.wrapper}>
