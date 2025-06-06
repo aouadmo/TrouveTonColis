@@ -11,80 +11,92 @@ import {
 } from 'react-native';
 import { FontAwesome, FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation, useRoute } from '@react-navigation/native';
-import SignInModal from './SignInModal';;
+import { useSelector, useDispatch } from 'react-redux';
+import { logout } from '../reducers/user';
+import SignInModal from './SignInModal';
 
-// Composant d’en-tête utilisé sur toutes les pages
-function Header() {
+function Header({ role }) {
   const navigation = useNavigation();
   const route = useRoute();
-  const isMenuScreen = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name); // au lieu de 'HomeScreen' Vérifie si on est sur la page d’accueil
+  const dispatch = useDispatch();
+  const userToken = useSelector((state) => state.user.value.token);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const isHome = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name);
+
+  const backgroundColor = role === 'pro' ? '#FFFAF5' : role === 'client' ? '#FFFCE9' : '#FDFBFF';
+  const titleColor = role === 'pro' ? '#4F378A' : role === 'client' ? '#D0BCFF' : '#BFA8F1';
+
+  const handleLogout = () => {
+    dispatch(logout());
+    // C'est tout ! Laissez Navigation.jsx gérer automatiquement le changement
+  };
 
   return (
-    <SafeAreaView style={styles.safeContainer}>
-      <View style={styles.container}>
-        {/* À gauche : menu si page d’accueil, sinon flèche retour */}
-        {isMenuScreen ? (
+    <SafeAreaView style={[styles.safeContainer, { backgroundColor }]}>
+      <View style={[styles.container, { backgroundColor }]}>
+        {isHome ? (
           <TouchableOpacity onPress={() => navigation.openDrawer()}>
             <FontAwesome5 name="bars" size={24} color="#444" />
-          </TouchableOpacity>) : (
+          </TouchableOpacity>
+        ) : (
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <FontAwesome5 name="arrow-left" size={24} color="#444" />
           </TouchableOpacity>
         )}
 
-        {/* Logo cliquable + titre, permet de revenir à l’accueil */}
-        <TouchableOpacity onPress={() => navigation.navigate('Drawer', { screen: 'HomeScreen' })}>
+        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
           <View style={styles.centerBox}>
             <Image
               source={require('../assets/logoTTC_sansTexte.png')}
               style={styles.logo}
               resizeMode="contain"
             />
-            <Text style={styles.title}>TROUVE TON COLIS</Text>
+            <Text style={[styles.title, { color: titleColor }]}>TROUVE TON COLIS</Text>
           </View>
         </TouchableOpacity>
 
-        {/* À droite : bouton de connexion uniquement visible sur l’accueil */}
-        {isMenuScreen ? (
-          <View style={styles.iconBox}>
-            <TouchableOpacity onPress={() => setModalVisible(true)}>
-              <FontAwesome name="user-circle-o" size={28} color="#555" />
+        <View style={styles.iconBox}>
+          {userToken ? (
+            <TouchableOpacity onPress={handleLogout}>
+              <FontAwesome name="sign-out" size={28} color="#EC6E5B" />
+              <Text style={styles.hint}>Déconnexion</Text>
             </TouchableOpacity>
-            <Text style={styles.hint}>Connexion</Text>
-          </View>
-        ) : (
-          <View style={{ width: 28 }} />  // Garde l’alignement visuel à droite
-        )}
+          ) : (
+            <>
+              <TouchableOpacity onPress={() => setModalVisible(true)}>
+                <FontAwesome name="user-circle-o" size={28} color="#555" />
+              </TouchableOpacity>
+              <Text style={styles.hint}>Connexion</Text>
+            </>
+          )}
+        </View>
       </View>
       <SignInModal visible={modalVisible} onClose={() => setModalVisible(false)} />
     </SafeAreaView>
   );
 }
 
-
-
 const styles = StyleSheet.create({
   safeContainer: {
-    backgroundColor: '#f9f9f9',
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
   container: {
     height: 100,
     paddingTop: 20,
     paddingHorizontal: 16,
-    backgroundColor: '#f9f9f9',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderBottomColor: '#ddd',
-    borderBottomWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 6,
   },
   centerBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 0, // Petit espace entre logo et texte
   },
   logo: {
     width: 60,
@@ -93,7 +105,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#5E4AE3', // Violet clair, couleur principale
+    marginLeft: 8,
   },
   iconBox: {
     flexDirection: 'column',

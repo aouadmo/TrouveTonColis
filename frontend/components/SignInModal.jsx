@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity, Modal, StyleSheet,
+  KeyboardAvoidingView, Platform
+} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/user';
 import { useNavigation } from '@react-navigation/native';
@@ -12,7 +15,6 @@ export default function SignInModal({ visible, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  
 
   const handleLogin = async () => {
     setLoading(true);
@@ -66,12 +68,28 @@ export default function SignInModal({ visible, onClose }) {
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.overlay}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.overlay}
+      >
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Connexion</Text>
 
-          <TextInput placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} style={styles.input} autoCapitalize="none"/>
-          <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry style={styles.input}/>
+          <TextInput
+            placeholder="Email"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+            autoCapitalize="none"
+          />
+          <TextInput
+            placeholder="Mot de passe"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={styles.input}
+          />
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>

@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 
 // Inscription Pro
 router.post('/signup', (req, res) => {
-  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone','nomRelais', 'adresse', 'ville', 'codePostal'])) {
+  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone', 'phone2', 'nomRelais', 'adresse', 'ville', 'codePostal'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
@@ -26,6 +26,7 @@ router.post('/signup', (req, res) => {
         emailConfirm: req.body.emailConfirm,
         password: hash,
         phone: req.body.phone,
+        phone2: req.body.phone2,
         nomRelais: req.body.nomRelais,
         adresse: req.body.adresse,
         ville: req.body.ville,
