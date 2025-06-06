@@ -1,10 +1,10 @@
 import React from 'react';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-import FAQScreen from '../screens/FAQScreen';
 
 // Screens visibles dans le menu
 import HomeScreen from '../screens/HomeScreen';
 import HistoireRelais from '../screens/HistoireRelais';
+import FAQScreen from '../screens/FAQScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import SearchScreen from '../screens/SearchScreen';
 import CameraScreen from '../screens/CameraScreen';
@@ -38,12 +38,12 @@ export default function DrawerNavigator() {
 
       {/* Lien vers la page FAQ */}
       <Drawer.Screen
-        name="FAQScreen"
+        name="FAQ"
         component={FAQScreen}
         options={{ title: 'FAQ' }}
       />
 
-      <Drawer.Screen
+      {/* <Drawer.Screen
         name="SignUpScreen"
         component={SignUpScreen}
         options={{ title: 'Inscription' }}
@@ -59,7 +59,7 @@ export default function DrawerNavigator() {
         name="CameraScreen"
         component={CameraScreen}
         options={{ title: 'Prenez vos plus belles photos !' }}
-      />
+      /> */}
     </Drawer.Navigator>
   );
 }

@@ -9,7 +9,7 @@ import SearchScreen from '../screens/SearchScreen';
 
 const Stack = createNativeStackNavigator();
 
-export default function AuthNavigator() {
+export default function AuthentNavigator() {
     // Écrans disponibles avant la connexion (publics)
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

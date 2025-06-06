@@ -4,12 +4,16 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { store, persistor } from './store';
 import Navigation from './navigation/Navigation';
 import { ActivityIndicator } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { navigationRef } from './navigation/NavigationRef';
 
 export default function App() {
   return (
     <Provider store={store}>
       <PersistGate loading={<ActivityIndicator />} persistor={persistor}>
-        <Navigation />
+        <NavigationContainer ref={navigationRef}>
+          <Navigation />
+        </NavigationContainer>
       </PersistGate>
     </Provider>
   );

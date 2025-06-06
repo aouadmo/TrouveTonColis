@@ -10,22 +10,23 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faUserPlus, faBarcode } from '@fortawesome/free-solid-svg-icons';
 
 import Header from '../components/Header';
+import { navigate } from '../navigation/NavigationRef';
 import { useSelector } from 'react-redux';
 
-export default function HomeScreen({ navigation }) {
-const { token } = useSelector(state => state.user.value);
+export default function HomeScreen({ }) {
+  const { token } = useSelector(state => state.user.value);
 
   // Redirections vers les différentes pages
   const handleSignUp = () => {
-    navigation.navigate('SignUpScreen');
+    navigate('SignUpScreen')
   };
 
   const handleSearch = () => {
-    navigation.navigate('SearchScreen');
+    navigate('SearchScreen');
   };
 
   const gotocamerascreen = () => {
-    navigation.navigate('CameraScreen');
+    navigate('CameraScreen');
   };
 
   return (
