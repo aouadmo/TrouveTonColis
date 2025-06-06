@@ -57,11 +57,21 @@ router.post('/signin', (req, res) => {
 
 router.get('/client/:token', (req, res) => {
   Client.findOne({ token: req.params.token }).then(data => {
-    if (data) {
-      res.json({ result: true, client: data.client });
-    } else {
-      res.json({ result: false, error: 'Utilisateur inconnu' });
+    if (!data) {
+      return res.json({ result: false, error: 'Utilisateur inconnu' });
     }
+
+    res.json({
+      result: true,
+      client: {
+        nom: data.nom,
+        prenom: data.prenom,
+        phone: data.phone,
+        email: data.email,
+        spouseName: data.spouseName || '',
+        loginEmail: data.loginEmail || '',
+      }
+    });
   });
 });
 

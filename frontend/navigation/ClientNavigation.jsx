@@ -2,6 +2,7 @@ import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 // Les écrans
 import DrawerNavigator from './DrawerNavigator';
@@ -18,17 +19,19 @@ const TabNavigatorClient = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          let iconName = '';
-
           if (route.name === 'MesColis') {
-            iconName = 'dolly';
+            return (
+              <MaterialCommunityIcons name="package" size={size} color={color} />
+            );
           } else if (route.name === 'Search') {
-            iconName = 'search';
+            return (
+              <FontAwesome name="search" size={size} color={color} />
+            );
           } else if (route.name === 'ProfilClient') {
-            iconName = 'user';
+            return (
+              <FontAwesome name="user" size={size} color={color} />
+            );
           }
-
-          return <FontAwesome name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#0F58B8',
         tabBarInactiveTintColor: '#CDF4FF',
