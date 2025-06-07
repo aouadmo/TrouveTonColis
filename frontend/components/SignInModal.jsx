@@ -6,6 +6,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/user';
 import { useNavigation } from '@react-navigation/native';
+import { navigate } from '../navigation/navigationRef';
 
 export default function SignInModal({ visible, onClose }) {
   const [email, setEmail] = useState('');
@@ -21,7 +22,7 @@ export default function SignInModal({ visible, onClose }) {
     setError('');
   
     try {
-      let response = await fetch('http://192.168.1.254:3000/pros/signin', {
+      let response = await fetch('http://192.168.1.191:3002/pros/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -33,11 +34,11 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: true }));
         onClose();
-        navigation.navigate('TabNavigatorPro', { screen: 'TableauBord' });
+        navigate('TabNavigatorPro', { screen: 'TableauBord' });
         return;
        }
 
-      response = await fetch('http://192.168.1.254:3000/users/signin', {
+      response = await fetch('http://192.168.1.191:3002/users/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -49,7 +50,7 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: false }));
         onClose();
-        navigation.navigate('TabNavigator', { screen: 'MyParcelsScreen' });
+        navigate('TabNavigatorClient', { screen: 'MyParcelsScreen' });
         return;
       }
   

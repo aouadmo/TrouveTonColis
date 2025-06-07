@@ -11,16 +11,6 @@ export default function HomeScreen({ navigation }) {
   const { token, isPro } = useSelector(state => state.user.value);
   const [failCount, setFailCount] = useState(0); // 🔥 À supprimer le 07/06 UNIQUEMENT
 
-  // ✅ Redirection automatique si connecté
-  useEffect(() => {
-    if (token !== null && isPro !== null) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: isPro ? 'TabPro' : 'TabClient' }],
-      });
-    }
-  }, [token, isPro]);
-
   const handleSignUp = () => navigate('SignUpScreen');
   const handleSearch = () => navigate('SearchScreen');
   const gotocamerascreen = () => navigate('CameraScreen');

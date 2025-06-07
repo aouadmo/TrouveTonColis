@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 //Les Écrans
 import DrawerNavigator from './DrawerNavigator';
-import SingUpScreen from '../screens/SignUpScreen';
+import SignUpScreen from '../screens/SignUpScreen';
 import MonStockScreen from '../screens/MonStockScreen';
 import TableauBordScreen from '../screens/TableauBordScreen';
 import ProfilProScreen from '../screens/ProfilProScreen';
@@ -13,7 +15,7 @@ import ProfilProScreen from '../screens/ProfilProScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigatorPro = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -36,15 +38,22 @@ const TabNavigator = () => {
   );
 };
 export default function App() {
-return (
-<Provider store={store}>
-  <PersistGate persistor={persistor}>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
-        <Stack.Screen name="TabNavigator" component={TabNavigator} />
-        <Stack.Screen name = "SignUpScreen" component={SingUpScreen}/>
-      </Stack.Navigator>
-  </PersistGate>
-</Provider>
-);
+  const { token } = useSelector((state) => state.user.value);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (token) {
+      navigation.navigate('TabNavigatorPro', {
+        screen: 'TableauBord',
+      });
+    }
+  }, [token]);
+
+  return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+          <Stack.Screen name="TabNavigatorPro" component={TabNavigatorPro} />
+          <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+        </Stack.Navigator>
+  );
 }
