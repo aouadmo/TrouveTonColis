@@ -10,7 +10,6 @@ import { useSelector } from 'react-redux';
 
 export default function HomeScreen({ navigation }) {
   const { token, isPro } = useSelector(state => state.user.value);
-  const [failCount, setFailCount] = useState(0); // 🔥 À supprimer le 07/06 UNIQUEMENT
 
   const handleSignUp = () => navigate('SignUpScreen');
   const handleSearch = () => navigate('SearchScreen');
@@ -25,40 +24,6 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.subtitle}>L’application simple et rapide pour vos colis</Text>
           <Text style={styles.paragraphe}>👋 Vous attendez un colis ? Vous êtes au bon endroit.</Text>
           <Text style={styles.paragraphe}>📦 Points relais et clients, tout le monde est le bienvenu !</Text>
-        </View>
-
-        {/* 🔥 BLOC ANNIVERSAIRE À SUPPRIMER LE 07/06 UNIQUEMENT */}
-        <View style={styles.birthdayCard}>
-          <Text style={styles.birthdayTitle}>🎂 JOYEUX ANNIVERSAIRE À CÉCILE 🎉</Text>
-          <Text style={styles.birthdaySubtitle}>Tentative de connexion à la cagnotte en ligne...</Text>
-
-          <View style={styles.progressBar}>
-            <View style={styles.progressBugged} />
-          </View>
-          <Text style={styles.progressText}>Chargement des IBANs... (1/∞)</Text>
-
-          <TouchableOpacity
-            style={styles.fakeButton}
-            activeOpacity={1}
-            onPress={() => {
-              const chance = Math.random();
-              if (chance < 0.2) {
-                alert('✅ Paiement accepté ! Cécile vous remercie chaleureusement ❤️');
-              } else {
-                const newCount = failCount + 1;
-                setFailCount(newCount);
-                if (newCount >= 3) {
-                  alert('🧠 Bon ok… t’as quand même pas cru que c’était une vraie cagnotte ? 😅');
-                  setFailCount(0);
-                } else {
-                  alert('❌ Paiement échoué. Merci de réessayer (ou de donner du cash).');
-                }
-              }
-            }}
-          >
-            <Text style={styles.fakeButtonText}>💸 Tenter un virement</Text>
-          </TouchableOpacity>
-
         </View>
 
         <Text style={styles.buttonDescription}>🔍 Consultez si votre colis est arrivé</Text>
