@@ -34,7 +34,7 @@ const SignUpScreen = () => {
       return;
     }
 
-    const url = userType === 'client' ? 'http://192.168.1.157:3000/users/signup' : 'http://192.168.1.157:3000/pros/signup'; // <--- IP à modifier si besoin
+    const url = userType === 'client' ? 'http://192.168.1.157:3002/users/signup' : 'http://192.168.1.157:3002/pros/signup'; // <--- IP à modifier si besoin
     console.log(url);
     const payload = userType === 'client' ?
          {

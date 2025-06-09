@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
+
 //Les Écrans
 import DrawerNavigator from './DrawerNavigator';
 import SingUpScreen from '../screens/SignUpScreen';
@@ -37,14 +38,10 @@ const TabNavigator = () => {
 };
 export default function App() {
 return (
-<Provider store={store}>
-  <PersistGate persistor={persistor}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
         <Stack.Screen name="TabNavigator" component={TabNavigator} />
         <Stack.Screen name = "SignUpScreen" component={SingUpScreen}/>
       </Stack.Navigator>
-  </PersistGate>
-</Provider>
 );
 }
