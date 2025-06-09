@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { View, Text, StyleSheet } from 'react-native';
 import Header from '../components/Header';
 
@@ -28,3 +29,14 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
 });
+=======
+import { View, Text } from 'react-native';
+
+export default function TableauBordScreen() {
+  return (
+    <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Text>Tableau de Bord</Text>
+    </View>
+  );
+}
+>>>>>>> mohamed-codebarscan-feature

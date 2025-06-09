@@ -14,25 +14,38 @@
     "@fortawesome/react-native-fontawesome": "^0.3.2",
     "@react-native-async-storage/async-storage": "^2.1.2",
     "@react-navigation/bottom-tabs": "6",
+<<<<<<< HEAD
     "@react-navigation/drawer": "6.6.2",
+=======
+>>>>>>> mohamed-codebarscan-feature
     "@react-navigation/native": "6",
     "@react-navigation/native-stack": "6",
     "@reduxjs/toolkit": "^2.8.2",
     "expo": "~53.0.9",
     "expo-camera": "~16.1.6",
+<<<<<<< HEAD
     "expo-linking": "~7.1.5",
     "expo-location": "~18.1.5",
+=======
+>>>>>>> mohamed-codebarscan-feature
     "expo-status-bar": "~2.2.3",
     "node-fetch": "^3.3.2",
     "persist": "^0.2.7",
     "react": "19.0.0",
     "react-native": "0.79.2",
+<<<<<<< HEAD
     "react-native-gesture-handler": "~2.24.0",
     "react-native-maps": "1.20.1",
     "react-native-reanimated": "~3.17.4",
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
     "react-native-svg": "15.11.2",
+=======
+    "react-native-maps": "1.20.1",
+    "react-native-safe-area-context": "5.4.0",
+    "react-native-screens": "~4.10.0",
+    "react-native-svg": "^15.12.0",
+>>>>>>> mohamed-codebarscan-feature
     "react-redux": "^9.2.0",
     "redux": "^5.0.1",
     "redux-persist": "^6.0.0"

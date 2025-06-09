@@ -2,6 +2,27 @@
 # yarn lockfile v1
 
 
+<<<<<<< HEAD
+=======
+"@huggingface/inference@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@huggingface/inference/-/inference-4.0.2.tgz#962a14c468311755fa34da143c045c34b9dd7775"
+  integrity sha512-XuWb8ocH7lA5kSdXrGnqshtRz3ocSBzEzxcp5xeAXLjgM1ocoIHq+RW8/Ti0xq3MeRGQWgUkYPCgDV/xgs8p4g==
+  dependencies:
+    "@huggingface/jinja" "^0.5.0"
+    "@huggingface/tasks" "^0.19.11"
+
+"@huggingface/jinja@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.5.0.tgz#0da65deb98798cd24ea42ad13f6df224ce23f443"
+  integrity sha512-Ptc03/jGRiYRoi0bUYKZ14MkDslsBRT24oxmsvUlfYrvQMldrxCevhPnT+hfX8awKTT8/f/0ZBBWldoeAcMHdQ==
+
+"@huggingface/tasks@^0.19.11":
+  version "0.19.11"
+  resolved "https://registry.yarnpkg.com/@huggingface/tasks/-/tasks-0.19.11.tgz#2c1005b189432528c1e17d1ec9938d11f65a01ca"
+  integrity sha512-oBhSgVlg7Pp643MsH8BiI3OAXIMJNxdSiMtv4mApRZV8dmAz8oasKhg6CVKIplO7vAO7F6dkmMn4bYM64I2A9w==
+
+>>>>>>> mohamed-codebarscan-feature
 "@mongodb-js/saslprep@^1.1.9":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@mongodb-js/saslprep/-/saslprep-1.2.2.tgz#09506f29cc2a99d9d7b951caa7fffc87e522a6d3"

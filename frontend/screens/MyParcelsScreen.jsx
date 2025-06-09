@@ -10,6 +10,7 @@ import {
 
 export default function MyParcelsScreen() {
     return (
+<<<<<<< HEAD
         <KeyboardAvoidingView style={styles.container}>
         <Text>Page MyParcelsScreen</Text>
         </KeyboardAvoidingView>
@@ -26,3 +27,10 @@ const styles = StyleSheet.create({
     },
   });
   
+=======
+        <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+        <Text>Page MyParcelsScreen</Text>
+        </KeyboardAvoidingView>
+    );
+}
+>>>>>>> mohamed-codebarscan-feature

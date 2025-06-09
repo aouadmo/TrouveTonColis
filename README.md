@@ -18,6 +18,9 @@ cecile : (branche) j'ai du toucher au app.js pour ajouter la connexion car je ne
 cecile : (branche) j'ai créer SearchScreen avec la recherche de colis, mon fetch fonctionne ok tester
 seba : Création des routes users.js
 merge seba et cécile sur le main
+<<<<<<< HEAD
 
 apres le 28/05 = moins de motivation alors fini le readme lol
 passage sur notion
+=======
+>>>>>>> mohamed-codebarscan-feature
