@@ -8,7 +8,7 @@ const bcrypt = require('bcrypt');
 
 // Inscription Pro
 router.post('/signup', (req, res) => {
-  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone','nomRelais', 'adresse', 'ville', 'codePostal'])) {
+  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone', 'nomRelais', 'adresse', 'ville', 'codePostal'])) {
     res.json({ result: false, error: 'Missing or empty fields' });
     return;
   }
@@ -26,6 +26,7 @@ router.post('/signup', (req, res) => {
         emailConfirm: req.body.emailConfirm,
         password: hash,
         phone: req.body.phone,
+        phone2: req.body.phone2,
         nomRelais: req.body.nomRelais,
         adresse: req.body.adresse,
         ville: req.body.ville,
@@ -54,7 +55,7 @@ Pro.findOne({ email: req.body.email }).then(data => {
     if (data && bcrypt.compareSync(req.body.password, data.password)) {
       res.json({ result: true, token: data.token });
     } else {
-      res.json({ result: false, error: 'User not found or wrong password' });
+      res.status(401).json({ result: false, error: 'User not found or wrong password' });
     }
   });
 });

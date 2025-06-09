@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import {View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
+import {
+  View, Text, TextInput, TouchableOpacity, Modal, StyleSheet,
+  KeyboardAvoidingView, Platform
+} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/user';
 import { useNavigation } from '@react-navigation/native';
+import { navigate } from '../navigation/navigationRef';
 
 export default function SignInModal({ visible, onClose }) {
   const [email, setEmail] = useState('');
@@ -12,44 +16,49 @@ export default function SignInModal({ visible, onClose }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  
 
   const handleLogin = async () => {
     setLoading(true);
     setError('');
-
+  
     try {
-      let response = await fetch('http://192.168.1.254:3000/pros/signin', {
+      let response = await fetch('http://192.168.1.191:3002/pros/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
+  
+      let data = await response.json(); // attente retour fetch
+      console.log('Réponse Pro :', data);
+  
+      if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: true }));
         onClose();
-        navigation.navigate('TabNavigator', { screen: 'TableauBord' });
+        navigate('TabNavigatorPro', { screen: 'TableauBord' });
         return;
        }
 
-      response = await fetch('http://192.168.1.254:3000/users/signin', {
+      response = await fetch('http://192.168.1.191:3002/users/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
+  
+      data = await response.json(); // attente réponse fetch
+      console.log('Réponse Client :', data);
+  
+      if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: false }));
         onClose();
-        navigation.navigate('TabNavigator', { screen: 'SearchScreen' });
+        navigate('TabNavigatorClient', { screen: 'MyParcelsScreen' });
         return;
-      } else {
-        setError('Email ou mot de passe incorrect');
       }
+  
+      // Erreur renvoyée par le backend
+      setError(data.error || 'Email ou mot de passe incorrect');
+  
     } catch (error) {
-      console.error(error);
+      console.error('Erreur attrapée dans le catch :', error);
       setError('Erreur de connexion');
     } finally {
       setLoading(false);
@@ -58,12 +67,28 @@ export default function SignInModal({ visible, onClose }) {
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.overlay}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.overlay}
+      >
         <View style={styles.modalContainer}>
           <Text style={styles.title}>Connexion</Text>
 
-          <TextInput placeholder="Email" keyboardType="email-address" value={email} onChangeText={setEmail} style={styles.input} autoCapitalize="none"/>
-          <TextInput placeholder="Mot de passe" value={password} onChangeText={setPassword} secureTextEntry style={styles.input}/>
+          <TextInput
+            placeholder="Email"
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+            style={styles.input}
+            autoCapitalize="none"
+          />
+          <TextInput
+            placeholder="Mot de passe"
+            value={password}
+            onChangeText={setPassword}
+            secureTextEntry
+            style={styles.input}
+          />
           {error ? <Text style={styles.error}>{error}</Text> : null}
 
           <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
