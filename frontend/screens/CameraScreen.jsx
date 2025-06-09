@@ -6,7 +6,7 @@ import { addPhoto } from "../reducers/user";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useIsFocused } from "@react-navigation/native";
 
-const BACKEND_ADDRESS = "http://192.168.1.32:3000/colis";
+const BACKEND_ADDRESS = "http://192.168.58.102:3000/colis";
 
 export default function CameraScreen() {
 	const dispatch = useDispatch();

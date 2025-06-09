@@ -8,7 +8,7 @@ const colisSchema = mongoose.Schema({
     phone: Number,
     poids: Number,
     date: Date,
-    extractedFromOCR: { type: Object },
+    extractedFromOCR: Object,
 });
 
 const Colis = mongoose.model('colis', colisSchema);
