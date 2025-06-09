@@ -19,6 +19,7 @@ const SignUpScreen = () => {
     emailConfirm: '',
     password: '',
     phone: '',
+    phone2:'',
     adresse: '',
     ville: '',
     codePostal: '',
@@ -51,6 +52,7 @@ const SignUpScreen = () => {
             email: form.email,
             password: form.password,
             phone: form.phone,
+            phone2:form.phone,
             adresse: form.adresse,
             ville: form.ville,
             codePostal: form.codePostal,
@@ -68,14 +70,13 @@ const SignUpScreen = () => {
       if (userType === "client") {
         navigation.reset({
           index: 0,
-          routes: [{ name: "ClientProfileScreen" }],
+          routes: [{ name: "TabNavigatorClient", params: { screen: "ProfilClient" } }],
         });
       } else {
         navigation.reset({
           index: 0,
-          routes: [{ name: "TabNavigator", params: { screen: "TableauBord" } }],
-        });
-        
+          routes: [{ name: "TabNavigatorPro", params: { screen: "TableauBord" } }],
+        });        
       }
     }
   };
@@ -109,6 +110,7 @@ const SignUpScreen = () => {
 
         {userType === "pro" && (
           <>
+            <TextInput style={styles.input} placeholder="Phone Pro" value={form.phone2} onChangeText={(v) => handleChange("phone2", v)} keyboardType="phone-pad"/>
             <TextInput style={styles.input} placeholder="Adresse" value={form.adresse} onChangeText={(v) => handleChange("adresse", v)}/>
             <View style={styles.row}>
               <TextInput style={styles.inputHalf} placeholder="Ville" value={form.ville} onChangeText={(v) => handleChange("ville", v)}/>

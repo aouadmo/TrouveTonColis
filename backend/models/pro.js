@@ -7,6 +7,7 @@ const prosSchema = mongoose.Schema({
     emailConfirm: String,
     password: String,
     phone: String,
+    phone2: String,
     nomRelais: String,
     adresse: String,
     ville: String,

@@ -3,6 +3,7 @@ import {View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, KeyboardAvoi
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/user';
 import { useNavigation } from '@react-navigation/native';
+import { navigate } from '../navigation/navigationRef';
 
 export default function SignInModal({ visible, onClose }) {
   const [email, setEmail] = useState('');
@@ -30,7 +31,7 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: true }));
         onClose();
-        navigation.navigate('TabNavigator', { screen: 'TableauBord' });
+        navigate('TabNavigatorPro', { screen: 'TableauBord' });
         return;
        }
 
@@ -46,7 +47,7 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: false }));
         onClose();
-        navigation.navigate('TabNavigator', { screen: 'MyParcelsScreen' });
+        navigate('TabNavigatorClient', { screen: 'MyParcelsScreen' });
         return;
       }
   
