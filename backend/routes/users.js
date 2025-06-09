@@ -10,11 +10,7 @@ const bcrypt = require('bcrypt');
 router.post('/signup', (req, res) => {
   const { nom, prenom, email, password, phone, client } = req.body;
 
-<<<<<<< HEAD
   if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone'])) {
-=======
-  if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone', 'client'])) {
->>>>>>> mohamed-codebarscan-feature
     res.json({ result: false, error: 'Tous les champs sont requis.' });
     return;
   }
@@ -43,7 +39,6 @@ router.post('/signup', (req, res) => {
 });
 
 router.post('/signin', (req, res) => {
-<<<<<<< HEAD
   const password = req.body.password;
   if (!checkBody(req.body, ['email', 'password'])) {
     return res.status(400).json({ result: false, error: 'Tous les champs doivent être remplis.' });
@@ -55,28 +50,10 @@ router.post('/signin', (req, res) => {
     } else {
       res.status(401).json({ result: false, error: 'Utilisateur ou mot de passe incorrect.' });
       //res.json({ result: true, token: data.token });
-=======
-  const { email, password } = req.body;
-
-  if (!checkBody(req.body, ['email', 'password'])) {
-    res.json({ result: false, error: 'Tous les champs doivent être remplit.' });
-    return;
-  }
-
-  Client.findOne({ email }).then(data => {
-    if (data && bcrypt.compareSync( password, data.password)) {
-      res.json({ result: true, token: data.token });
-    } else {
-      res.json({ result: false, error: 'Utilisateur ou mot de passe incorrect.' });
->>>>>>> mohamed-codebarscan-feature
     }
   });
 });
 
-<<<<<<< HEAD
-
-=======
->>>>>>> mohamed-codebarscan-feature
 router.get('/client/:token', (req, res) => {
   Client.findOne({ token: req.params.token }).then(data => {
     if (data) {

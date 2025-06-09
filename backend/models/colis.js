@@ -8,10 +8,7 @@ const colisSchema = mongoose.Schema({
     phone: Number,
     poids: Number,
     date: Date,
-<<<<<<< HEAD
-=======
     extractedFromOCR: Object,
->>>>>>> mohamed-codebarscan-feature
 });
 
 const Colis = mongoose.model('colis', colisSchema);

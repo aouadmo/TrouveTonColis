@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useState, useEffect } from "react";
 import {View, KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, Platform} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
@@ -42,88 +41,12 @@ export default function HomeScreen({ navigation }) {
         <TouchableOpacity onPress={gotocamerascreen} style={styles.button} activeOpacity={0.8}>
           <FontAwesomeIcon icon={faBarcode} size={18} color="#fff" />
           <Text style={styles.textButton}>Scanner un colis</Text>
-=======
-import {
-  View,
-  KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
-
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faUserPlus } from '@fortawesome/free-solid-svg-icons';
-
-import Header from '../component/Header';
-
-export default function HomeScreen({ navigation }) {
-  const handleSignUp = () => {
-    navigation.navigate('SignUpScreen');
-  };
-
-  const handleSearch = () => {
-    navigation.navigate('SearchScreen');
-  };
-
-  const gotocamerascreen = () => {
-    navigation.navigate('CameraScreen');
-  };
-  return (
-    <View style={styles.wrapper}>
-      <Header />
-      <KeyboardAvoidingView
-        style={styles.container}
-      >
-        <View style={styles.circle} />
-
-        <Text style={styles.title}>🎯 Bienvenue sur TTC</Text>
-        <Text style={styles.subtitle}>L'application de gestion de colis</Text>
-        <Text style={styles.subtitle}>Voici le hub pour tester si votre page marche bien !</Text>
-
-        <TouchableOpacity
-          onPress={handleSignUp}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-          <Text style={styles.textButton}> Inscription</Text>
-        </TouchableOpacity>
-
-        {/* bouton pour rechercher les colis */}
-        <TouchableOpacity
-          onPress={handleSearch}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-          <Text style={styles.textButton}> Rechercher les colis</Text>
-        </TouchableOpacity>
-        {/* bouton pour scanner les colis */}
-        <TouchableOpacity
-          onPress={gotocamerascreen}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-          <Text style={styles.textButton}> Scanner les colis</Text>
-        </TouchableOpacity>
-
-        {/* bouton pour scanner les colis */}
-        <TouchableOpacity
-          onPress={gotocamerascreen}
-          style={styles.button}
-          activeOpacity={0.8}
-        >
-          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-          <Text style={styles.textButton}> Scanner les colis</Text>
->>>>>>> mohamed-codebarscan-feature
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
   );
 }
 
-<<<<<<< HEAD
 // 🔥 STYLES D'ANNIVERSAIRE À SUPPRIMER LE 07/06 UNIQUEMENT
 const styles = StyleSheet.create({
   wrapper: {
@@ -166,62 +89,21 @@ const styles = StyleSheet.create({
     marginTop: 20,
     marginBottom: 6,
     textAlign: 'center',
-=======
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: '#ffffff',
-  },
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  circle: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: '#ec6e5b',
-    marginBottom: 30,
-  },
-  title: {
-    fontSize: 30,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: '#333',
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    marginBottom: 20,
->>>>>>> mohamed-codebarscan-feature
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-<<<<<<< HEAD
     backgroundColor: '#4F89E6',
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 12,
     marginBottom: 10,
     elevation: 2,
-=======
-    backgroundColor: '#ec6e5b',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 10,
-    marginVertical: 5,
->>>>>>> mohamed-codebarscan-feature
   },
   textButton: {
     color: '#ffffff',
     fontWeight: '600',
     fontSize: 16,
-<<<<<<< HEAD
     marginLeft: 10,
   },
   birthdayCard: {
@@ -288,9 +170,3 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
 });
-=======
-    marginLeft: 8,
-  },
-});
-
->>>>>>> mohamed-codebarscan-feature

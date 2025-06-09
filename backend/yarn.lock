@@ -2,27 +2,24 @@
 # yarn lockfile v1
 
 
-<<<<<<< HEAD
-=======
 "@huggingface/inference@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@huggingface/inference/-/inference-4.0.2.tgz#962a14c468311755fa34da143c045c34b9dd7775"
-  integrity sha512-XuWb8ocH7lA5kSdXrGnqshtRz3ocSBzEzxcp5xeAXLjgM1ocoIHq+RW8/Ti0xq3MeRGQWgUkYPCgDV/xgs8p4g==
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/@huggingface/inference/-/inference-4.0.3.tgz#bd4a6025e2fdf02b185aa594b85097c632e6ca5f"
+  integrity sha512-TE1IvY+4DQJhjpJsFdBqDHu0Jg+p/+9G5UmW3hmLBcUJzy7P4J0yZky+VFniSVxI8dFA4eKKcW8/uYD+yZM9NA==
   dependencies:
     "@huggingface/jinja" "^0.5.0"
-    "@huggingface/tasks" "^0.19.11"
+    "@huggingface/tasks" "^0.19.12"
 
 "@huggingface/jinja@^0.5.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@huggingface/jinja/-/jinja-0.5.0.tgz#0da65deb98798cd24ea42ad13f6df224ce23f443"
   integrity sha512-Ptc03/jGRiYRoi0bUYKZ14MkDslsBRT24oxmsvUlfYrvQMldrxCevhPnT+hfX8awKTT8/f/0ZBBWldoeAcMHdQ==
 
-"@huggingface/tasks@^0.19.11":
-  version "0.19.11"
-  resolved "https://registry.yarnpkg.com/@huggingface/tasks/-/tasks-0.19.11.tgz#2c1005b189432528c1e17d1ec9938d11f65a01ca"
-  integrity sha512-oBhSgVlg7Pp643MsH8BiI3OAXIMJNxdSiMtv4mApRZV8dmAz8oasKhg6CVKIplO7vAO7F6dkmMn4bYM64I2A9w==
+"@huggingface/tasks@^0.19.12":
+  version "0.19.12"
+  resolved "https://registry.yarnpkg.com/@huggingface/tasks/-/tasks-0.19.12.tgz#29e25d8aba902a98267758004e299d30575fb2a2"
+  integrity sha512-rg5+phoJg7SCqbUx9O9I+bfZkZBf6rqf2XGuN7M+uuwBSO4zO3V9s/Iqein1QSEhktR4g5OVBUZimodkX4ISkg==
 
->>>>>>> mohamed-codebarscan-feature
 "@mongodb-js/saslprep@^1.1.9":
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/@mongodb-js/saslprep/-/saslprep-1.2.2.tgz#09506f29cc2a99d9d7b951caa7fffc87e522a6d3"
@@ -125,9 +122,9 @@ braces@~3.0.2:
     fill-range "^7.1.1"
 
 bson@^6.10.3:
-  version "6.10.3"
-  resolved "https://registry.yarnpkg.com/bson/-/bson-6.10.3.tgz#5f9a463af6b83e264bedd08b236d1356a30eda47"
-  integrity sha512-MTxGsqgYTwfshYWTRdmZRC+M7FnG1b4y7RO7p2k3X24Wq0yv1m77Wsj0BzlPzd/IowgESfsruQCUToa7vbOpPQ==
+  version "6.10.4"
+  resolved "https://registry.yarnpkg.com/bson/-/bson-6.10.4.tgz#d530733bb5bb16fb25c162e01a3344fab332fd2b"
+  integrity sha512-WIsKqkSC0ABoBJuT1LEX+2HEvNmNKKgnTAyd0fL8qzK4SH2i9NXg+t08YtdZp/V9IZ33cxe3iV4yM0qg8lMQng==
 
 busboy@^1.6.0:
   version "1.6.0"
@@ -371,13 +368,14 @@ finalhandler@1.1.1:
     unpipe "~1.0.0"
 
 form-data@^4.0.2:
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.2.tgz#35cabbdd30c3ce73deb2c42d3c8d3ed9ca51794c"
-  integrity sha512-hGfm/slu0ZabnNt4oaRZ6uREyfCj6P4fT/n6A1rGV+Z0VdGXjfOhVUpkn6qVQONHGIFwmveGXyDs75+nr6FM8w==
+  version "4.0.3"
+  resolved "https://registry.yarnpkg.com/form-data/-/form-data-4.0.3.tgz#608b1b3f3e28be0fccf5901fc85fb3641e5cf0ae"
+  integrity sha512-qsITQPfmvMOSAdeyZ+12I1c+CKSstAFAwu+97zrnWAbIr5u8wfsExUzCesVLC8NgHuRUqNN4Zy6UPWUTRGslcA==
   dependencies:
     asynckit "^0.4.0"
     combined-stream "^1.0.8"
     es-set-tostringtag "^2.1.0"
+    hasown "^2.0.2"
     mime-types "^2.1.12"
 
 forwarded@0.2.0:
@@ -588,9 +586,9 @@ mongodb@~6.16.0:
     mongodb-connection-string-url "^3.0.0"
 
 mongoose@^8.15.0:
-  version "8.15.0"
-  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-8.15.0.tgz#29024dfc941b5b092a85a9d947b7812a6c61957a"
-  integrity sha512-WFKsY1q12ScGabnZWUB9c/QzZmz/ESorrV27OembB7Gz6rrh9m3GA4Srsv1uvW1s9AHO5DeZ6DdUTyF9zyNERQ==
+  version "8.15.1"
+  resolved "https://registry.yarnpkg.com/mongoose/-/mongoose-8.15.1.tgz#d0c5224a01ea8a8f96f5fd5f8557675a054d0a6f"
+  integrity sha512-RhQ4DzmBi5BNGcS0w4u1vdMRIKcteXTCNzDt1j7XRcdWYBz1MjMjulBhPaeC5jBCHOD1yinuOFTTSOWLLGexWw==
   dependencies:
     bson "^6.10.3"
     kareem "2.6.3"
