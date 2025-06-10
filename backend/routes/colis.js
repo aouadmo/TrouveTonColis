@@ -134,4 +134,10 @@ router.post('/ocr', async (req, res) => {
   }
 });
 
+//route get pour récupérer tous les colis et les afficher dans le stock colis côté pro
+router.get('/', async (req, res) => {
+const stock = await Colis.find(); 
+    res.json({ result: true, stock });
+});
+
 module.exports = router;
