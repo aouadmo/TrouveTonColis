@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers } from 'redux';
 
 import user from './reducers/user'; // <-- ton reducer
+import colis from './reducers/colis';
 
 const persistConfig = {
   key: 'root',
@@ -12,7 +13,7 @@ const persistConfig = {
   blacklist: [],
 };
 
-const rootReducer = combineReducers({ user });
+const rootReducer = combineReducers({ user, colis });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
