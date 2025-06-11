@@ -6,6 +6,7 @@ import {
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/user';
 import { useNavigation } from '@react-navigation/native';
+import { navigate } from '../navigation/navigationRef';
 
 export default function SignInModal({ visible, onClose }) {
   const [email, setEmail] = useState('');
@@ -16,51 +17,53 @@ export default function SignInModal({ visible, onClose }) {
   const [error, setError] = useState('');
 
 
-const handleLogin = async () => {
-  setLoading(true);
-  setError('');
+  const handleLogin = async () => {
+    setLoading(true);
+    setError('');
+  
+    try {
+      let response = await fetch('http://192.168.1.191:3002/pros/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      let data = await response.json(); // attente retour fetch
+      console.log('Réponse Pro :', data);
+  
+      if (response.ok && data.result) {
+        dispatch(login({ ...data, isPro: true }));
+        onClose();
+        navigate('TabNavigatorPro', { screen: 'TableauBord' });
+        return;
+       }
 
-  try {
-    // Connexion PRO
-    let response = await fetch('http://192.168.1.10:3006/pros/signin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    let data = await response.json();
-    console.log('Réponse Pro :', data);
-
-    if (response.ok && data.result) {
-      dispatch(login({ ...data, isPro: true }));
-      onClose(); // PAS DE NAVIGATION
-      return;
+      response = await fetch('http://192.168.1.191:3002/users/signin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
+  
+      data = await response.json(); // attente réponse fetch
+      console.log('Réponse Client :', data);
+  
+      if (response.ok && data.result) {
+        dispatch(login({ ...data, isPro: false }));
+        onClose();
+        navigate('TabNavigatorClient', { screen: 'MyParcelsScreen' });
+        return;
+      }
+  
+      // Erreur renvoyée par le backend
+      setError(data.error || 'Email ou mot de passe incorrect');
+  
+    } catch (error) {
+      console.error('Erreur attrapée dans le catch :', error);
+      setError('Erreur de connexion');
+    } finally {
+      setLoading(false);
     }
-
-    // Connexion CLIENT
-    response = await fetch('http://192.168.1.10:3006/users/signin', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
-
-    data = await response.json();
-    console.log('Réponse Client :', data);
-
-    if (response.ok && data.result) {
-      dispatch(login({ ...data, isPro: false }));
-      onClose(); // PAS DE NAVIGATION
-      return;
-    }
-
-    setError(data.error || 'Email ou mot de passe incorrect');
-  } catch (err) {
-    console.error(err);
-    setError("Erreur de connexion");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   return (
     <Modal visible={visible} animationType="slide" transparent onRequestClose={onClose}>

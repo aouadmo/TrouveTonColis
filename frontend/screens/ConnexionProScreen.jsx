@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from 'react-native';
 import { useDispatch } from 'react-redux';
-import { login } from '../reducers/user';
+import { login } from '../reducers/userpro';
 
-export default function SignupProScreen({ navigation }) {
+export default function ProSignupScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const [pro, setPro] = useState({
@@ -29,7 +29,7 @@ export default function SignupProScreen({ navigation }) {
       return;
     }
 
-    fetch('http://192.168.1.157:3006/pros/signup', {
+    fetch('http://localhost:3000/pros/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(pro),
@@ -37,10 +37,8 @@ export default function SignupProScreen({ navigation }) {
       .then(res => res.json())
       .then(data => {
         if (data.result) {
-          if (data.result) {
-            dispatch(login({ token: data.token, email: pro.email, isPro: true }));
-            navigation.navigate('TabNavigator', { screen: 'TableauBord' });
-          }          
+          dispatch(login({ token: data.token, email: pro.email }));
+          navigation.navigate('TableauBord');
         } 
       });
   };
@@ -67,7 +65,7 @@ export default function SignupProScreen({ navigation }) {
         <TextInput placeholder="Zip"  style={styles.inputHalf} onChangeText={val => handleChange('codePostal', val)} />
       </View>
 
-      <TextInput placeholder="Mot de Passe" style={styles.input} secureTextEntry onChangeText={val => handleChange('password', val)} />
+      <TextInput placeholder="Mot de Passe" style={styles.input} onChangeText={val => handleChange('password', val)} />
 
       <TouchableOpacity style={styles.button} onPress={handleSubmit}>
         <Text style={styles.buttonText}>Inscription</Text>

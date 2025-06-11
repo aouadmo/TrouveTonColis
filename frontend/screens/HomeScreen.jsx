@@ -1,44 +1,18 @@
-import {
-  View,
-  KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-} from 'react-native';
-
+import React, { useState, useEffect } from "react";
+import {View, KeyboardAvoidingView, StyleSheet, Text, TouchableOpacity, Platform} from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faSearch, faUserPlus, faBarcode } from '@fortawesome/free-solid-svg-icons';
 
 import Header from '../components/Header';
-
+import { navigate } from '../navigation/navigationRef';
 import { useSelector } from 'react-redux';
-import { useEffect } from 'react';
 
 export default function HomeScreen({ navigation }) {
   const { token, isPro } = useSelector(state => state.user.value);
 
-  useEffect(() => {
-    if (token !== null && isPro !== null) {
-      navigation.reset({
-        index: 0,
-        routes: [
-          { name: isPro ? 'TabPro' : 'TabClient' },
-        ],
-      });
-    }
-  }, [token, isPro]);
-
-  const handleSignUp = () => {
-    navigation.navigate('SignUpScreen');
-  };
-
-  const handleSearch = () => {
-    navigation.navigate('SearchScreen');
-  };
-
-  const gotocamerascreen = () => {
-    navigation.navigate('CameraScreen');
-  };
+  const handleSignUp = () => navigate('SignUpScreen');
+  const handleSearch = () => navigate('SearchScreen');
+  const gotocamerascreen = () => navigate('CameraScreen');
 
   return (
     <View style={styles.wrapper}>
@@ -78,6 +52,7 @@ export default function HomeScreen({ navigation }) {
   );
 }
 
+// 🔥 STYLES D'ANNIVERSAIRE À SUPPRIMER LE 07/06 UNIQUEMENT
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
@@ -163,5 +138,68 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     fontSize: 16,
     marginLeft: 10,
+  },
+  birthdayCard: {
+    backgroundColor: '#FFF1F1',
+    borderWidth: 1,
+    borderColor: '#FF9AA2',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 30,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  birthdayTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#C94F7C',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  birthdaySubtitle: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 10,
+    textAlign: 'center',
+    fontStyle: 'italic',
+  },
+  progressBar: {
+    width: '100%',
+    height: 14,
+    backgroundColor: '#FFE5E5',
+    borderRadius: 7,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  progressBugged: {
+    width: '17%',
+    height: '100%',
+    backgroundColor: '#FF9AA2',
+  },
+  progressText: {
+    fontSize: 12,
+    color: '#888',
+    marginBottom: 12,
+  },
+  fakeButton: {
+    backgroundColor: '#FF9AA2',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  fakeButtonText: {
+    color: 'white',
+    fontWeight: '600',
+    fontSize: 14,
+  },
+  errorText: {
+    fontSize: 11,
+    color: '#A00',
+    marginTop: 10,
+    fontFamily: Platform.OS === 'ios' ? 'Courier' : 'monospace',
   },
 });

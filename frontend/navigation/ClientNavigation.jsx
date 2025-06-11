@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
 // Les écrans
 import DrawerNavigator from './DrawerNavigator';
@@ -19,14 +20,12 @@ const TabNavigatorClient = () => {
     <Tab.Navigator
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
-          if (route.name === 'MesColis') {
-            return (
-              <MaterialCommunityIcons name="package" size={size} color={color} />
-            );
-          } else if (route.name === 'Search') {
-            return (
-              <FontAwesome name="search" size={size} color={color} />
-            );
+          let iconName = '';
+
+          if (route.name === 'MyParcelsScreen') {
+            iconName = 'archive';
+          } else if (route.name === 'SearchScreen') {
+            iconName = 'search';
           } else if (route.name === 'ProfilClient') {
             return (
               <FontAwesome name="user" size={size} color={color} />
@@ -39,18 +38,29 @@ const TabNavigatorClient = () => {
       })}
     >
       <Tab.Screen name="ProfilClient" component={ClientProfileScreen} options={{ title: 'Profil' }} />
-      <Tab.Screen name="Search" component={SearchScreen} options={{ title: 'Rechercher' }} />
-      <Tab.Screen name="MesColis" component={MyParcelsScreen} options={{ title: 'Mes colis' }} />
+      <Tab.Screen name="SearchScreen" component={SearchScreen} options={{ title: 'Rechercher' }} />
+      <Tab.Screen name="MyParcelsScreen" component={MyParcelsScreen} options={{ title: 'Mes colis' }} />
     </Tab.Navigator>
   );
 };
 
 export default function ClientNavigation() {
+  const { token } = useSelector((state) => state.user.value);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    if (token) {
+      navigation.navigate('TabNavigatorClient', {
+        screen: 'MyParcelsScreen',
+      });
+    }
+  }, [token]);
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Drawer" component={DrawerNavigator} />
-      <Stack.Screen name="TabClient" component={TabNavigatorClient} />
-      <Stack.Screen name="SignUp" component={SignUpScreen} />
+      <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+      <Stack.Screen name="TabNavigatorClient" component={TabNavigatorClient} />
+      <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
     </Stack.Navigator>
   );
 }

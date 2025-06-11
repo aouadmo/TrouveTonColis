@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { useNavigation } from '@react-navigation/native';
+import { useSelector } from 'react-redux';
 
-// Écrans Pro
+//Les Écrans
+import DrawerNavigator from './DrawerNavigator';
+import SignUpScreen from '../screens/SignUpScreen';
 import MonStockScreen from '../screens/MonStockScreen';
 import TableauBordScreen from '../screens/TableauBordScreen';
 import ProfilProScreen from '../screens/ProfilProScreen';
@@ -12,7 +16,7 @@ import CameraScreen from '../screens/CameraScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const TabNavigator = () => {
+const TabNavigatorPro = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -34,12 +38,24 @@ const TabNavigator = () => {
     </Tab.Navigator>
   );
 };
+export default function App() {
+  const { token } = useSelector((state) => state.user.value);
+  const navigation = useNavigation();
 
-export default function ProNavigation() {
+  useEffect(() => {
+    if (token) {
+      navigation.navigate('TabNavigatorPro', {
+        screen: 'TableauBord',
+      });
+    }
+  }, [token]);
+
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="TabNavigatorPro" component={TabNavigator} />
-      <Stack.Screen name="CameraScreen" component={CameraScreen} />
-    </Stack.Navigator>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
+          <Stack.Screen name="TabNavigatorPro" component={TabNavigatorPro} />
+          <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+          <Stack.Screen name="CameraScreen" component={CameraScreen} />
+        </Stack.Navigator>
   );
 }

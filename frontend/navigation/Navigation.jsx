@@ -8,11 +8,12 @@ import ProNavigation from './ProNavigation';
 export default function Navigation() {
 const { token, isPro } = useSelector(state => state.user.value);
 
-if (!token) {
-return <AuthentNavigation />;
-} else if (isPro) {
-return <ProNavigation />;
-} else {
-return <ClientNavigation />
-}
+
+  if (!token) {
+    return <AuthentNavigation />;
+  } else if (isPro) {
+    return <ProNavigation />;
+  } else {
+    return <ClientNavigation />
+  }
 }
