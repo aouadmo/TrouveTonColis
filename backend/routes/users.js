@@ -54,9 +54,10 @@ router.post('/signin', (req, res) => {
   });
 });
 
-
+// route pour récupéré les infos du client
 router.get('/client/:token', (req, res) => {
   Client.findOne({ token: req.params.token }).then(data => {
+
     if (!data) {
       return res.json({ result: false, error: 'Utilisateur inconnu' });
     }
@@ -68,12 +69,37 @@ router.get('/client/:token', (req, res) => {
         prenom: data.prenom,
         phone: data.phone,
         email: data.email,
-        spouseName: data.spouseName || '',
         loginEmail: data.loginEmail || '',
       }
     });
   });
 });
+
+// 🔄 PUT /users/update — mise à jour des infos du client
+router.put('/update', (req, res) => {
+  const token = req.headers.authorization?.replace('Bearer ', '');
+
+  if (!token) {
+    return res.status(401).json({ result: false, error: 'Token manquant' });
+  }
+
+  Client.findOne({ token }).then(client => {
+    if (!client) {
+      return res.status(404).json({ result: false, error: 'Utilisateur non trouvé' });
+    }
+
+    // 🔁 Mise à jour des champs autorisés
+    client.nom = req.body.lastName || client.nom;
+    client.prenom = req.body.firstName || client.prenom;
+    client.phone = req.body.phone || client.phone;
+    client.email = req.body.email || client.email;
+
+    client.save().then(() => {
+      res.json({ result: true, message: 'Modifications enregistrées' });
+    });
+  });
+});
+
 
 
 module.exports = router;

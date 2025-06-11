@@ -34,7 +34,7 @@ const TabNavigatorClient = () => {
           }
         },
         tabBarActiveTintColor: '#0F58B8',
-        tabBarInactiveTintColor: '#CDF4FF',
+        tabBarInactiveTintColor: '#79B4C4',
         headerShown: false,
       })}
     >
