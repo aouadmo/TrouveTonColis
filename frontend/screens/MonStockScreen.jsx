@@ -3,44 +3,68 @@ import { View, Text, FlatList, StyleSheet, SafeAreaView, TouchableOpacity } from
 import { useDispatch, useSelector } from 'react-redux';
 import { setColis, updateColisStatus } from '../reducers/colis';
 import { FontAwesome } from '@expo/vector-icons';
+import Header from '../components/Header';
+import moment from 'moment'; // Gérer les dates
 
 export default function MonStockScreen() {
   const dispatch = useDispatch();
-  const colis = useSelector(state => state.colis.value);
+  const colis = useSelector(state => state.colis.value); // Récupération des colis depuis le store Redux
 
-  const [selectedColis, setSelectedColis] = useState([]);
-  const [filtreActif, setFiltreActif] = useState('tous');
+  const [selectedColis, setSelectedColis] = useState([]); // Colis sélectionné pour relance
+  const [filtreActif, setFiltreActif] = useState('tous'); // Statut pour le filtrage
 
+  // Récupération des colis
   useEffect(() => {
     fetch('http://192.168.1.157:3002/colis') 
       .then(res => res.json())
       .then(data => {
         if (data.result) {
-          dispatch(setColis(data.stock));
+          const today = moment();
+          // On ajoute chaque colis avec un champ "computedStatus"
+          const enrichedColis = data.stock.map(item => {
+            if (item.status === 'réservé') {
+              return { ...item, computedStatus: 'réservé' }; // Partie colis réservés à dynamiser plus tard en fonction de la prise de RDV client
+            }
+  
+            const arrival = moment(item.arrivalDate); // Date d'arrivée du colis
+            const days = today.diff(arrival, 'days'); // Calcul du nombre de jours écoulés
+            // Attribution du statut dynamique selon l'ancienneté
+            let computedStatus = 'en attente';
+            if (days >= 7) {
+              computedStatus = 'relance possible';
+            } else if (days >= 5) {
+              computedStatus = 'j+5';
+            }
+  
+            return { ...item, computedStatus };
+          });
+        // Envoi des colis avec leur statut dans le store Redux
+          dispatch(setColis(enrichedColis));
         }
       })
-      .catch(err => console.log('Erreur fetch colis :', err));
   }, []);
 
+  // Sélection ou désélection d’un colis via son numéro de suivi
   const colisSelection = (trackingNumber) => {
     setSelectedColis((prev) =>
       prev.includes(trackingNumber)
-        ? prev.filter(item => item !== trackingNumber)
-        : [...prev, trackingNumber]
+        ? prev.filter(item => item !== trackingNumber) // On retire si déjà sélectionné
+        : [...prev, trackingNumber] //sinon, on ajoute
     );
   };
 
+  // Action suite clic sur le bouton de relance
   const handleRelance = () => {
     selectedColis.forEach(trackingNumber => {
-      dispatch(updateColisStatus({ trackingNumber, nouveauStatut: 'relance possible' }));
+      dispatch(updateColisStatus({ trackingNumber, nouveauStatut: 'relance possible' })); // MAJ du statut dans le store (en local uniquement pour l’instant)
     });
-    setSelectedColis([]);
+    setSelectedColis([]); // Reset de la sélection
   };
 
-  const colisFiltres = filtreActif === 'tous'
-    ? colis
-    : colis.filter(c => c.status === filtreActif);
+  // Filtrage des colis selon l’onglet sélectionné
+  const colisFiltres = filtreActif === 'tous' ? colis : colis.filter(c => c.computedStatus === filtreActif);
 
+  // Fonction de rendu pour chaque colis dans la FlatList
   const renderItem = ({ item }) => (
     <View style={styles.item}>
       <View style={styles.row}>
@@ -54,7 +78,7 @@ export default function MonStockScreen() {
         <View>
           <Text style={styles.text}>{item.nom} {item.prenom} - {item.trackingNumber}</Text>
           <Text style={styles.subtext}>Transporteur : {item.transporteur}</Text>
-          <Text style={styles.statusText}>Statut : {item.status || 'non défini'}</Text>
+          <Text style={styles.statusText}>Statut : {item.computedStatus || 'non défini'}</Text>
         </View>
       </View>
     </View>
@@ -62,6 +86,7 @@ export default function MonStockScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
+       <Header role="pro" />
       <Text style={styles.title}>Mon Stock de Colis</Text>
 
       <View style={styles.tabs}>

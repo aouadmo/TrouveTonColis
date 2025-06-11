@@ -8,16 +8,16 @@ export const colisSlice = createSlice({
   name: 'colis',
   initialState,
   reducers: {
-    setColis: (state, action) => { //afficher la liste du stock colis
+    setColis: (state, action) => { // Actualise la liste de colis
       state.value = action.payload;
     },
-    addColis: (state, action) => { //ajouter un colis
+    addColis: (state, action) => { // Ajoute un nouveau colis à la liste existante
       state.value.push(action.payload);
     },
-    resetColis: (state) => { //enlever un ou plusieurs colis
+    resetColis: (state) => {  // Réinitialise complètement le stock (pour la déconnexion)
       state.value = [];
     },
-    updateColisStatus: (state, action) => { //création d'un statut colis pour le filtre dans "Mon Stock"
+    updateColisStatus: (state, action) => { // MAJ du statut d’un colis grâce à son tracking number
         const { trackingNumber, nouveauStatut } = action.payload;
         const index = state.value.findIndex(c => c.trackingNumber === trackingNumber);
         if (index !== -1) {
