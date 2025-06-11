@@ -14,7 +14,7 @@ export default function CameraScreen() {
     setLoading(true);
     setError(null);
     try {
-      const response = await fetch("http://192.168.209.102:3000/ocr", {
+      const response = await fetch("http://192.168.1.10:3006/ocr", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -62,15 +62,17 @@ export default function CameraScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1 }}>
       <Header />
+    <View style={styles.container}>
       <Button title="Run OCR" onPress={testOCR} disabled={loading} />
       {loading && <Text>Loading...</Text>}
       {error && <Text style={styles.error}>Error: {error}</Text>}
       {ocrResult && (
         <Text>OCR Result: {JSON.stringify(ocrResult)}</Text>
-      )}
+        )}
     </View>
+        </View>
   );
 }
 
