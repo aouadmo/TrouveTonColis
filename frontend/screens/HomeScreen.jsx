@@ -9,7 +9,6 @@ import { useSelector } from 'react-redux';
 
 export default function HomeScreen({ navigation }) {
   const { token, isPro } = useSelector(state => state.user.value);
-  const [failCount, setFailCount] = useState(0); // 🔥 À supprimer le 07/06 UNIQUEMENT
 
   const handleSignUp = () => navigate('SignUpScreen');
   const handleSearch = () => navigate('SearchScreen');
@@ -26,57 +25,28 @@ export default function HomeScreen({ navigation }) {
           <Text style={styles.paragraphe}>📦 Points relais et clients, tout le monde est le bienvenu !</Text>
         </View>
 
-        {/* 🔥 BLOC ANNIVERSAIRE À SUPPRIMER LE 07/06 UNIQUEMENT */}
-        <View style={styles.birthdayCard}>
-          <Text style={styles.birthdayTitle}>🎂 JOYEUX ANNIVERSAIRE À CÉCILE 🎉</Text>
-          <Text style={styles.birthdaySubtitle}>Tentative de connexion à la cagnotte en ligne...</Text>
+        <View style={styles.hubContainer}>
+          <Text style={styles.hubTitle}>🛠️ Petit hub temporaire pour les tests</Text>
+          <Text style={styles.hubSubtitle}>Mot de l’équipe : restez motivé, ça avance ! 💪</Text>
 
-          <View style={styles.progressBar}>
-            <View style={styles.progressBugged} />
-          </View>
-          <Text style={styles.progressText}>Chargement des IBANs... (1/∞)</Text>
-
-          <TouchableOpacity
-            style={styles.fakeButton}
-            activeOpacity={1}
-            onPress={() => {
-              const chance = Math.random();
-              if (chance < 0.2) {
-                alert('✅ Paiement accepté ! Cécile vous remercie chaleureusement ❤️');
-              } else {
-                const newCount = failCount + 1;
-                setFailCount(newCount);
-                if (newCount >= 3) {
-                  alert('🧠 Bon ok… t’as quand même pas cru que c’était une vraie cagnotte ? 😅');
-                  setFailCount(0);
-                } else {
-                  alert('❌ Paiement échoué. Merci de réessayer (ou de donner du cash).');
-                }
-              }
-            }}
-          >
-            <Text style={styles.fakeButtonText}>💸 Tenter un virement</Text>
+          <Text style={styles.buttonDescription}>🔍 Consultez si votre colis est arrivé</Text>
+          <TouchableOpacity onPress={handleSearch} style={styles.button} activeOpacity={0.8}>
+            <FontAwesomeIcon icon={faSearch} size={18} color="#fff" />
+            <Text style={styles.textButton}>Rechercher un colis</Text>
           </TouchableOpacity>
 
+          <Text style={styles.buttonDescription}>📝 Créez un compte client ou pro</Text>
+          <TouchableOpacity onPress={handleSignUp} style={styles.button} activeOpacity={0.8}>
+            <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
+            <Text style={styles.textButton}>Inscription</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.buttonDescription}>📷 Scannez vos colis pour les enregistrer</Text>
+          <TouchableOpacity onPress={gotocamerascreen} style={styles.button} activeOpacity={0.8}>
+            <FontAwesomeIcon icon={faBarcode} size={18} color="#fff" />
+            <Text style={styles.textButton}>Scanner un colis</Text>
+          </TouchableOpacity>
         </View>
-
-        <Text style={styles.buttonDescription}>🔍 Consultez si votre colis est arrivé</Text>
-        <TouchableOpacity onPress={handleSearch} style={styles.button} activeOpacity={0.8}>
-          <FontAwesomeIcon icon={faSearch} size={18} color="#fff" />
-          <Text style={styles.textButton}>Rechercher un colis</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.buttonDescription}>📝 Créez un compte client ou pro</Text>
-        <TouchableOpacity onPress={handleSignUp} style={styles.button} activeOpacity={0.8}>
-          <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-          <Text style={styles.textButton}>Inscription</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.buttonDescription}>📷 Scannez vos colis pour les enregistrer</Text>
-        <TouchableOpacity onPress={gotocamerascreen} style={styles.button} activeOpacity={0.8}>
-          <FontAwesomeIcon icon={faBarcode} size={18} color="#fff" />
-          <Text style={styles.textButton}>Scanner un colis</Text>
-        </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
   );
@@ -86,7 +56,7 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFCE9',
+    backgroundColor: '#FFFCF2', // neutre
   },
   container: {
     flex: 1,
@@ -101,34 +71,62 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#4F378A',
+    color: '#5B4E9C', // neutre
     textAlign: 'center',
     marginBottom: 10,
   },
   subtitle: {
     fontSize: 14,
-    color: '#4F378A',
+    color: '#5B4E9C',
     textAlign: 'center',
     fontWeight: '500',
     marginBottom: 12,
   },
   paragraphe: {
     fontSize: 12,
-    color: '#4F378A',
+    color: '#4D4A63',
     textAlign: 'center',
     marginBottom: 5,
+  },
+  hubContainer: {
+    marginTop: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: '#D0BCFF',
+    width: '100%',
+  },
+  hubTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#4F378A',
+    marginBottom: 6,
+    textAlign: 'center',
+  },
+  hubSubtitle: {
+    fontSize: 13,
+    color: '#6B5EA4',
+    marginBottom: 16,
+    textAlign: 'center',
+    fontStyle: 'italic',
   },
   buttonDescription: {
     fontSize: 12,
     color: '#4F378A',
-    marginTop: 20,
+    marginTop: 12,
     marginBottom: 6,
     textAlign: 'center',
   },
   button: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#4F89E6',
+    backgroundColor: '#0E56B4', // couleur bouton neutre
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 12,

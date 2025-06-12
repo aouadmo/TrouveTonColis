@@ -28,11 +28,11 @@ const ColisSearchForm = () => {
       // Nettoyage des entrées utilisateur
       if (searchMode === "tracking") {
         const cleanedTracking = trackingNumber.trim();
-        response = await fetch(`http://192.168.1.10:3000/colis/search/${cleanedTracking}`);
+        response = await fetch(`http://192.168.1.10:3006/colis/search/${cleanedTracking}`);
       } else {
         const cleanedNom = nom.trim().toLowerCase();
         const cleanedPrenom = prenom.trim().toLowerCase();
-        response = await fetch("http://192.168.1.10:3000/colis/search/name", {
+        response = await fetch("http://192.168.1.10:3006/colis/search/name", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nom: cleanedNom, prenom: cleanedPrenom }),
@@ -143,69 +143,85 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     alignItems: "center",
+    backgroundColor: '#FFFCF2',
+    flex: 1,
   },
   switchContainer: {
     flexDirection: "row",
     justifyContent: "center",
     marginBottom: 16,
+    gap: 12,
   },
   switchButton: {
     paddingVertical: 10,
     paddingHorizontal: 16,
-    marginHorizontal: 8,
-    borderRadius: 8,
-    backgroundColor: "#ccc",
+    borderRadius: 10,
+    backgroundColor: "#DCD6F2",
   },
   active: {
-    backgroundColor: "#6a0dad",
+    backgroundColor: "#A79ABF",
   },
   switchText: {
     color: "#fff",
     fontWeight: "bold",
   },
   input: {
-    borderColor: "#ccc",
+    borderColor: "#D0BCFF",
     borderWidth: 1,
     padding: 12,
-    width: '80%',
+    width: '85%',
     marginBottom: 12,
-    borderRadius: 8,
+    borderRadius: 10,
+    backgroundColor: "#FFF",
+    fontSize: 14,
   },
   button: {
-    backgroundColor: "#6a0dad",
-    padding: 12,
-    borderRadius: 8,
+    backgroundColor: "#A79ABF",
+    padding: 14,
+    borderRadius: 12,
     alignItems: "center",
     flexDirection: "row",
-    gap: 8,
+    gap: 10,
     marginBottom: 20,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
+    fontSize: 15,
   },
   result: {
     fontSize: 16,
     textAlign: "center",
-    marginBottom: 12,
+    marginBottom: 14,
+    color: "#4F378A",
   },
   colisCard: {
     marginTop: 10,
-    padding: 12,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
+    padding: 14,
+    borderRadius: 12,
     width: '90%',
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#F3F0FC",
     alignItems: "center",
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 2,
   },
   colisText: {
-    fontSize: 16,
+    fontSize: 15,
     marginBottom: 4,
+    color: "#3E3A6D",
   },
   relayButton: {
-    backgroundColor: "#0F58B8",
-    padding: 12,
+    backgroundColor: "#0E56B4",
+    paddingVertical: 10,
+    paddingHorizontal: 18,
     borderRadius: 8,
     marginTop: 10,
   },
@@ -213,6 +229,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     textAlign: "center",
+    fontSize: 14,
   },
 });
 
