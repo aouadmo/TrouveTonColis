@@ -54,10 +54,7 @@ router.post('/signin', (req, res) => {
   });
 });
 
-<<<<<<< HEAD
 // route pour récupéré les infos du client
-=======
->>>>>>> a3679d4f1f1e846eb661ec3bad3b232d58fd6476
 router.get('/client/:token', (req, res) => {
   Client.findOne({ token: req.params.token }).then(data => {
 

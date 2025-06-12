@@ -11,7 +11,7 @@ export default function ProSignupScreen({ navigation }) {
     prenom: '',
     nom: '',
     email: '',
-    emailConfirm: '',
+    phoneConfirm: '',
     password: '',
     phone: '',
     adresse: '',
@@ -24,12 +24,12 @@ export default function ProSignupScreen({ navigation }) {
   };
 
   const handleSubmit = () => {
-    if (pro.email !== pro.emailConfirm) {
-      alert("Les emails ne correspondent pas.");
+    if (pro.phone !== pro.phoneConfirm) {
+      alert("Les numéros de telephone ne correspondent pas.");
       return;
     }
 
-    fetch('http://localhost:3000/pros/signup', {
+    fetch('http://192.168.1.10:3006/pros/signup', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(pro),
@@ -56,8 +56,8 @@ export default function ProSignupScreen({ navigation }) {
       </View>
 
       <TextInput placeholder="E-mail"  style={styles.input} onChangeText={val => handleChange('email', val)} />
-      <TextInput placeholder="Confirmation E-mail"  style={styles.input} onChangeText={val => handleChange('emailConfirm', val)} />
       <TextInput placeholder="Phone" keyboardType="phone-pad" style={styles.input} onChangeText={val => handleChange('phone', val)} />
+      <TextInput placeholder="Confirmation numéros de telephone" keyboardType="phone-pad" style={styles.input} onChangeText={val => handleChange('phoneConfirm', val)} />
       <TextInput placeholder="Street" style={styles.input} onChangeText={val => handleChange('adresse', val)} />
 
       <View style={styles.row}>

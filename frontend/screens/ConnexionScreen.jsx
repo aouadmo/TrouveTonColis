@@ -30,7 +30,7 @@ export default function ConnexionScreen({ navigation }) {
             return;
         }
 
-        fetch('http://localhost:3000/users/signin', {
+        fetch('http://192.168.1.10:3006/users/signin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email, password }),
