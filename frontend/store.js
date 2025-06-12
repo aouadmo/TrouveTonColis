@@ -5,7 +5,7 @@ import { combineReducers } from 'redux';
 
 import user from './reducers/user';
 import userProfile from './reducers/userProfile';
-
+import colis from './reducers/colis';
 
 const persistConfig = {
   key: 'root',
@@ -13,11 +13,7 @@ const persistConfig = {
   blacklist: [], // on persiste tout pour l’instant
 };
 
-const rootReducer = combineReducers({ 
-  user,
-  userProfile, // 👈 obligatoire
-});
-
+const rootReducer = combineReducers({ user, userProfile, colis });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
