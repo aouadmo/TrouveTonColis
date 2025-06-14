@@ -8,6 +8,7 @@ import FAQScreen from '../screens/FAQScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import SearchScreen from '../screens/SearchScreen';
 import CameraScreen from '../screens/CameraScreen';
+import SmsReplyScreen from '../screens/SmsReplyScreen';
 
 // Menu customisé
 import CustomDrawer from '../components/DrawerMenu';
@@ -55,6 +56,13 @@ export default function DrawerNavigator() {
         component={CameraScreen}
         options={{ title: 'Prenez vos plus belles photos !' }}
       />
+      <Drawer.Screen
+        name="SmsReplyScreen"
+        component={SmsReplyScreen}
+        options={{ title: 'Prenez vos plus belles photos !' }}
+      />
+      
     </Drawer.Navigator>
+    
   );
 }

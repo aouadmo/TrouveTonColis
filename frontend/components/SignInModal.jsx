@@ -31,7 +31,7 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: true }));
         onClose();
-        navigate('TabNavigatorPro', { screen: 'TableauBord' });
+        navigate('TableauBord');
         return;
        }
 
@@ -47,7 +47,7 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: false }));
         onClose();
-        navigate('TabNavigatorClient', { screen: 'MyParcelsScreen' });
+        navigate('MyParcelsScreen');
         return;
       }
   
