@@ -13,6 +13,13 @@ import TableauBordScreen from '../screens/TableauBordScreen';
 import ProfilProScreen from '../screens/ProfilProScreen';
 import CameraScreen from '../screens/CameraScreen';
 
+// Les Écrans secondaires de Mon Profil Pro
+import ProHoraires from '../screens/ProHorairesScreen';
+import Absences from '../screens/AbsencesScreen';
+import ProCoordonnees from '../screens/ProCoordonnees';
+import EditMessageAccueil from '../screens/EditMessageAccueil';
+import Stat from '../screens/StatScreen';
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -56,6 +63,12 @@ export default function App() {
           <Stack.Screen name="TabNavigatorPro" component={TabNavigatorPro} />
           <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
           <Stack.Screen name="CameraScreen" component={CameraScreen} />
+          {/* Écrans liés au Profil Pro */}
+          <Stack.Screen name="ProHorairesScreen" component={ProHoraires} />
+          <Stack.Screen name="AbsencesScreen" component={Absences} />
+          <Stack.Screen name="ProCoordonneesScreen" component={ProCoordonnees} />
+          <Stack.Screen name="EditMessageAccueilScreen" component={EditMessageAccueil} />
+          <Stack.Screen name="StatScreen" component={Stat} />
         </Stack.Navigator>
   );
 }
