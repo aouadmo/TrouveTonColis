@@ -31,12 +31,11 @@ const ColisSearchForm = () => {
         response = await fetch(`http://192.168.1.10:3006/colis/search/${cleanedTracking}`);
       } else {
         const cleanedNom = nom.trim().toLowerCase();
-        const cleanedPrenom = prenom.trim().toLowerCase();
-        response = await fetch("http://192.168.1.10:3006/colis/search/name", {
-          method: "POST",
+        // const cleanedPrenom = prenom.trim().toLowerCase();
+        response = await fetch(`http://192.168.1.10:3006/colis/searchname`), {
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nom: cleanedNom, prenom: cleanedPrenom }),
-        });
+          body: JSON.stringify({ nom: cleanedNom}),
+        };
       }
 
       data = await response.json();

@@ -24,13 +24,13 @@ router.get('/search/:trackingNumber', async (req, res) => {
 });
 
 //  Route 2 : recherche par nom et prénom 
-router.post('/search/name', async (req, res) => {
-  const { nom, prenom } = req.body;
+router.get('/searchname', async (req, res) => {
+  // const  nom  = req.body
 
 
-  const colis = await Colis.find({ nom, prenom }); // on peut renvoyer plusieurs colis !
+  const colis = await Colis.find({ nom: req.body.nom }); // on peut renvoyer plusieurs colis !
 
-  if (colis.length > 0) {
+  if (colis) {
     res.json({ found: true, colis, message: 'Colis trouvés' });
   } else {
     res.status(404).json({ found: false, message: 'Aucun colis à ce nom' });
