@@ -30,6 +30,11 @@ function ProfilProStackScreen() {
     <ProfilProStack.Navigator screenOptions={{ headerShown: false }}>
       <ProfilProStack.Screen name="ProfilProHome" component={ProfilProScreen} />
       <ProfilProStack.Screen name="SmsReplyScreen" component={SmsReplyScreen} />
+      <ProfilProStack.Screen name="ProHorairesScreen" component={ProHoraires} />
+      <ProfilProStack.Screen name="AbsencesScreen" component={Absences} />
+      <ProfilProStack.Screen name="ProCoordonneesScreen" component={ProCoordonnees} />
+      <ProfilProStack.Screen name="EditMessageAccueilScreen" component={EditMessageAccueil} />
+      <ProfilProStack.Screen name="StatScreen" component={Stat} />
     </ProfilProStack.Navigator>
   );
 }
@@ -74,13 +79,7 @@ export default function ProNavigation() {
           <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
           <Stack.Screen name="TabNavigatorPro" component={TabNavigatorPro} />
           <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
-          <Stack.Screen name="CameraScreen" component={CameraScreen} />
-          {/* Écrans liés au Profil Pro */}
-          <Stack.Screen name="ProHorairesScreen" component={ProHoraires} />
-          <Stack.Screen name="AbsencesScreen" component={Absences} />
-          <Stack.Screen name="ProCoordonneesScreen" component={ProCoordonnees} />
-          <Stack.Screen name="EditMessageAccueilScreen" component={EditMessageAccueil} />
-          <Stack.Screen name="StatScreen" component={Stat} />
+          <Stack.Screen name="CameraScreen" component={CameraScreen} /> 
         </Stack.Navigator>
   );
 }
