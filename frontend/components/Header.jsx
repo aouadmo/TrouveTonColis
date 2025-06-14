@@ -59,7 +59,7 @@ function Header({ role }) {
         <View style={styles.iconBox}>
           {userToken ? (
             <TouchableOpacity onPress={handleLogout}>
-              <FontAwesome name="sign-out" size={28} color="#EC6E5B" />
+              <FontAwesome name="sign-out" size={28} style={styles.logoLogout}color="#EC6E5B" />
               <Text style={styles.hint}>Déconnexion</Text>
             </TouchableOpacity>
           ) : (
@@ -111,10 +111,15 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     marginTop: 18,
     alignItems: 'center',
+    marginLeft: 8,
     justifyContent: 'center',
+  },
+  logoLogout: {
+    marginRight: 18,
   },
   hint: {
     fontSize: 10,
+    marginLeft: 2,
     color: '#888',
     marginTop: 1,
   },

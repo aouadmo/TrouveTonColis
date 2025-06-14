@@ -7,7 +7,9 @@ const clientsSchema = mongoose.Schema({
     email: String,
     password: String,
     token: String,
-    phone: String,
+    phone: Number,
+    phoneConfirm: Number,
+
 });
 
 const Client = mongoose.model('clients', clientsSchema);

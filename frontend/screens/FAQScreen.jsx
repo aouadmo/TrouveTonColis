@@ -36,11 +36,11 @@ export default function FAQScreen() {
     {
       category: '💌 Colis et livraisons',
       questions: [
-          {
-            question: 'Pourquoi mon colis est en point relais ?',
-            answer:
-              'Les livreurs sont seuls décideurs des colis qu\'ils dépose, Les point relais ne sont pas responssable.',
-          },
+        {
+          question: 'Pourquoi mon colis est en point relais ?',
+          answer:
+            'Les livreurs sont seuls décideurs des colis qu\'ils dépose, Les point relais ne sont pas responssable.',
+        },
         {
           question: 'Comment savoir si mon colis est arrivé ?',
           answer:
@@ -89,7 +89,7 @@ export default function FAQScreen() {
                   <FontAwesome5
                     name={expandedIndex === `${i}-${j}` ? 'chevron-up' : 'chevron-down'}
                     size={16}
-                    color="#5E4AE3"
+                    color="#5B4E9C" // couleur texte neutre
                   />
                 </TouchableOpacity>
                 {expandedIndex === `${i}-${j}` && (
@@ -107,50 +107,62 @@ export default function FAQScreen() {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#FFFCE9',
+    backgroundColor: '#FFFCF2', // fond neutre entre #FFFCE9 et #FFFAF5
+    flex: 1,
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#5E4AE3',
-    marginBottom: 20,
+    color: '#5B4E9C', // mélange entre texte pro et client
+    marginBottom: 24,
+    textAlign: 'center',
   },
   section: {
-    marginBottom: 24,
+    marginBottom: 28,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 14,
+    padding: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: '#444',
-    backgroundColor: '#E6E0FF',
-    padding: 10,
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    elevation: 2,
-    marginBottom: 10,
+    fontWeight: '700',
+    color: '#5B4E9C',
+    marginBottom: 12,
   },
   item: {
-    marginBottom: 10,
+    marginBottom: 14,
   },
   questionBox: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: '#F3F2FF',
-    padding: 12,
-    borderRadius: 6,
+    alignItems: 'center',
+    backgroundColor: '#ECE9F9', // lavande/gris très doux
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#D9D4F3',
   },
   question: {
     fontSize: 15,
-    fontWeight: '500',
-    color: '#333',
+    fontWeight: '600',
+    color: '#3E3A6D', // plus sérieux mais doux
+    flexShrink: 1,
+    paddingRight: 10,
   },
   answer: {
-    padding: 10,
-    paddingTop: 6,
+    backgroundColor: '#F6F5FB',
+    borderRadius: 8,
+    marginTop: 8,
+    padding: 12,
     fontSize: 14,
-    color: '#555',
+    lineHeight: 20,
+    color: '#4D4A63',
+    borderWidth: 1,
+    borderColor: '#E0DEF1',
   },
 });

@@ -12,6 +12,7 @@ import MonStockScreen from '../screens/MonStockScreen';
 import TableauBordScreen from '../screens/TableauBordScreen';
 import ProfilProScreen from '../screens/ProfilProScreen';
 import SmsReplyScreen from '../screens/SmsReplyScreen';
+import CameraScreen from '../screens/CameraScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -66,6 +67,7 @@ export default function ProNavigation() {
           <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
           <Stack.Screen name="TabNavigatorPro" component={TabNavigatorPro} />
           <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+          <Stack.Screen name="CameraScreen" component={CameraScreen} />
         </Stack.Navigator>
   );
 }

@@ -27,13 +27,13 @@ const TabNavigatorClient = () => {
           } else if (route.name === 'SearchScreen') {
             iconName = 'search';
           } else if (route.name === 'ProfilClient') {
-            iconName = 'user';
+            return (
+              <FontAwesome name="user" size={size} color={color} />
+            );
           }
-
-          return <FontAwesome name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#0F58B8',
-        tabBarInactiveTintColor: '#CDF4FF',
+        tabBarInactiveTintColor: '#79B4C4',
         headerShown: false,
       })}
     >
