@@ -3,7 +3,7 @@ import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers } from 'redux';
 
-import user from './reducers/user'; // <-- ton reducer
+import user from './reducers/user';
 
 const persistConfig = {
   key: 'root',

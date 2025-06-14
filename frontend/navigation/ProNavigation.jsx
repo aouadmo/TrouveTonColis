@@ -11,9 +11,20 @@ import SignUpScreen from '../screens/SignUpScreen';
 import MonStockScreen from '../screens/MonStockScreen';
 import TableauBordScreen from '../screens/TableauBordScreen';
 import ProfilProScreen from '../screens/ProfilProScreen';
+import SmsReplyScreen from '../screens/SmsReplyScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const ProfilProStack = createNativeStackNavigator();
+
+function ProfilProStackScreen() {
+  return (
+    <ProfilProStack.Navigator screenOptions={{ headerShown: false }}>
+      <ProfilProStack.Screen name="ProfilProHome" component={ProfilProScreen} />
+      <ProfilProStack.Screen name="SmsReplyScreen" component={SmsReplyScreen} />
+    </ProfilProStack.Navigator>
+  );
+}
 
 const TabNavigatorPro = () => {
   return (
@@ -33,11 +44,12 @@ const TabNavigatorPro = () => {
     >
       <Tab.Screen name="TableauBord" component={TableauBordScreen} />
       <Tab.Screen name="MonStock" component={MonStockScreen} />
-      <Tab.Screen name="ProfilPro" component={ProfilProScreen} />
+      <Tab.Screen name="ProfilPro" component={ProfilProStackScreen} />
     </Tab.Navigator>
   );
 };
-export default function App() {
+
+export default function ProNavigation() {
   const { token } = useSelector((state) => state.user.value);
   const navigation = useNavigation();
 
