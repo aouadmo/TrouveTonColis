@@ -25,7 +25,7 @@ export default function ClientProfileScreen() {
   useEffect(() => {
     if (!token) return;
 
-    fetch(`http://192.168.1.10:3006/users/client/${token}`)
+    fetch(`http://192.168.1.157:3002/users/client/${token}`)
       .then(res => res.json())
       .then(data => {
         if (data?.result && data?.client) {
