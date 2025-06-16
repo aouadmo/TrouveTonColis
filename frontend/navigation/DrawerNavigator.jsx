@@ -8,7 +8,11 @@ import FAQScreen from '../screens/FAQScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import SearchScreen from '../screens/SearchScreen';
 import CameraScreen from '../screens/CameraScreen';
+<<<<<<< HEAD
+import MapScreen from '../screens/MapScreen';
+=======
 import SmsReplyScreen from '../screens/SmsReplyScreen';
+>>>>>>> a9655cbb9cd92a7d35e743942089787c847d6f18
 
 // Menu customisé
 import CustomDrawer from '../components/DrawerMenu';
@@ -56,12 +60,21 @@ export default function DrawerNavigator() {
         component={CameraScreen}
         options={{ title: 'Prenez vos plus belles photos !' }}
       />
+<<<<<<< HEAD
+
+      <Drawer.Screen
+        name="MapScreen"
+        component={MapScreen}
+        options={{ title: 'Trouvez votre point relais sur la carte' }}
+      />
+=======
       <Drawer.Screen
         name="SmsReplyScreen"
         component={SmsReplyScreen}
         options={{ title: 'Prenez vos plus belles photos !' }}
       />
       
+>>>>>>> a9655cbb9cd92a7d35e743942089787c847d6f18
     </Drawer.Navigator>
     
   );

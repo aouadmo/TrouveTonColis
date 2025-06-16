@@ -11,6 +11,7 @@ import SearchScreen from '../screens/SearchScreen';
 import MyParcelsScreen from '../screens/MyParcelsScreen';
 import ClientProfileScreen from '../screens/ClientProfileScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import MapScreen from '../screens/MapScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();

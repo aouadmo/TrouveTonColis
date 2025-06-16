@@ -62,6 +62,16 @@ router.post('/signin', (req, res) => {
   });
 });
 
+// Route pour récupérer les adresses des professionnels
+router.get('/adressepro/', (req, res) => {
+  Pro.find().then(data => {
+    if (data) {
+      res.json({ result: true, data: data });
+    } else {
+      res.json({ result: false, error: 'Les infos du PR n\'ont pas été trouvées' });
+    }
+  });
+});
 
 // Authentification du token dans l'en-tête Authorization
 const authenticatePro = async (req, res, next) => {
