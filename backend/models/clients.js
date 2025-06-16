@@ -8,6 +8,8 @@ const clientsSchema = mongoose.Schema({
     password: String,
     token: String,
     phone: Number,
+    phoneConfirm: Number,
+
 });
 
 const Client = mongoose.model('clients', clientsSchema);

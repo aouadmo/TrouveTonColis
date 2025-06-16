@@ -11,8 +11,6 @@ const hf = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
 
 
 
-
-
 // Route 1 : recherche par tracking number
 router.get('/search/:trackingNumber', async (req, res) => {
   const colis = await Colis.findOne({ trackingNumber: req.params.trackingNumber });
@@ -234,6 +232,12 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+//route get pour récupérer tous les colis et les afficher dans le stock colis côté pro
+router.get('/', async (req, res) => {
+  const stock = await Colis.find(); 
+      res.json({ result: true, stock });
+  });
+  
 
 module.exports = router;
 

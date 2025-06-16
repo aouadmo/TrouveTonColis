@@ -6,7 +6,7 @@ import ClientNavigation from './ClientNavigation';
 import ProNavigation from './ProNavigation';
 
 export default function Navigation() {
-  const { token, isPro } = useSelector(state => state.user.value);
+const { token, isPro } = useSelector(state => state.user.value);
 
 
   if (!token) {

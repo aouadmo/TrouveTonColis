@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
-import {
-  View, Text, TextInput, TouchableOpacity, Modal, StyleSheet,
-  KeyboardAvoidingView, Platform
-} from 'react-native';
+import {View, Text, TextInput, TouchableOpacity, Modal, StyleSheet, KeyboardAvoidingView, Platform} from 'react-native';
 import { useDispatch } from 'react-redux';
 import { login } from '../reducers/user';
 import { useNavigation } from '@react-navigation/native';
@@ -22,7 +19,7 @@ export default function SignInModal({ visible, onClose }) {
     setError('');
   
     try {
-      let response = await fetch('http://192.168.1.191:3002/pros/signin', {
+      let response = await fetch('http://192.168.1.157:3002/pros/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -34,11 +31,11 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: true }));
         onClose();
-        navigate('TabNavigatorPro', { screen: 'TableauBord' });
+        navigate('TableauBord');
         return;
        }
 
-      response = await fetch('http://192.168.1.191:3002/users/signin', {
+      response = await fetch('http://192.168.1.157:3002/users/signin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -50,7 +47,7 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: false }));
         onClose();
-        navigate('TabNavigatorClient', { screen: 'MyParcelsScreen' });
+        navigate('MyParcelsScreen');
         return;
       }
   

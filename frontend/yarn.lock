@@ -1251,6 +1251,11 @@
   dependencies:
     merge-options "^3.0.4"
 
+"@react-native-community/checkbox@^0.5.20":
+  version "0.5.20"
+  resolved "https://registry.yarnpkg.com/@react-native-community/checkbox/-/checkbox-0.5.20.tgz#7b8004a80a90988d5dff208693524f069270b849"
+  integrity sha512-NuTAOFmttPEX7cwDbVr5Rf0HR86zCzX2FllebMayxca//dFH6X5DLySftra/PC2K9kt42yashWK7T2Tucm5JTQ==
+
 "@react-native/assets-registry@0.79.2":
   version "0.79.2"
   resolved "https://registry.npmjs.org/@react-native/assets-registry/-/assets-registry-0.79.2.tgz"
@@ -2533,6 +2538,11 @@ expo-modules-core@2.3.13:
   dependencies:
     invariant "^2.2.4"
 
+expo-sms@^13.1.4:
+  version "13.1.4"
+  resolved "https://registry.yarnpkg.com/expo-sms/-/expo-sms-13.1.4.tgz#729b1b8840e589fb30fc07c8a7c97ad0fa8b4067"
+  integrity sha512-yt8htaS/aOWAXn2YpLfoeSIxpLFqnt9E3lx6IGKll9/5wAh8BdQvKzzzFamJIvlyCaC24orqcXfhQxpboBd3DA==
+
 expo-status-bar@~2.2.3:
   version "2.2.3"
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-2.2.3.tgz"
@@ -3560,6 +3570,11 @@ mkdirp@^3.0.1:
   resolved "https://registry.npmjs.org/mkdirp/-/mkdirp-3.0.1.tgz"
   integrity sha512-+NsyUUAZDmo6YVHzL/stxSu3t9YS1iljliy3BSDrXJ/dkn1KYdmtZODGGjLcc9XLgVVpH4KshHB8XmZgMhaBXg==
 
+moment@^2.30.1:
+  version "2.30.1"
+  resolved "https://registry.yarnpkg.com/moment/-/moment-2.30.1.tgz#f8c91c07b7a786e30c59926df530b4eac96974ae"
+  integrity sha512-uEmtNhbDOrWPFS+hdjFCBfy9f2YoyzRpwcl+DqpC6taX21FzsTLQVbMV/W7PzNSX6x/bhC1zA3c2UQ5NzH6how==
+
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
@@ -4027,6 +4042,11 @@ react-native-maps@^1.24.3:
   dependencies:
     "@types/geojson" "^7946.0.13"
 
+react-native-pager-view@^6.8.1:
+  version "6.8.1"
+  resolved "https://registry.yarnpkg.com/react-native-pager-view/-/react-native-pager-view-6.8.1.tgz#fa0ec09ea7c44190c7c013d75dd09fdc17b96100"
+  integrity sha512-XIyVEMhwq7sZqM7GobOJZXxFCfdFgVNq/CFB2rZIRNRSVPJqE1k1fsc8xfQKfdzsp6Rpt6I7VOIvhmP7/YHdVg==
+
 react-native-reanimated@~3.17.4:
   version "3.17.5"
   resolved "https://registry.yarnpkg.com/react-native-reanimated/-/react-native-reanimated-3.17.5.tgz#09ebe3c9e3379c5c0c588b7ab30c131ea29b60f0"
@@ -4066,6 +4086,13 @@ react-native-svg@15.11.2:
     css-select "^5.1.0"
     css-tree "^1.1.3"
     warn-once "0.1.1"
+
+react-native-tab-view@^4.1.1:
+  version "4.1.1"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-4.1.1.tgz#546770d01dc6c96af4504e1285fba2b141d35f2b"
+  integrity sha512-+OSjPCGgmzkgpyyX15M5FkV0XO8ZfWmdfDt11l5f2prWRAUBcj+9fTr5Pd0B3M6F43Kf4wMdohaRBjb8qDfC4w==
+  dependencies:
+    use-latest-callback "^0.2.3"
 
 react-native@0.79.2:
   version "0.79.2"
@@ -4736,7 +4763,7 @@ update-browserslist-db@^1.1.3:
     escalade "^3.2.0"
     picocolors "^1.1.1"
 
-use-latest-callback@^0.2.1:
+use-latest-callback@^0.2.1, use-latest-callback@^0.2.3:
   version "0.2.3"
   resolved "https://registry.npmjs.org/use-latest-callback/-/use-latest-callback-0.2.3.tgz"
   integrity sha512-7vI3fBuyRcP91pazVboc4qu+6ZqM8izPWX9k7cRnT8hbD5svslcknsh3S9BUhaK11OmgTV4oWZZVSeQAiV53SQ==

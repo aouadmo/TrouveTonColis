@@ -3,16 +3,17 @@ import { persistStore, persistReducer } from 'redux-persist';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { combineReducers } from 'redux';
 
-import user from './reducers/user'; // <-- ton reducer
+import user from './reducers/user';
+import userProfile from './reducers/userProfile';
+import colis from './reducers/colis';
 
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  // 👇 Ignore les actions persist/* qui causent les warnings
-  blacklist: [],
+  blacklist: [], // on persiste tout pour l’instant
 };
 
-const rootReducer = combineReducers({ user });
+const rootReducer = combineReducers({ user, userProfile, colis });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
@@ -27,3 +28,5 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+export default store;

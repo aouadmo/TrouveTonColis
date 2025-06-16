@@ -16,7 +16,7 @@ const SignUpScreen = () => {
     prenom: '',
     nom: '',
     email: '',
-    emailConfirm: '',
+    phoneConfirm: '',
     password: '',
     phone: '',
     phone2:'',
@@ -30,12 +30,12 @@ const SignUpScreen = () => {
   };
 
   const handleSubmit = async () => {
-    if (form.email !== form.emailConfirm) {
-      alert("Les emails ne correspondent pas.");
+    if (form.phone !== form.phoneConfirm) {
+      alert("Les numéros de téléphone ne correspondent pas.");
       return;
     }
 
-    const url = userType === 'client' ? 'http://192.168.1.191:3002/users/signup' : 'http://192.168.1.191:3002/pros/signup'; // <--- IP à modifier si besoin
+    const url = userType === 'client' ? 'http://192.168.1.157:3002/users/signup' : 'http://192.168.1.157:3002/pros/signup'; // <--- IP à modifier si besoin
     console.log(url);
     const payload = userType === 'client' ?
          {
@@ -100,13 +100,13 @@ const SignUpScreen = () => {
           <TextInput style={styles.input} placeholder="Nom Point Relais" value={form.nomRelais} onChangeText={(v) => handleChange("nomRelais", v)} />)}
 
         <View style={styles.row}>
-          <TextInput style={styles.inputHalf} placeholder="First name" value={form.prenom} onChangeText={(v) => handleChange("prenom", v)}/>
-          <TextInput style={styles.inputHalf} placeholder="Last name" value={form.nom} onChangeText={(v) => handleChange("nom", v)}/>
+          <TextInput style={styles.inputHalf} placeholder="prénom" value={form.prenom} onChangeText={(v) => handleChange("prenom", v)}/>
+          <TextInput style={styles.inputHalf} placeholder="Nom de Famille" value={form.nom} onChangeText={(v) => handleChange("nom", v)}/>
         </View>
 
         <TextInput style={styles.input} placeholder="E-mail" value={form.email} onChangeText={(v) => handleChange("email", v)} keyboardType="email-address" autoCapitalize="none"/>
-        <TextInput style={styles.input} placeholder="Confirmation E-mail" value={form.emailConfirm} onChangeText={(v) => handleChange("emailConfirm", v)} keyboardType="email-address" autoCapitalize="none" />
-        <TextInput style={styles.input} placeholder="Phone" value={form.phone} onChangeText={(v) => handleChange("phone", v)} keyboardType="phone-pad"/>
+        <TextInput style={styles.input} placeholder="téléphone portable" value={form.phone} onChangeText={(v) => handleChange("phone", v)} keyboardType="phone-pad"/>
+        <TextInput style={styles.input} placeholder="Confirmation numéros de téléphone portable" value={form.phoneConfirm} onChangeText={(v) => handleChange("phoneConfirm", v)} keyboardType="phone-pad"/>
 
         {userType === "pro" && (
           <>

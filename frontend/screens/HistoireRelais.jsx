@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
+import { Text, StyleSheet, ScrollView, SafeAreaView, View } from 'react-native';
 import Header from '../components/Header';
 
 export default function HistoireRelais() {
@@ -47,6 +47,12 @@ export default function HistoireRelais() {
 
 <Text style={styles.paragraph}>
   Si tu repères un bug 🐛, ou si tu as une idée brillante 💡 pour l’améliorer : n’hésite pas ! 😉
+  <Text style={styles.paragraph}>
+  Un coup de main ? Vous pouvez aussi <Text style={styles.bold}>laisser un petit avis</Text> sur notre page Google pour soutenir le relais 👀  
+  {' '}<Text style={styles.link} onPress={() => Linking.openURL('https://g.co/kgs/yXawQuK')}>
+    ➤ ici
+  </Text>
+</Text>
 </Text>
       </ScrollView>
     </SafeAreaView>
@@ -56,31 +62,59 @@ export default function HistoireRelais() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFCE9',
+    backgroundColor: '#FFFAF2', // fond neutre très doux
   },
   container: {
-    padding: 20,
-    paddingBottom: 40,
+    padding: 24,
+    paddingBottom: 50,
   },
   title: {
-    fontSize: 20,
-    color: '#5E4AE3',
+    fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 12,
+    color: '#4F378A',
+    marginBottom: 14,
+    lineHeight: 28,
   },
   paragraph: {
     fontSize: 15,
-    color: '#444',
-    marginBottom: 12,
-    lineHeight: 22,
+    lineHeight: 24,
+    color: '#4D4A63',
+    marginBottom: 14,
+    backgroundColor: '#FFFFFF',
+    padding: 14,
+    borderRadius: 12,
+    borderLeftWidth: 3,
+    borderLeftColor: '#C9B7FF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
   },
   bullet: {
     fontSize: 15,
-    color: '#333',
-    marginLeft: 12,
-    marginBottom: 6,
+    color: '#3E3A6D',
+    marginLeft: 8,
+    marginBottom: 10,
+    paddingLeft: 14,
+    paddingVertical: 10,
+    backgroundColor: '#F6F3FF',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#DAD5F5',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 3,
+    elevation: 1,
   },
   bold: {
     fontWeight: 'bold',
+    color: '#4F378A',
   },
-});
+  link: {
+    color: '#0E56B4',
+    fontWeight: 'bold',
+    textDecorationLine: 'underline',
+  },
+  });
