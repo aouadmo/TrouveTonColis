@@ -24,7 +24,7 @@ router.get('/search/:trackingNumber', async (req, res) => {
 });
 
 //  Route 2 : recherche par nom et prénom 
-router.post('/search/name', async (req, res) => {
+router.post('/searchname', async (req, res) => {
   const { nom, prenom } = req.body;
 
 

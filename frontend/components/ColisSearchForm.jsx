@@ -32,7 +32,7 @@ const ColisSearchForm = () => {
       } else {
         const cleanedNom = nom.trim().toLowerCase();
         const cleanedPrenom = prenom.trim().toLowerCase();
-        response = await fetch("http://192.168.1.10:3006/colis/search/name", {
+        response = await fetch("http://192.168.1.10:3006/colis/searchname", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nom: cleanedNom, prenom: cleanedPrenom }),
@@ -42,15 +42,15 @@ const ColisSearchForm = () => {
       data = await response.json();
 
       if (data.found) {
-        setResult(`✅ ${Array.isArray(data.colis) ? data.colis.length : 1} colis trouvé(s)`);
+        setResult(`${Array.isArray(data.colis) ? data.colis.length : 1} colis trouvé(s)`);
         const colisArray = Array.isArray(data.colis) ? data.colis : [data.colis];
         setColisTrouves(colisArray);
       } else {
-        setResult("❌ Aucun colis trouvé.");
+        setResult(" Aucun colis trouvé.");
         setColisTrouves([]);
       }
     } catch (error) {
-      setResult("❌ Erreur lors de la recherche.");
+      setResult(" Erreur lors de la recherche.");
       setColisTrouves([]);
     }
   };
