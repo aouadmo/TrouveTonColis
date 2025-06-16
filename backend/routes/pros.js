@@ -60,6 +60,16 @@ Pro.findOne({ email: req.body.email }).then(data => {
   });
 });
 
+// Route pour récupérer les adresses des professionnels
+router.get('/adressepro/', (req, res) => {
+  Pro.find().then(data => {
+    if (data) {
+      res.json({ result: true, data: data });
+    } else {
+      res.json({ result: false, error: 'Les infos du PR n\'ont pas été trouvées' });
+    }
+  });
+});
 
 module.exports = router;
 

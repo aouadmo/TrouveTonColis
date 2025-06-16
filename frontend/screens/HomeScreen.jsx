@@ -13,6 +13,7 @@ export default function HomeScreen({ navigation }) {
   const handleSignUp = () => navigate('SignUpScreen');
   const handleSearch = () => navigate('SearchScreen');
   const gotocamerascreen = () => navigate('CameraScreen');
+  const gotomapScreen = () => navigate('MapScreen');
 
   return (
     <View style={styles.wrapper}>
@@ -41,6 +42,12 @@ export default function HomeScreen({ navigation }) {
         <TouchableOpacity onPress={gotocamerascreen} style={styles.button} activeOpacity={0.8}>
           <FontAwesomeIcon icon={faBarcode} size={18} color="#fff" />
           <Text style={styles.textButton}>Scanner un colis</Text>
+        </TouchableOpacity>
+
+        <Text style={styles.buttonDescription}>📷 Trouver votre itinéraire pour rejoindre le point relais</Text>
+        <TouchableOpacity onPress={gotomapScreen} style={styles.button} activeOpacity={0.8}>
+          <FontAwesomeIcon icon={faBarcode} size={18} color="#fff" />
+          <Text style={styles.textButton}>Trouver l'itinéraire optimal</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </View>
