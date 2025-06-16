@@ -51,7 +51,7 @@ export default function ClientProfileScreen() {
   }, []);
 
   const handleSave = () => {
-    fetch('http://192.168.1.10:3006/users/update', {
+    fetch('http://192.168.1.157:3002/users/update', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
