@@ -10,6 +10,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
+// mon ip = cecile.IP
 
 const ColisSearchForm = () => {
   const [searchMode, setSearchMode] = useState("tracking");
@@ -28,28 +29,28 @@ const ColisSearchForm = () => {
       // Nettoyage des entrées utilisateur
       if (searchMode === "tracking") {
         const cleanedTracking = trackingNumber.trim();
-        response = await fetch(`http://192.168.1.10:3006/colis/search/${cleanedTracking}`);
+        response = await fetch(`http://192.168.1.10:3005/colis/search/${cleanedTracking}`);
       } else {
         const cleanedNom = nom.trim().toLowerCase();
-        // const cleanedPrenom = prenom.trim().toLowerCase();
-        response = await fetch(`http://192.168.1.10:3006/colis/searchname`), {
+        response = await fetch(`http://192.168.1.10:3005/colis/searchname`, {
+          method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nom: cleanedNom}),
-        };
+          body: JSON.stringify({ nom: cleanedNom, prenom: prenom.trim().toLowerCase() }),
+        });
       }
 
       data = await response.json();
-
+        console.log(data);
       if (data.found) {
-        setResult(`✅ ${Array.isArray(data.colis) ? data.colis.length : 1} colis trouvé(s)`);
+        setResult(` ${Array.isArray(data.colis) ? data.colis.length : 1} colis trouvé(s)`); // isArray renvoi vrais ou faux
         const colisArray = Array.isArray(data.colis) ? data.colis : [data.colis];
         setColisTrouves(colisArray);
       } else {
-        setResult("❌ Aucun colis trouvé.");
+        setResult(" Aucun colis trouvé.");
         setColisTrouves([]);
       }
     } catch (error) {
-      setResult("❌ Erreur lors de la recherche.");
+      setResult(" Erreur lors de la recherche.");
       setColisTrouves([]);
     }
   };
