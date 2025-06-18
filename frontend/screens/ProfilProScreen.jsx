@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
+import CoordonneesModal from '../components/CoordonneesModal';
+import AbsenceModal from '../components/AbsenceModal';
+
 
 export default function ProDashboardScreen() {
   const navigation = useNavigation();
@@ -14,6 +17,11 @@ export default function ProDashboardScreen() {
     { label: 'Lien de la page Google', checked: false },
     { label: 'Paragraphe en anglais', checked: false, hasTranslate: true },
   ]);
+
+  const [coordonnesModal, setCoordonneesModal] = useState(false);
+  const [absenceModal, setAbsenceModal] = useState(false);
+
+
   
   const checkOptions = (index) => {
     setOptions((prevOptions) => {
@@ -60,13 +68,15 @@ export default function ProDashboardScreen() {
   ))}
       </View>
 
-      <TouchableOpacity onPress={() => navigation.navigate('AbsencesScreen')}>
+      <TouchableOpacity onPress={() => setAbsenceModal(true)}>
         <Text style={styles.link}>Absence programmée</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('ProCoordonneesScreen')}>
+
+      <TouchableOpacity onPress={() => setCoordonneesModal(true)}>
         <Text style={styles.link}>Modifier coordonnées du relais</Text>
       </TouchableOpacity>
+
 
       <TouchableOpacity onPress={() => navigation.navigate('AccueilMessageScreen')}>
         <Text style={styles.link}>Ajouter un message en page d’accueil</Text>
@@ -85,6 +95,8 @@ export default function ProDashboardScreen() {
       {isUnavailable && (
         <Text style={styles.alertMessage}> Ce point relais est momentanément indisponible.</Text>
       )}
+        <CoordonneesModal visible={coordonnesModal} onClose={() => setCoordonneesModal(false)} />
+        <AbsenceModal visible={absenceModal} onClose={() => setAbsenceModal(false)} />
     </ScrollView>
   );
 }
