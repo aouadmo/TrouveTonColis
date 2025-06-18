@@ -2,8 +2,7 @@ import { View, StyleSheet, Text} from 'react-native';
 import Header from '../components/Header';
 
 
-export default function TableauBordScreen() {
-const handleCamScreen = () => navigate('CameraScreen');
+export default function AbsencesScreen() {
 
 return (
 <View style={styles.container}>
