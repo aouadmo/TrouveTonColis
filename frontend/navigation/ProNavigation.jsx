@@ -16,8 +16,6 @@ import CameraScreen from '../screens/CameraScreen';
 
 // Les Écrans secondaires de Mon Profil Pro
 import ProHoraires from '../screens/ProHorairesScreen';
-import Absences from '../screens/AbsencesScreen';
-import ProCoordonnees from '../screens/ProCoordonnees';
 import EditMessageAccueil from '../screens/EditMessageAccueil';
 import Stat from '../screens/StatScreen';
 
@@ -31,8 +29,6 @@ function ProfilProStackScreen() {
       <ProfilProStack.Screen name="ProfilProHome" component={ProfilProScreen} />
       <ProfilProStack.Screen name="SmsReplyScreen" component={SmsReplyScreen} />
       <ProfilProStack.Screen name="ProHorairesScreen" component={ProHoraires} />
-      <ProfilProStack.Screen name="AbsencesScreen" component={Absences} />
-      <ProfilProStack.Screen name="ProCoordonneesScreen" component={ProCoordonnees} />
       <ProfilProStack.Screen name="EditMessageAccueilScreen" component={EditMessageAccueil} />
       <ProfilProStack.Screen name="StatScreen" component={Stat} />
     </ProfilProStack.Navigator>
