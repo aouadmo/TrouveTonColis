@@ -5,6 +5,7 @@ const Client = require('../models/clients');
 const { checkBody } = require('../modules/checkBody');
 const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
+const { groupByPeriod } = require('../modules/groupByPeriod');
 
 
 router.post('/signup', (req, res) => {
@@ -100,6 +101,14 @@ router.put('/update', (req, res) => {
   });
 });
 
+// Route get pour stat inscriptions clients
+router.get('/stats', async (req, res) => {
+  const { range } = req.query; // 'semaine', 'mois', 'annee'
+    const clients = await Client.find();
+    const grouped = groupByPeriod(clients, 'createdAt', range);
+    res.json({ result: true, data: grouped, total: clients.length });
+  
+});
 
 
 module.exports = router;

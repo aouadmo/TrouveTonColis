@@ -5,6 +5,7 @@ const router = express.Router();
 const Colis = require('../models/colis');
 const FormData = require('form-data');
 const fetch = require('node-fetch');
+const {groupByPeriod} = require('../modules/groupByPeriod')
 //const { spawn } = require('child_process');
 dotenv.config();
 const hf = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
@@ -26,8 +27,6 @@ router.get('/search/:trackingNumber', async (req, res) => {
 //  Route 2 : recherche par nom et prénom 
 router.post('/search/name', async (req, res) => {
   const { nom, prenom } = req.body;
-
-
   const colis = await Colis.find({ nom, prenom }); // on peut renvoyer plusieurs colis !
 
   if (colis.length > 0) {
@@ -238,6 +237,15 @@ router.get('/', async (req, res) => {
       res.json({ result: true, stock });
   });
   
+  // Route GET pour les stat colis scannés
+router.get('/stats', async (req, res) => {
+  const { range } = req.query; // 'semaine', 'mois', 'annee'
+    const colis = await Colis.find();
+    const grouped = groupByPeriod(colis, 'createdAt', range);
+    const bestScore = Math.max(...grouped);
+    res.json({ result: true, data: grouped, best: bestScore });
+});
+
 
 module.exports = router;
 
