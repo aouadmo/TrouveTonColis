@@ -10,6 +10,9 @@ import SearchScreen from '../screens/SearchScreen';
 import CameraScreen from '../screens/CameraScreen';
 import MapScreen from '../screens/MapScreen';
 import SmsReplyScreen from '../screens/SmsReplyScreen';
+import TableauBordScreen from '../screens/TableauBordScreen';
+import ClientProfileScreen from '../screens/ClientProfileScreen';
+import RelayInfoScreen from '../screens/RelayInfoScreen';
 
 
 // Menu customisé
@@ -68,6 +71,21 @@ export default function DrawerNavigator() {
         name="SmsReplyScreen"
         component={SmsReplyScreen}
         options={{ title: 'Prenez vos plus belles photos !' }}
+      />
+      <Drawer.Screen
+        name="TableauBordScreen"
+        component={TableauBordScreen}
+        options={{ title: 'Tableau de bord pros' }}
+      />
+      <Drawer.Screen
+        name="ClientProfileScreen"
+        component={ClientProfileScreen}
+        options={{ title: 'Profil client' }}
+      />
+      <Drawer.Screen
+        name="RelayInfoScreen"
+        component={RelayInfoScreen}
+        options={{ title: 'Informations sur le point relais' }}
       />
     </Drawer.Navigator>
     

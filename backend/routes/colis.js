@@ -96,17 +96,18 @@ router.post('/ocr', async (req, res) => {
     }
     // les ordes à donner au robot
     const prompt = `
-    Extrait le prénom (first name of the *recipient*), le nom (last name of the *recipient*), et le numéro de téléphone du texte suivant.
-    Pour le numéro de téléphone, cherche spécifiquement celui qui est précédé par "Tel : " ou "Téléphone :".
-    Si une information (prénom, nom, téléphone) n'est pas trouvée, laisse sa valeur vide ("").
+    Extrait le prénom (first name of the *recipient*), le nom (last name of the *recipient*), le numeros de  tracking et le numéro de téléphone du texte suivant.
+    Pour le numéro de téléphone, cherche spécifiquement celui qui est précédé par "Tel : " ou "Téléphone :", assure toi que chaque numéros de telephone est cohérent en France (06, 07 ou 336, 337) de tel sorte que l'on puisse envoyer un SMS.
+    le tracking est toujours au format "1Z" suivi de 11 caractères.
+    Si une information (prénom, nom, tracking, téléphone) n'est pas trouvée, laisse sa valeur vide ("").
     Retourne la réponse uniquement en JSON strict, sans texte supplémentaire ni formatage Markdown (pas de \`\`\`json).
   
     Exemple:
-    Texte: "Nom: Dupont, Prénom: Jean, Adresse: 123 Rue de la Paix, Tel: 0123456789"
-    {"prenom": "Jean", "nom": "Dupont", "telephone": "0123456789"}
+    Texte: "Nom: Dupont, Prénom: Jean, Adresse: 123 Rue de la Paix, Tel: 0123456789", trackingNumber: "1Z23456789"
+    {"prenom": "Jean", "nom": "Dupont", "trackingNumber": "1Z23456789", "telephone": "0123456789" }
   
-    Texte: "Entreprise ABC, Service Client, Contact: 0987654321"
-    {"prenom": "", "nom": "", "telephone": "0987654321"}
+    Texte: "Entreprise ABC, Service Client, trackingNumber: 1Z753159, Contact: 0687654321"
+    {"prenom": "", "nom": "", "trackingNumber": "1Z753159", "telephone": "0687654321"}
   
     Texte :
     ${parsedText}

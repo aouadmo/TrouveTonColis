@@ -23,7 +23,7 @@ export default function ClientProfileScreen() {
   const [isEditable, setIsEditable] = useState(false);
 
   useEffect(() => {
-    if (!token) return;
+     if (!token) return;
 
     fetch(`http://192.168.1.10:3005/users/client/${token}`)
       .then(res => res.json())
@@ -42,11 +42,8 @@ export default function ClientProfileScreen() {
           dispatch(updateClientProfile(newProfile));
           setEditedData(newProfile);
         } else {
-          console.warn('⚠️ Données client manquantes ou format inattendu :', data);
+          console.log(' Erreur fetch client :', data);
         }
-      })
-      .catch(err => {
-        console.log('❌ Erreur fetch client :', err);
       });
   }, []);
 
@@ -62,15 +59,15 @@ export default function ClientProfileScreen() {
       .then(res => res.json())
       .then(data => {
         if (data.result) {
-          Alert.alert('✅ Succès', 'Modifications enregistrées avec succès !');
+          Alert.alert(' Succès', 'Modifications enregistrées avec succès !');
           dispatch(updateClientProfile(editedData));
           setIsEditable(false);
         } else {
-          Alert.alert('❌ Erreur', data.error || 'Une erreur est survenue');
+          Alert.alert(' Erreur', data.error || 'Une erreur est survenue');
         }
       })
       .catch(err => {
-        Alert.alert('❌ Erreur réseau', "Impossible de contacter le serveur.");
+        Alert.alert(' Erreur réseau', "Impossible de contacter le serveur.");
         console.log('Erreur lors de la sauvegarde :', err);
       });
   };
@@ -137,7 +134,7 @@ export default function ClientProfileScreen() {
           </View>
           <TouchableOpacity style={styles.button} onPress={handleMainButton}>
             <Text style={styles.buttonText}>
-              {isEditable ? '💾 Sauvegarder' : '✏️ Modifier'}
+              {isEditable ? ' Sauvegarder' : ' Modifier'}
             </Text>
           </TouchableOpacity>
         </ScrollView>
@@ -148,12 +145,13 @@ export default function ClientProfileScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: 'FFFCE9',
+    backgroundColor: '#FFFCE9',
     padding: 20,
+    flex : 1
   },
   scroll: {
     paddingBottom: 80,
+    flex: 1,
   },
   title: {
     fontSize: 24,

@@ -10,7 +10,7 @@ import colis from './reducers/colis';
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  blacklist: [], // on persiste tout pour l’instant
+  blacklist: [],
 };
 
 const rootReducer = combineReducers({ user, userProfile, colis });
@@ -19,14 +19,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-  getDefaultMiddleware({
+    getDefaultMiddleware({
       serializableCheck: {
-        // Ignore les actions de redux-persist
-        ignoredActions: ['persist/PERSIST'],
+        ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
     }),
 });
 
 export const persistor = persistStore(store);
-
 export default store;

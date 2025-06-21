@@ -10,7 +10,6 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
-// mon ip = cecile.IP
 
 const ColisSearchForm = () => {
   const [searchMode, setSearchMode] = useState("tracking");
@@ -36,22 +35,24 @@ const ColisSearchForm = () => {
         response = await fetch(`http://192.168.1.10:3005/colis/searchname`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nom: cleanedNom, prenom: prenom.trim().toLowerCase() }),
+          body: JSON.stringify({ nom: cleanedNom, prenom: cleanedPrenom }),
         });
       }
 
       data = await response.json();
-        console.log(data);
+      console.log("Données reçues:", data);
+
       if (data.found) {
-        setResult(` ${Array.isArray(data.colis) ? data.colis.length : 1} colis trouvé(s)`); // isArray renvoi vrais ou faux
+        setResult(`✅ ${Array.isArray(data.colis) ? data.colis.length : 1} colis trouvé(s)`);
         const colisArray = Array.isArray(data.colis) ? data.colis : [data.colis];
         setColisTrouves(colisArray);
       } else {
-        setResult(" Aucun colis trouvé.");
+        setResult("❌ Aucun colis trouvé.");
         setColisTrouves([]);
       }
     } catch (error) {
-      setResult(" Erreur lors de la recherche.");
+      console.error("Erreur lors de la recherche:", error);
+      setResult("⚠️ Erreur lors de la recherche.");
       setColisTrouves([]);
     }
   };
@@ -128,11 +129,23 @@ const ColisSearchForm = () => {
         <View key={index} style={styles.colisCard}>
           <Text style={styles.colisText}>📦 {colis.trackingNumber}</Text>
           <Text style={styles.colisText}>👤 {colis.nom} {colis.prenom}</Text>
+
+          {/* Statut du colis */}
+          <Text style={styles.colisStatus}>
+            📍 Statut: Disponible en point relais
+          </Text>
+          
+          {/* Bouton pour voir les infos du point relais */}
           <TouchableOpacity
             style={styles.relayButton}
-            onPress={() => navigation.navigate("RelayInfoScreen", { relais: colis.relais })}
+            onPress={() => {
+              console.log("Navigation vers RelayInfoScreen avec relayId:", colis.relais || '6841e0438bc7de726f971515');
+              navigation.navigate('RelayInfoScreen', {
+                relayId: colis.relais || '6841e0438bc7de726f971515'
+              });
+            }}
           >
-            <Text style={styles.relayButtonText}>Voir les infos du point relais</Text>
+            <Text style={styles.relayButtonText}>📍 Voir les infos du point relais</Text>
           </TouchableOpacity>
         </View>
       ))}
@@ -200,10 +213,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 14,
     color: "#4F378A",
+    fontWeight: "600",
   },
   colisCard: {
     marginTop: 10,
-    padding: 14,
+    padding: 16,
     borderRadius: 12,
     width: '90%',
     backgroundColor: "#F3F0FC",
@@ -216,15 +230,27 @@ const styles = StyleSheet.create({
   },
   colisText: {
     fontSize: 15,
-    marginBottom: 4,
+    marginBottom: 6,
     color: "#3E3A6D",
+    fontWeight: "500",
+  },
+  colisStatus: {
+    fontSize: 14,
+    marginBottom: 10,
+    color: "#666",
+    fontStyle: "italic",
   },
   relayButton: {
     backgroundColor: "#0E56B4",
-    paddingVertical: 10,
-    paddingHorizontal: 18,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
     borderRadius: 8,
-    marginTop: 10,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    elevation: 2,
   },
   relayButtonText: {
     color: "#fff",

@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { addPhoto } from "../reducers/user";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useIsFocused } from "@react-navigation/native";
+import Header from "../components/Header";
 
 const BACKEND_ADDRESS = "http://192.168.1.10:3005/colis";
 
@@ -92,7 +93,7 @@ export default function CameraScreen() {
           nom: data.extractedData.nom || '',
           prenom: data.extractedData.prenom || '',
           phone: data.extractedData.telephone || '',
-          trackingNumber: '',
+          trackingNumber: data.extractedData.trackingNumber || '',
           transporteur: '',
           poids: '',
           date: data.extractedData.date ? new Date(data.extractedData.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
@@ -163,6 +164,7 @@ export default function CameraScreen() {
 
   return (
     <View style={styles.container}>
+      <Header />
       <View style={styles.cameraWrapper}>
         <CameraView
           style={styles.camera}

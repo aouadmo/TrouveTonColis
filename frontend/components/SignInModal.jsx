@@ -47,7 +47,7 @@ export default function SignInModal({ visible, onClose }) {
       if (response.ok && data.result) {
         dispatch(login({ ...data, isPro: false }));
         onClose();
-        navigate('MyParcelsScreen');
+        navigate('ClientProfileScreen');
         return;
       }
   
