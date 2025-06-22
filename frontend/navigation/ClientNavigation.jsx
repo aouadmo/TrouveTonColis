@@ -22,7 +22,7 @@ const TabNavigatorClient = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: ({ color, size }) => {
           let iconName = '';
-
+        
           if (route.name === 'MyParcelsScreen') {
             iconName = 'archive';
           } else if (route.name === 'SearchScreen') {
@@ -32,6 +32,9 @@ const TabNavigatorClient = () => {
               <FontAwesome name="user" size={size} color={color} />
             );
           }
+          
+          // AJOUT MANQUANT : Return pour FontAwesome
+          return <FontAwesome name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#0F58B8',
         tabBarInactiveTintColor: '#79B4C4',
