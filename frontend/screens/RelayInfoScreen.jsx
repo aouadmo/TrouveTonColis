@@ -16,24 +16,23 @@ const RelayInfoScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
   
-  // Récupération de l'ID du point relais depuis les paramètres
+  // Récupération de l'ID du point relais
   const relayId = route.params?.relayId || route.params?.relais?.id;
   
-  // States
+  // States pour la gestion des données
   const [relayData, setRelayData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [distanceInfo, setDistanceInfo] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [showHoraires, setShowHoraires] = useState(false);
 
-  // Récupération des données du pro/point relais depuis la DB
+  // Récupération des données du point relais
   useEffect(() => {
     const fetchRelayData = async () => {
       try {
         setLoading(true);
         
-        // Appel à votre API Express
-        const response = await fetch(`http://VOTRE_IP:3000/pros/info/${relayId}`); // Remplacez par votre IP/URL
+        const response = await fetch(`http://192.168.1.10:3005/pros/info/${relayId}`);
         const result = await response.json();
         
         if (result.result && result.data) {
@@ -46,9 +45,7 @@ const RelayInfoScreen = () => {
         Alert.alert(
           "Erreur", 
           "Impossible de charger les informations du point relais.",
-          [
-            { text: "Retour", onPress: () => navigation.goBack() }
-          ]
+          [{ text: "Retour", onPress: () => navigation.goBack() }]
         );
       } finally {
         setLoading(false);
@@ -63,7 +60,7 @@ const RelayInfoScreen = () => {
     }
   }, [relayId]);
 
-  // Récupération de la position utilisateur pour l'itinéraire
+  // Récupération de la géolocalisation pour l'itinéraire
   useEffect(() => {
     if (!relayData?.adresseComplete) return;
 
@@ -71,11 +68,9 @@ const RelayInfoScreen = () => {
       try {
         setLocationLoading(true);
 
-        // Vérifier les services de localisation
         const serviceEnabled = await Location.hasServicesEnabledAsync();
         if (!serviceEnabled) return;
 
-        // Vérifier les permissions
         let { status } = await Location.getForegroundPermissionsAsync();
         if (status !== "granted") {
           const { status: requestStatus } = await Location.requestForegroundPermissionsAsync();
@@ -83,7 +78,6 @@ const RelayInfoScreen = () => {
           status = requestStatus;
         }
 
-        // Récupérer la position
         const location = await Location.getCurrentPositionAsync({
           accuracy: Location.Accuracy.Balanced,
           timeout: 15000,
@@ -98,7 +92,6 @@ const RelayInfoScreen = () => {
         
       } catch (error) {
         console.log("Géolocalisation non disponible:", error);
-        // Pas d'alerte, la géolocalisation est optionnelle
       } finally {
         setLocationLoading(false);
       }
@@ -107,7 +100,7 @@ const RelayInfoScreen = () => {
     getDistance();
   }, [relayData?.adresseComplete]);
 
-  // Fonction pour appeler le point relais
+  // Appel téléphonique
   const handleCall = () => {
     if (!relayData?.phone2) {
       Alert.alert("Erreur", "Numéro de téléphone non disponible");
@@ -117,7 +110,7 @@ const RelayInfoScreen = () => {
     Linking.openURL(phoneNumber);
   };
 
-  // Ouvre Google Maps avec itinéraire
+  // Ouverture de Google Maps
   const handleItineraire = () => {
     if (!relayData?.adresseComplete) {
       Alert.alert("Erreur", "Adresse non disponible");
@@ -125,56 +118,52 @@ const RelayInfoScreen = () => {
     }
 
     if (distanceInfo) {
-      // Avec position utilisateur
       const url = `https://www.google.com/maps/dir/?api=1&origin=${distanceInfo.userCoords}&destination=${distanceInfo.destination}&travelmode=driving`;
       Linking.openURL(url);
     } else {
-      // Sans position utilisateur
       const destination = encodeURIComponent(relayData.adresseComplete);
       const url = `https://www.google.com/maps/search/?api=1&query=${destination}`;
       Linking.openURL(url);
     }
   };
 
-  // Gestion de la prise de RDV pour les visiteurs
+  // Gestion de la prise de RDV
   const handlePriseRDV = () => {
     Alert.alert(
       "Prendre rendez-vous", 
       "Pour prendre rendez-vous, vous devez créer un compte client.",
       [
         { text: "Annuler" },
-        { 
-          text: "Créer un compte", 
-          onPress: () => navigation.navigate('Register') // Adaptez selon votre navigation
-        },
-        { 
-          text: "Se connecter", 
-          onPress: () => navigation.navigate('Login') // Adaptez selon votre navigation
-        }
+        { text: "Créer un compte", onPress: () => navigation.navigate('SignUpScreen') },
+        { text: "Se connecter", onPress: () => setModalVisible(true) }
       ]
     );
   };
 
-  // Affichage du loading
+  // Affichage du chargement
   if (loading) {
     return (
       <View style={{ flex: 1 }}>
         <Header />
         <View style={styles.loadingContainer}>
-          <Text style={styles.loadingText}>⏳ Chargement des informations...</Text>
+          <Text style={styles.loadingText}>Chargement des informations...</Text>
         </View>
       </View>
     );
   }
 
-  // Affichage d'erreur si pas de données
+  // Affichage d'erreur
   if (!relayData) {
     return (
       <View style={{ flex: 1 }}>
         <Header />
         <View style={styles.errorContainer}>
-          <Text style={styles.errorText}>❌ Point relais introuvable</Text>
-          <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Text style={styles.errorText}>Point relais introuvable</Text>
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.8}
+          >
             <Text style={styles.buttonText}>Retour</Text>
           </TouchableOpacity>
         </View>
@@ -183,96 +172,93 @@ const RelayInfoScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <Header />
 
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>📍 Infos Point Relais</Text>
+        <Text style={styles.title}>Informations Point Relais</Text>
 
         <View style={styles.card}>
           {/* Nom du point relais */}
           <View style={styles.infoBox}>
-            <Text style={styles.label}>🏠 Point Relais</Text>
+            <Text style={styles.label}>Point Relais</Text>
             <Text style={styles.value}>{relayData.nomRelais}</Text>
           </View>
 
-          {/* Adresse complète */}
+          {/* Adresse */}
           <View style={styles.infoBox}>
-            <Text style={styles.label}>📍 Adresse</Text>
+            <Text style={styles.label}>Adresse</Text>
             <Text style={styles.value}>{relayData.adresseComplete}</Text>
           </View>
 
-          {/* Téléphone (seulement phone2 disponible) */}
+          {/* Téléphone */}
           {relayData.phone2 && (
             <View style={styles.infoBox}>
-              <Text style={styles.label}>📞 Téléphone</Text>
-              <TouchableOpacity onPress={() => {
-                const phoneNumber = `tel:${relayData.phone2}`;
-                Linking.openURL(phoneNumber);
-              }}>
+              <Text style={styles.label}>Téléphone</Text>
+              <TouchableOpacity onPress={handleCall} activeOpacity={0.8}>
                 <Text style={[styles.value, styles.phoneLink]}>{relayData.phone2}</Text>
               </TouchableOpacity>
             </View>
           )}
 
-          {/* Horaires - Pour l'instant statiques car pas dans le schema */}
+          {/* Horaires */}
           <View style={styles.infoBox}>
             <TouchableOpacity 
               style={styles.horaireToggle}
               onPress={() => setShowHoraires(!showHoraires)}
+              activeOpacity={0.8}
             >
-              <Text style={styles.label}>🕒 Horaires</Text>
+              <Text style={styles.label}>Horaires</Text>
               <Text style={styles.toggleIcon}>{showHoraires ? '▲' : '▼'}</Text>
             </TouchableOpacity>
             
             {showHoraires && (
               <View style={styles.horaireContent}>
                 <Text style={styles.horaireText}>
-                  Lundi - Vendredi : 9h00 - 18h00{'\n'}
-                  Samedi : 9h00 - 12h00{'\n'}
-                  Dimanche : Fermé{'\n\n'}
-                  📞 Contactez le {relayData.phone2 || "point relais"} pour des horaires spéciaux
+                  Lundi - Vendredi : 10h00 - 16h00 puis 21h45 à 22h00 SAUF VENDREDI{'\n'}
+                  Mardi : 10h00 - 20h00{'\n'}
+                  Samedi : 14h00 - 17h00{'\n'}
+                  Contactez le {relayData.phone2 || "point relais"} pour tout autres demandes
                 </Text>
               </View>
             )}
           </View>
 
-          {/* Infos pratiques */}
+          {/* Informations pratiques */}
           <View style={styles.infoBox}>
-            <Text style={styles.label}>ℹ️ Infos pratiques</Text>
+            <Text style={styles.label}>Informations pratiques</Text>
             <Text style={styles.value}>
               • Pièce d'identité obligatoire{'\n'}
               • SMS 10 min avant d'arriver{'\n'}
-              • Colis gardé 15 jours maximum{'\n'}
-              • Confirmation SMS après dépôt
+              • Reçu par SMS après dépôt possible
             </Text>
           </View>
 
-          {/* Chargement géolocalisation */}
+          {/* Indicateur géolocalisation */}
           {locationLoading && (
             <View style={styles.geoLoading}>
-              <Text style={styles.geoLoadingText}>📍 Calcul de l'itinéraire...</Text>
+              <Text style={styles.geoLoadingText}>Calcul de l'itinéraire...</Text>
             </View>
           )}
 
           {/* Boutons d'action */}
           <View style={styles.buttonContainer}>
-            {/* Bouton Itinéraire */}
             <TouchableOpacity
               style={styles.buttonItineraire}
               onPress={handleItineraire}
+              activeOpacity={0.8}
             >
               <Text style={styles.buttonText}>
-                🗺️ {distanceInfo ? 'Itinéraire' : 'Voir sur la carte'}
+                {distanceInfo ? 'Itinéraire' : 'Voir sur la carte'}
               </Text>
             </TouchableOpacity>
 
-            {/* Bouton Prise de RDV */}
             <TouchableOpacity
               style={styles.buttonRDV}
               onPress={handlePriseRDV}
+              activeOpacity={0.8}
             >
-              <Text style={styles.buttonText}>📅 Prendre RDV</Text>
+              <Text style={styles.buttonText}>Prendre RDV</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -283,48 +269,59 @@ const RelayInfoScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#fff",
-    padding: 24,
+    backgroundColor: "#FFFFFF", // Palette Neutre - Fond blanc
+    padding: 20,
     alignItems: "center",
     paddingBottom: 40,
   },
+  
+  // Titre principal
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 20,
-    color: "#333",
+    color: "#444444", // Palette Neutre - Texte principal
   },
+  
+  // Carte principale
   card: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#FFFFFF",
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     width: "100%",
     maxWidth: 500,
-    elevation: 3,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
+    shadowRadius: 8,
+    elevation: 6,
+    borderLeftWidth: 4,
+    borderLeftColor: "#B48DD3", // Palette Neutre - Boutons principaux
   },
+  
+  // Boîtes d'information
   infoBox: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
   label: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#555",
+    color: "#444444", // Palette Neutre - Texte principal
     marginBottom: 6,
   },
   value: {
     fontSize: 16,
-    color: "#222",
+    color: "#666666",
     lineHeight: 22,
   },
   phoneLink: {
-    color: "#5E4AE3",
+    color: "#B48DD3", // Palette Neutre - Boutons principaux
     textDecorationLine: "underline",
+    fontWeight: "600",
   },
+  
+  // Section horaires
   horaireToggle: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -333,50 +330,62 @@ const styles = StyleSheet.create({
   },
   toggleIcon: {
     fontSize: 16,
-    color: "#666",
+    color: "#79B4C4", // Palette Neutre - Accent secondaire
     fontWeight: "bold",
   },
   horaireContent: {
-    marginTop: 10,
-    padding: 12,
-    backgroundColor: "#fff",
-    borderRadius: 8,
+    marginTop: 12,
+    padding: 14,
+    backgroundColor: "#F8F9FA",
+    borderRadius: 10,
     borderLeftWidth: 3,
-    borderLeftColor: "#5E4AE3",
+    borderLeftColor: "#79B4C4", // Palette Neutre - Accent secondaire
   },
   horaireText: {
     fontSize: 15,
-    color: "#333",
+    color: "#444444",
     lineHeight: 20,
   },
+  
+  // Géolocalisation
   geoLoading: {
     padding: 12,
-    backgroundColor: "#f0f8ff",
+    backgroundColor: "#F0F8FF",
     borderRadius: 8,
     marginBottom: 16,
     alignItems: "center",
   },
   geoLoadingText: {
-    color: "#666",
+    color: "#79B4C4", // Palette Neutre - Accent secondaire
     fontSize: 14,
   },
+  
+  // Boutons d'action
   buttonContainer: {
     marginTop: 24,
-    gap: 12,
+    gap: 14,
   },
   buttonItineraire: {
-    backgroundColor: "#5E4AE3",
-    paddingVertical: 14,
+    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 10,
-    elevation: 2,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
   },
   buttonRDV: {
-    backgroundColor: "#6a0dad",
-    paddingVertical: 14,
+    backgroundColor: "#79B4C4", // Palette Neutre - Accent secondaire
+    paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 10,
-    elevation: 2,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
   },
   buttonText: {
     color: "#fff",
@@ -384,31 +393,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
+  
+  // États de chargement et d'erreur
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFFFF",
   },
   loadingText: {
     fontSize: 16,
-    color: "#666",
+    color: "#666666",
   },
   errorContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFFFF",
     padding: 24,
   },
   errorText: {
     fontSize: 18,
-    color: "#d32f2f",
+    color: "#D32F2F",
     marginBottom: 20,
     textAlign: "center",
   },
   backButton: {
-    backgroundColor: "#666",
+    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
