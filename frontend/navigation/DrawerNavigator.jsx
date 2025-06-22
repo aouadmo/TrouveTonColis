@@ -38,7 +38,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen
         name="FAQ"
         component={FAQScreen}
-        options={{ title: 'FAQ' }}
+        options={{ title: 'FAQScreen' }}
       />
 
       <Drawer.Screen
@@ -70,6 +70,6 @@ export default function DrawerNavigator() {
         options={{ title: 'Prenez vos plus belles photos !' }}
       />
     </Drawer.Navigator>
-    
+
   );
 }

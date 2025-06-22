@@ -8,13 +8,12 @@ import {
   Linking
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useSelector } from 'react-redux';
 
 export default function CustomDrawerContent({ navigation }) {
   
-  // Navigation vers FAQ
-  const openFAQ = () => {
-    navigation.navigate('FAQScreen');
-  };
+  // Récupération du statut utilisateur
+  const { token, isPro } = useSelector(state => state.user.value);
 
   // Ouverture du client email
   const handleSendEmail = () => {
@@ -25,9 +24,39 @@ export default function CustomDrawerContent({ navigation }) {
     Linking.openURL(url);
   };
 
+  // Navigation vers l'espace utilisateur selon le statut
+  const handleBackToProfile = () => {
+    if (isPro) {
+      // Pro → Tableau de bord
+      navigation.navigate('TabNavigatorPro', { screen: 'TableauBord' });
+    } else {
+      // Client → Profil client
+      navigation.navigate('TabNavigatorClient', { screen: 'ProfilClient' });
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Menu</Text>
+
+      {/* Lien de retour si utilisateur connecté */}
+      {token && (
+        <TouchableOpacity
+          style={[styles.item, styles.backItem]}
+          onPress={handleBackToProfile}
+          activeOpacity={0.8}
+        >
+          <FontAwesome5 
+            name={isPro ? "chart-bar" : "user"} 
+            size={18} 
+            color="#fff" 
+            style={styles.icon} 
+          />
+          <Text style={[styles.label, styles.backLabel]}>
+            {isPro ? "Retour au tableau de bord" : "Retour à mon profil"}
+          </Text>
+        </TouchableOpacity>
+      )}
 
       {/* Navigation Accueil */}
       <TouchableOpacity
@@ -52,7 +81,7 @@ export default function CustomDrawerContent({ navigation }) {
       {/* Navigation FAQ */}
       <TouchableOpacity
         style={styles.item}
-        onPress={openFAQ}
+        onPress={() => navigation.navigate('FAQ')}
         activeOpacity={0.8}
       >
         <FontAwesome5 name="question-circle" size={18} color="#B48DD3" style={styles.icon} />
@@ -122,6 +151,25 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: '#444444', // Palette Neutre - Texte principal
     fontWeight: '500',
+  },
+  
+  // Item de retour spécial (pro/client)
+  backItem: {
+    backgroundColor: '#79B4C4', // Palette Neutre - Accent secondaire
+    borderRadius: 12,
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    marginBottom: 20,
+    borderBottomWidth: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  backLabel: {
+    color: '#fff',
+    fontWeight: '600',
   },
   
   // Item de contact spécial
