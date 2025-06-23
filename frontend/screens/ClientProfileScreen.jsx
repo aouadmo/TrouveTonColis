@@ -39,7 +39,7 @@ export default function ClientProfileScreen() {
   useEffect(() => {
      if (!token) return;
 
-    fetch(`http://192.168.1.191:3002/users/client/${token}`)
+    fetch(`http://192.168.1.191:3006/users/client/${token}`)
       .then(res => res.json())
       .then(data => {
         if (data?.result && data?.client) {
@@ -60,8 +60,8 @@ export default function ClientProfileScreen() {
         }
       })
       .catch(err => {
-        console.log('❌ Erreur fetch client :', err);
-        Alert.alert('❌ Erreur', 'Impossible de charger votre profil');
+        console.log(' Erreur fetch client :', err);
+        Alert.alert(' Erreur', 'Impossible de charger votre profil');
       });
 
     // Fetch statistiques (factices pour l'instant)
@@ -73,7 +73,7 @@ export default function ClientProfileScreen() {
   }, [token, dispatch]);
 
   const handleSave = () => {
-    fetch('http://192.168.1.191:3002/users/update', {
+    fetch('http://192.168.1.191:3006/users/update', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

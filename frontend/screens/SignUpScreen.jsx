@@ -97,8 +97,8 @@ const SignUpScreen = () => {
     try {
       // Configuration de l'URL selon le type d'utilisateur
       const url = userType === 'client' 
-        ? 'http://192.168.1.10:3005/users/signup' 
-        : 'http://192.168.1.10:3005/pros/signup';
+        ? 'http://192.168.1.10:3006/users/signup' 
+        : 'http://192.168.1.10:3006/pros/signup';
 
       // Préparation des données selon le type
       const payload = userType === 'client' ? {

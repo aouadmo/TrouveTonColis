@@ -32,7 +32,7 @@ const RelayInfoScreen = () => {
       try {
         setLoading(true);
         
-        const response = await fetch(`http://192.168.1.10:3005/pros/info/${relayId}`);
+        const response = await fetch(`http://192.168.1.10:3006/pros/info/${relayId}`);
         const result = await response.json();
         
         console.log("Fetch result:", result);
