@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   Text,
   StyleSheet,
@@ -7,8 +6,6 @@ import {
   ScrollView,
   Linking
 } from 'react-native';
-import { FontAwesome5, FontAwesome } from '@expo/vector-icons';
-import { useSelector } from 'react-redux';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 
@@ -37,12 +34,34 @@ export default function CustomDrawerContent({ navigation }) {
     }
   };
 
+  // Navigation conditionnelle selon le statut utilisateur
+  const handleNavigation = () => {
+    if (token) {
+      // Si connecté, rediriger selon le type
+      handleBackToProfile();
+    } else {
+      // Si pas connecté, rediriger vers connexion
+      navigation.navigate('Login');
+    }
+  };
+
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Menu</Text>
 
-      {/* Lien de retour si utilisateur connecté */}
-      {token && (
+      {/* Navigation Accueil */}
+      <TouchableOpacity
+        style={styles.item}
+        onPress={() => navigation.navigate('HomeScreen')}
+        activeOpacity={0.8}
+      >
+        <FontAwesome5 name="home" size={18} color="#B48DD3" style={styles.icon} />
+        <Text style={styles.label}>Accueil</Text>
+      </TouchableOpacity>
+
+      {/* Navigation conditionnelle selon statut utilisateur */}
+      {token ? (
+        // Si utilisateur connecté - Lien de retour stylé
         <TouchableOpacity
           style={[styles.item, styles.backItem]}
           onPress={handleBackToProfile}
@@ -58,33 +77,17 @@ export default function CustomDrawerContent({ navigation }) {
             {isPro ? "Retour au tableau de bord" : "Retour à mon profil"}
           </Text>
         </TouchableOpacity>
+      ) : (
+        // Si utilisateur non connecté - Lien vers connexion
+        <TouchableOpacity
+          style={styles.item}
+          onPress={() => navigation.navigate('Login')}
+          activeOpacity={0.8}
+        >
+          <FontAwesome5 name="sign-in-alt" size={18} color="#5E4AE3" style={styles.icon} />
+          <Text style={styles.label}>Se connecter</Text>
+        </TouchableOpacity>
       )}
-
-      {/* Navigation Accueil */}
-      <TouchableOpacity
-        style={styles.item}
-        onPress={() => navigation.navigate('HomeScreen')}
-        activeOpacity={0.8}
-      >
-        <FontAwesome5 name="home" size={18} color="#B48DD3" style={styles.icon} />
-        <Text style={styles.label}>Accueil</Text>
-      </TouchableOpacity>
-
-      {/* Navigation conditionnelle - UN SEUL LIEN AFFICHÉ */}
-      <TouchableOpacity
-        style={styles.item}
-        onPress={handleNavigation}
-      >
-        <FontAwesome5 
-          name={isPro ? "chart-bar" : "user"} 
-          size={18} 
-          color="#5E4AE3" 
-          style={styles.icon} 
-        />
-        <Text style={styles.label}>
-          {isPro ? "Retour sur le tableau de bord" : "Mon Profil"}
-        </Text>
-      </TouchableOpacity>
 
       {/* Navigation Histoire */}
       <TouchableOpacity
@@ -92,8 +95,6 @@ export default function CustomDrawerContent({ navigation }) {
         onPress={() => navigation.navigate('HistoireRelais')}
         activeOpacity={0.8}
       >
-        <FontAwesome5 name="info-circle" size={18} color="#5E4AE3" style={styles.icon} />
-        <Text style={styles.label}>C'est quoi un point relais ?</Text>
         <FontAwesome5 name="info-circle" size={18} color="#B48DD3" style={styles.icon} />
         <Text style={styles.label}>C'est quoi un point relais ?</Text>
       </TouchableOpacity>
@@ -118,6 +119,22 @@ export default function CustomDrawerContent({ navigation }) {
         <Text style={[styles.label, styles.mailLabel]}>Envoyez-nous un mail</Text>
       </TouchableOpacity>
 
+      {/* Si utilisateur connecté, option de déconnexion */}
+      {token && (
+        <TouchableOpacity
+          style={[styles.item, styles.logoutItem]}
+          onPress={() => {
+            // Ici vous devez implémenter votre logique de déconnexion
+            // Par exemple : dispatch(logout()) puis navigation.navigate('HomeScreen')
+            console.log('Déconnexion');
+          }}
+          activeOpacity={0.8}
+        >
+          <FontAwesome5 name="sign-out-alt" size={18} color="#D32F2F" style={styles.icon} />
+          <Text style={[styles.label, styles.logoutLabel]}>Se déconnecter</Text>
+        </TouchableOpacity>
+      )}
+
       {/* Footer équipe */}
       <View style={styles.footer}>
         <Text style={styles.footerText}>
@@ -133,7 +150,7 @@ const styles = StyleSheet.create({
   container: {
     paddingTop: 100,
     paddingHorizontal: 20,
-    backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
+    backgroundColor: '#FFFFFF',
     flexGrow: 1,
     justifyContent: 'flex-start',
   },
@@ -142,7 +159,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#444444', // Palette Neutre - Texte principal
+    color: '#444444',
     marginBottom: 30,
     textAlign: 'center',
   },
@@ -169,13 +186,13 @@ const styles = StyleSheet.create({
   // Labels des items
   label: {
     fontSize: 16,
-    color: '#444444', // Palette Neutre - Texte principal
+    color: '#444444',
     fontWeight: '500',
   },
   
   // Item de retour spécial (pro/client)
   backItem: {
-    backgroundColor: '#79B4C4', // Palette Neutre - Accent secondaire
+    backgroundColor: '#79B4C4',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
@@ -187,6 +204,7 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 3,
   },
+  
   backLabel: {
     color: '#fff',
     fontWeight: '600',
@@ -194,7 +212,7 @@ const styles = StyleSheet.create({
   
   // Item de contact spécial
   mailItem: {
-    backgroundColor: '#B48DD3', // Palette Neutre - Boutons principaux
+    backgroundColor: '#B48DD3',
     borderRadius: 12,
     paddingHorizontal: 16,
     paddingVertical: 16,
@@ -207,8 +225,26 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
+  
   mailLabel: {
     color: '#fff',
+    fontWeight: '600',
+  },
+  
+  // Item de déconnexion
+  logoutItem: {
+    backgroundColor: '#ffebee',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginTop: 20,
+    borderBottomWidth: 0,
+    borderWidth: 1,
+    borderColor: '#ffcdd2',
+  },
+  
+  logoutLabel: {
+    color: '#D32F2F',
     fontWeight: '600',
   },
   
@@ -220,9 +256,10 @@ const styles = StyleSheet.create({
     borderTopColor: '#E5E5E5',
     alignItems: 'center',
   },
+  
   footerText: {
     fontSize: 12,
-    color: '#79B4C4', // Palette Neutre - Accent secondaire
+    color: '#79B4C4',
     textAlign: 'center',
     lineHeight: 18,
   },

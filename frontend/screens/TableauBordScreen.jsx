@@ -20,11 +20,7 @@ export default function TableauBordScreen() {
     colisRecuperesAujourdhui: 5,
     totalColisEnStock: 23,
     colisExpiresBientot: 3,
-    derniereCo: "09:15",
   });
-
-  const handleSmsReplysScreen = () => navigate('SmsReplyScreen');
-  const handleCamScreen = () => navigate('CameraScreen');
 
   // Actions rapides
   const quickActions = [
@@ -37,17 +33,16 @@ export default function TableauBordScreen() {
     },
     {
       id: 2,
-      title: "Répondre aux SMS",
+      title: "Gérer les SMS",
       icon: "sms",
-      action: () => navigation.navigate('ProfilPro', { screen: 'SmsReplyScreen' }),
-      description: "Gérer les messages clients"
+      action: () => navigation.navigate('SmsReplyScreen'),
+      description: "Gérer les messages envoyé auxclients"
     },
     {
       id: 3,
-      title: "Mon stock",
+      title: "Fermé le relais",
       icon: "boxes",
-      action: () => navigation.navigate('MonStock'),
-      description: "Voir tous les colis"
+      description: "Etat d'urgence",
     },
     {
       id: 4,
@@ -143,14 +138,6 @@ export default function TableauBordScreen() {
           <Text style={styles.sectionTitle}>ℹ️ Infos utiles</Text>
           
           <View style={styles.infoCard}>
-            <FontAwesome5 name="clock" size={16} color="#4F378A" />
-            <View style={styles.infoContent}>
-              <Text style={styles.infoTitle}>Dernière connexion</Text>
-              <Text style={styles.infoText}>Aujourd'hui à {stats.derniereCo}</Text>
-            </View>
-          </View>
-
-          <View style={styles.infoCard}>
             <FontAwesome5 name="calendar-day" size={16} color="#4F378A" />
             <View style={styles.infoContent}>
               <Text style={styles.infoTitle}>Horaires aujourd'hui</Text>
@@ -160,17 +147,6 @@ export default function TableauBordScreen() {
             </View>
           </View>
 
-          {stats.colisExpiresBientot > 0 && (
-            <View style={[styles.infoCard, styles.alertInfo]}>
-              <FontAwesome5 name="exclamation-triangle" size={16} color="#DC2626" />
-              <View style={styles.infoContent}>
-                <Text style={[styles.infoTitle, styles.alertText]}>⚠️ Attention !</Text>
-                <Text style={styles.infoText}>
-                  {stats.colisExpiresBientot} colis expire(nt) dans moins de 2 jours
-                </Text>
-              </View>
-            </View>
-          )}
         </View>
       </ScrollView>
     </SafeAreaView>
