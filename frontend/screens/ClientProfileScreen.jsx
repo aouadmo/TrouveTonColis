@@ -13,6 +13,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import Header from '../components/Header.jsx';
 import { updateClientProfile } from '../reducers/userProfile';
+import { navigate } from '../navigation/navigationRef';
 
 export default function ClientProfileScreen() {
   const token = useSelector(state => state.user.value.token);
@@ -22,10 +23,12 @@ export default function ClientProfileScreen() {
   const [editedData, setEditedData] = useState(userData);
   const [isEditable, setIsEditable] = useState(false);
 
+  const goToClientCrenaux = () => navigate('ClientCrenauxScreen');
+
   useEffect(() => {
     if (!token) return;
 
-    fetch(`http://192.168.1.157:3002/users/client/${token}`)
+    fetch(`http://192.168.1.191:3002/users/client/${token}`)
       .then(res => res.json())
       .then(data => {
         if (data?.result && data?.client) {
@@ -51,7 +54,7 @@ export default function ClientProfileScreen() {
   }, []);
 
   const handleSave = () => {
-    fetch('http://192.168.1.10:3006/users/update', {
+    fetch('http://192.168.1.191:3002/users/update', {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -140,6 +143,10 @@ export default function ClientProfileScreen() {
               {isEditable ? '💾 Sauvegarder' : '✏️ Modifier'}
             </Text>
           </TouchableOpacity>
+
+          <TouchableOpacity onPress={goToClientCrenaux} style={styles.button} activeOpacity={0.8}>
+            <Text style={styles.textButton}>Aller à ClientCrenaux</Text>
+          </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
     </View>
@@ -149,7 +156,7 @@ export default function ClientProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'FFFCE9',
+    backgroundColor: '#FFFCE9',
     padding: 20,
   },
   scroll: {

@@ -66,9 +66,9 @@ export default function DrawerNavigator() {
       <Drawer.Screen
         name="SmsReplyScreen"
         component={SmsReplyScreen}
-        options={{ title: 'Prenez vos plus belles photos !' }}
+        options={{ title: 'Ecrivez ce que vous voulez dire aux clients !' }}
       />
-      
+
     </Drawer.Navigator>
     
   );

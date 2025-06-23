@@ -12,6 +12,7 @@ import MyParcelsScreen from '../screens/MyParcelsScreen';
 import ClientProfileScreen from '../screens/ClientProfileScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import MapScreen from '../screens/MapScreen';
+import ClientCrenauxScreen from '../screens/ClientCrenauxScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -62,6 +63,7 @@ export default function ClientNavigation() {
       <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />
       <Stack.Screen name="TabNavigatorClient" component={TabNavigatorClient} />
       <Stack.Screen name="SignUpScreen" component={SignUpScreen} />
+      <Stack.Screen name="ClientCrenauxScreen" component={ClientCrenauxScreen} />
     </Stack.Navigator>
   );
 }

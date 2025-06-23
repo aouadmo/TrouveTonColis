@@ -6,7 +6,7 @@ import { faRoute, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import Header from '../components/Header.jsx';
-
+//import { set } from 'mongoose';
 //import axios from 'axios';
 export default function MapScreen() {
   const [currentPosition, setCurrentPosition] = useState(null);

@@ -13,6 +13,14 @@ const prosSchema = mongoose.Schema({
     ville: String,
     codePostal: Number,
     token: String,
+    absences: [
+        {
+          startDate: String,
+          endDate: String,
+          reason: String,
+        }
+      ],
+      
 });
 
 const Pro = mongoose.model('pros', prosSchema);

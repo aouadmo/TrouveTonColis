@@ -2,14 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert } from 'react-native';
 import Header from '../components/Header';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faBarcode, faComments, faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
+import { faCameraRetro, faComments, faExclamationTriangle, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 import { navigate } from '../navigation/navigationRef';
 import { useSelector } from 'react-redux';
 
 
 export default function TableauBordScreen() {
   const token = useSelector((state) => state.user.value.token);
+  const rdvList = useSelector((state) => state.rdv.value) ?? []; //Opérateur de coalescence nulle 
+
   const [urgentMessage, setUrgentMessage] = useState('');
+  const [isUrgenceActive, setIsUrgenceActive] = useState(false);
 
   const handleSmsReplysScreen = () => navigate('SmsReplyScreen');
   const handleCamScreen = () => navigate('CameraScreen');
@@ -29,7 +32,7 @@ export default function TableauBordScreen() {
         if (data.result && data.data) {
           setUrgentMessage(data.data.absentUrgentMessage);
         } else {
-          console.warn('Message urgence introuvable');
+          console.error('Message urgence introuvable');
         }
       } catch (error) {
         console.error('Erreur fetch message urgence :', error);
@@ -42,12 +45,33 @@ export default function TableauBordScreen() {
   }, [token]);
 
   const handleUrgence = () => {
-    if (urgentMessage) {
-      Alert.alert("Message d'urgence", urgentMessage);
+    if (!isUrgenceActive) {
+      if (urgentMessage) {
+        Alert.alert("Urgence Activée", urgentMessage);
+        setIsUrgenceActive(true);
+      } else {
+        Alert.alert("Erreur", "Aucun message d'urgence disponible.");
+      }
     } else {
-      Alert.alert("Erreur", "Aucun message d'urgence disponible.");
+      Alert.alert("Urgence Désactivée", "Le message d'urgence a été retiré.");
+      setIsUrgenceActive(false);
     }
   };
+
+  //Dans le cas ou le rdv est dépassé
+  const getTodayRdvList = (rdvList) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    return rdvList.filter((rdv) => {
+      const [day, month, year] = rdv.date.split('/');
+      const rdvDate = new Date(`${year}-${month}-${day}`);
+      rdvDate.setHours(0, 0, 0, 0);
+      return rdvDate.getTime() === today.getTime();
+    });
+  };
+
+  const todayRdvList = getTodayRdvList(rdvList);
 
   return (
     <View style={styles.wrapper}>
@@ -56,23 +80,47 @@ export default function TableauBordScreen() {
         {/* Colonne de gauche */}
         <View style={styles.sidebar}>
           <TouchableOpacity onPress={handleCamScreen} style={styles.iconButton}>
-            <FontAwesomeIcon icon={faBarcode} size={20} color="#fff" />
+            <FontAwesomeIcon icon={faCameraRetro} size={40} color="#fff" />
+            <Text style={styles.iconLabel}>Scan</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleSmsReplysScreen} style={styles.iconButton}>
-            <FontAwesomeIcon icon={faComments} size={20} color="#fff" />
+            <FontAwesomeIcon icon={faComments} size={40} color="#fff" />
+            <Text style={styles.iconLabel}>Messages Persos</Text>
           </TouchableOpacity>
         </View>
 
         {/* Partie droite */}
         <View style={styles.content}>
-          <Text style={styles.title}>Rendez-vous du jour</Text>
-          <Text style={styles.rdv}>- 08h00 : Fetch de l'ecran Crenaux</Text>
-          <Text style={styles.rdv}>- 09h00 : Ceci est écrit en brut</Text>
-          <Text style={styles.rdv}>- 11h30 : C'est tout pour le moment</Text>
+          <Text style={styles.title}>Tableau de bord</Text>
 
-          <TouchableOpacity onPress={handleUrgence} style={styles.urgenceButton}>
-            <FontAwesomeIcon icon={faExclamationTriangle} size={20} color="#fff" />
-            <Text style={styles.urgenceText}>Envoyer un message d'urgence</Text>
+          <View style={{ marginBottom: 20 }}>
+            <Text style={styles.title}>Rendez-vous du jour</Text>
+            {todayRdvList.length > 0 ? (
+              todayRdvList.map((rdv, index) => (
+                <Text key={index} style={styles.rdv}>
+                  - {rdv.time} : {rdv.client ?? 'Client'}
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.rdv}>- Pas de rendez-vous pour aujourd'hui</Text>
+            )}
+          </View>
+
+          <TouchableOpacity
+            onPress={handleUrgence}
+            style={[
+              styles.urgenceButton,
+              isUrgenceActive && styles.urgenceButtonActive
+            ]}
+          >
+            <FontAwesomeIcon
+              icon={isUrgenceActive ? faTimesCircle : faExclamationTriangle}
+              size={20}
+              color="#fff"
+            />
+            <Text style={styles.urgenceText}>
+              {isUrgenceActive ? 'Mettre fin à l\'urgence' : 'Envoyer un message d\'urgence'}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -91,10 +139,14 @@ const styles = StyleSheet.create({
     paddingTop: 20,
   },
   iconButton: {
-    marginBottom: 20,
+    width: 80,
+    height: 100,
     backgroundColor: '#6B3EFF',
-    padding: 40,
     borderRadius: 8,
+    marginBottom: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 10,
   },
   content: {
     flex: 1,
@@ -116,6 +168,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#D10000',
     padding: 12,
     borderRadius: 8,
+  },
+  iconLabel: {
+    color: '#fff',
+    marginTop: 8,
+    textAlign: 'center',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  urgenceButtonActive: {
+    backgroundColor: '#751414',
   },
   urgenceText: {
     color: '#fff',

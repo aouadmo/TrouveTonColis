@@ -113,5 +113,51 @@ router.get('/sms', authenticatePro, async (req, res) => {
   res.json({ result: true, data: sms });
 });
 
+//Route PUT pour MAJ des coordonnées du Relais Pro
+router.put('/update', (req, res) => {
+  const { token, nomRelais, adresse, codePostal, ville, phone } = req.body;
+
+  if (!token) {
+    return res.json({ result: false, error: 'Token manquant' });
+  }
+
+  Pro.findOneAndUpdate(
+    { token },
+    { nomRelais, adresse, codePostal, ville, phone },
+    { new: true }
+  )
+    .then(updated => {
+      if (updated) {
+        res.json({ result: true });
+      } else {
+        res.json({ result: false, error: 'Point relais non trouvé' });
+      }
+    })
+    .catch(err => res.json({ result: false, error: 'Erreur serveur' }));
+});
+
+//Route POST pour les absences programmées du relais
+router.post('/absence', (req, res) => {
+  const { token, startDate, endDate, reason } = req.body;
+
+  if (!token || !startDate || !endDate) {
+    return res.json({ result: false, error: 'Champs manquants' });
+  }
+
+  Pro.findOne({ token }).then(pro => {
+    if (!pro) {
+      return res.json({ result: false, error: 'Point relais introuvable' });
+    }
+    if (!pro.absences) pro.absences = [];
+
+    pro.absences.push({ startDate, endDate, reason });
+
+    pro.save().then(() => {
+      res.json({ result: true });
+    })
+  });
+});
+
+
 module.exports = router;
 
