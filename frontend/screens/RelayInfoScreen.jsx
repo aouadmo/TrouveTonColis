@@ -67,7 +67,7 @@ const RelayInfoScreen = () => {
         { text: "Retour", onPress: () => navigation.goBack() }
       ]);
     }
-  }, [relayId]);
+  }, [relayId, navigation]);
 
   // Récupération de la géolocalisation pour l'itinéraire
   useEffect(() => {
@@ -136,31 +136,10 @@ const RelayInfoScreen = () => {
     }
   };
 
-  // Gestion de la prise de RDV
-  const handlePriseRDV = () => {
-    Alert.alert(
-      "Prendre rendez-vous", 
-      "Pour prendre rendez-vous, vous devez créer un compte client.",
-      [
-        { text: "Annuler" },
-        { 
-          text: "Créer un compte", 
-          onPress: () => navigation.navigate('Register')
-        },
-        { 
-          text: "Se connecter", 
-          onPress: () => navigation.navigate('Login')
-        }
-        { text: "Créer un compte", onPress: () => navigation.navigate('SignUpScreen') },
-        { text: "Se connecter", onPress: () => setModalVisible(true) }
-      ]
-    );
-  };
-
   // Affichage du chargement
   if (loading) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.fullContainer}>
         <Header />
         <View style={styles.loadingContainer}>
           <Text style={styles.loadingText}>Chargement des informations...</Text>
@@ -172,7 +151,7 @@ const RelayInfoScreen = () => {
   // Affichage d'erreur
   if (!relayData) {
     return (
-      <View style={{ flex: 1 }}>
+      <View style={styles.fullContainer}>
         <Header />
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Point relais introuvable</Text>
@@ -189,7 +168,7 @@ const RelayInfoScreen = () => {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+    <View style={styles.fullContainer}>
       <Header />
 
       <ScrollView contentContainerStyle={styles.container}>
@@ -221,7 +200,7 @@ const RelayInfoScreen = () => {
           {/* Horaires */}
           <View style={styles.infoBox}>
             <TouchableOpacity 
-              style={styles.compactHoraireToggle}
+              style={styles.horaireToggle}
               onPress={() => setShowHoraires(!showHoraires)}
               activeOpacity={0.8}
             >
@@ -232,41 +211,33 @@ const RelayInfoScreen = () => {
             {showHoraires && (
               <View style={styles.horaireContent}>
                 <Text style={styles.horaireText}>
-                  Lundi - Vendredi : 10h00 - 16h00 puis 21h45 à 22h00 SAUF VENDREDI{'\n'}
-                  Mardi : 10h00 - 20h00{'\n'}
-                  Samedi : 14h00 - 17h00{'\n'}
-                  Contactez le {relayData.phone2 || "point relais"} pour tout autres demandes
+                  <Text style={styles.horaireBold}>Lundi - Vendredi :</Text> 10h00 - 16h00{'\n'}
+                  <Text style={styles.horaireBold}> puis :</Text> 21h45 - 22h00 (sauf vendredi){'\n'}
+                  <Text style={styles.horaireBold}>Mardi :</Text> 10h00 - 20h00{'\n'}
+                  <Text style={styles.horaireBold}>Samedi :</Text> 14h00 - 17h00{'\n'}
+                  <Text style={styles.horaireBold}>Dimanche :</Text> Fermé{'\n\n'}
+                  <Text style={styles.horaireNote}>
+                    💬 Contactez le {relayData.phone2 || "point relais"} pour toute autre demande
+                  </Text>
                 </Text>
               </View>
             )}
           </View>
 
-          {/* Détails horaires (si affiché) */}
-          {showHoraires && (
-            <View style={styles.horaireDetails}>
-              <Text style={styles.horaireText}>
-                Lundi-Vendredi : 10:00-16:00 // 21h45-22h00{'\n'}
-                Mardi : 10:00-20:00{'\n'}
-                Samedi : 14h00-17h00{'\n'}
-                Dimanche : Fermé
-              </Text>
-            </View>
-          )}
-
           {/* Informations pratiques */}
           <View style={styles.infoBox}>
             <Text style={styles.label}>Informations pratiques</Text>
             <Text style={styles.value}>
-              • Pièce d'identité obligatoire{'\n'}
-              • SMS 10 min avant d'arriver{'\n'}
-              • Reçu par SMS après dépôt possible
+              🆔 Pièce d'identité obligatoire{'\n'}
+              📱 SMS 10 min avant d'arriver{'\n'}
+              📧 Reçu par SMS après dépôt possible
             </Text>
           </View>
 
           {/* Indicateur géolocalisation */}
           {locationLoading && (
             <View style={styles.geoLoading}>
-              <Text style={styles.geoLoadingText}>Calcul de l'itinéraire...</Text>
+              <Text style={styles.geoLoadingText}>📍 Calcul de l'itinéraire...</Text>
             </View>
           )}
 
@@ -278,7 +249,7 @@ const RelayInfoScreen = () => {
               activeOpacity={0.8}
             >
               <Text style={styles.buttonText}>
-                {distanceInfo ? 'Itinéraire' : 'Voir sur la carte'}
+                🗺️ {distanceInfo ? 'Itinéraire' : 'Voir sur la carte'}
               </Text>
             </TouchableOpacity>
 
@@ -287,18 +258,24 @@ const RelayInfoScreen = () => {
               onPress={handlePriseRDV}
               activeOpacity={0.8}
             >
-              <Text style={styles.buttonText}>Prendre RDV</Text>
+              <Text style={styles.buttonText}>📅 Prendre RDV</Text>
             </TouchableOpacity>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
+  // Container principal
+  fullContainer: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  
   container: {
-    backgroundColor: "#FFFFFF", // Palette Neutre - Fond blanc
+    backgroundColor: "#FFFFFF",
     padding: 20,
     alignItems: "center",
     paddingBottom: 40,
@@ -310,7 +287,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 20,
-    color: "#444444", // Palette Neutre - Texte principal
+    color: "#444444",
   },
   
   // Carte principale
@@ -326,26 +303,29 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
     borderLeftWidth: 4,
-    borderLeftColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    borderLeftColor: "#B48DD3",
   },
   
   // Boîtes d'information
   infoBox: {
     marginBottom: 18,
   },
+  
   label: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#444444", // Palette Neutre - Texte principal
+    color: "#444444",
     marginBottom: 6,
   },
+  
   value: {
     fontSize: 16,
     color: "#666666",
     lineHeight: 22,
   },
+  
   phoneLink: {
-    color: "#B48DD3", // Palette Neutre - Boutons principaux
+    color: "#B48DD3",
     textDecorationLine: "underline",
     fontWeight: "600",
   },
@@ -357,23 +337,37 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 4,
   },
+  
   toggleIcon: {
     fontSize: 16,
-    color: "#79B4C4", // Palette Neutre - Accent secondaire
+    color: "#79B4C4",
     fontWeight: "bold",
   },
+  
   horaireContent: {
     marginTop: 12,
     padding: 14,
     backgroundColor: "#F8F9FA",
     borderRadius: 10,
     borderLeftWidth: 3,
-    borderLeftColor: "#79B4C4", // Palette Neutre - Accent secondaire
+    borderLeftColor: "#79B4C4",
   },
+  
   horaireText: {
     fontSize: 15,
     color: "#444444",
-    lineHeight: 20,
+    lineHeight: 22,
+  },
+  
+  horaireBold: {
+    fontWeight: "bold",
+    color: "#333333",
+  },
+  
+  horaireNote: {
+    fontStyle: "italic",
+    color: "#666666",
+    fontSize: 14,
   },
   
   // Géolocalisation
@@ -383,10 +377,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 16,
     alignItems: "center",
-    marginBottom: 16,
   },
+  
   geoLoadingText: {
-    color: "#79B4C4", // Palette Neutre - Accent secondaire
+    color: "#79B4C4",
     fontSize: 14,
   },
   
@@ -395,8 +389,9 @@ const styles = StyleSheet.create({
     marginTop: 24,
     gap: 14,
   },
-  buttonItineraire: {
-    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+  
+  actionButton: {
+    backgroundColor: "#B48DD3",
     paddingVertical: 16,
     paddingHorizontal: 24,
     borderRadius: 12,
@@ -406,21 +401,15 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
-  buttonRDV: {
-    backgroundColor: "#79B4C4", // Palette Neutre - Accent secondaire
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 4,
+  
+  rdvButton: {
+    backgroundColor: "#79B4C4",
   },
+  
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 14,
+    fontSize: 16,
     textAlign: "center",
   },
   
@@ -431,10 +420,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
   },
+  
   loadingText: {
     fontSize: 16,
     color: "#666666",
   },
+  
   errorContainer: {
     flex: 1,
     justifyContent: "center",
@@ -442,23 +433,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     padding: 24,
   },
+  
   errorText: {
     fontSize: 18,
     color: "#D32F2F",
     marginBottom: 20,
     textAlign: "center",
   },
+  
   backButton: {
-    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    backgroundColor: "#B48DD3",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 16,
-    textAlign: "center",
   },
 });
 
