@@ -31,7 +31,7 @@ export default function MapScreen() {
   }, []);
 // recuperation de la position du point relais
   const handleInforPr = () => {
-    fetch('https://localhost:3000/pros/adressepro')
+    fetch('http://192.168.1.157:3006/pros/adressepro')
       .then(response => response.json())
       .then(data => {
         console.log(data);

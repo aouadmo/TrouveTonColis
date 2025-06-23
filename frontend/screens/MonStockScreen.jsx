@@ -15,7 +15,7 @@ export default function MonStockScreen() {
 
   // Récupération des colis
   useEffect(() => {
-    fetch('http://192.168.1.157:3002/colis') 
+    fetch('http://192.168.1.157:3006/colis') 
       .then(res => res.json())
       .then(data => {
         if (data.result) {
