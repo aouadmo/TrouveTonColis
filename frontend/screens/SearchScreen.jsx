@@ -13,18 +13,15 @@ import ColisSearchForm from "../components/ColisSearchForm";
 const SearchScreen = () => {
   return (
     <View style={{ flex: 1 }}>
-      {/* En-tête toujours visible */}
       <Header />
-
-      {/* Contenu décalé proprement en cas d'ouverture du clavier */}
+      
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         <ScrollView contentContainerStyle={styles.container}>
-          <Text style={styles.title}>🔍 Rechercher un colis</Text>
-          {/* Formulaire de recherche */}
+          <Text style={styles.title}>Rechercher un colis</Text>
           <ColisSearchForm />
         </ScrollView>
       </KeyboardAvoidingView>
@@ -36,7 +33,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingBottom: 40,
-    backgroundColor: "#fff",
+    backgroundColor: "#FFFFFF", // Palette Neutre - Fond blanc
     flexGrow: 1,
     justifyContent: "flex-start",
   },
@@ -45,6 +42,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 30,
+    color: "#444444", // Palette Neutre - Texte principal
   },
 });
 
