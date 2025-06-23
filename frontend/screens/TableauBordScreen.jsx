@@ -8,10 +8,11 @@ import {
   SafeAreaView 
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
-import { navigate } from '../navigation/navigationRef';
 
 export default function TableauBordScreen() {
+  const navigation = useNavigation();
   
   // États pour les statistiques (factices pour l'instant)
   const [stats, setStats] = useState({
@@ -31,32 +32,28 @@ export default function TableauBordScreen() {
       id: 1,
       title: "Scanner un colis",
       icon: "qrcode",
-      color: "#4F378A",
-      action: handleCamScreen,
+      action: () => navigation.navigate('CameraScreen'),
       description: "Enregistrer un nouveau colis"
     },
     {
       id: 2,
       title: "Répondre aux SMS",
       icon: "sms",
-      color: "#6B46C1",
-      action: handleSmsReplysScreen,
+      action: () => navigation.navigate('ProfilPro', { screen: 'SmsReplyScreen' }),
       description: "Gérer les messages clients"
     },
     {
       id: 3,
       title: "Mon stock",
       icon: "boxes",
-      color: "#8B5CF6",
-      action: () => navigate('MonStock'),
+      action: () => navigation.navigate('MonStock'),
       description: "Voir tous les colis"
     },
     {
       id: 4,
       title: "Mes horaires",
       icon: "clock",
-      color: "#A78BFA",
-      action: () => navigate('ProHorairesScreen'),
+      action: () => navigation.navigate('ProHorairesScreen'),
       description: "Gérer les créneaux"
     }
   ];
@@ -124,18 +121,18 @@ export default function TableauBordScreen() {
             {quickActions.map((action) => (
               <TouchableOpacity
                 key={action.id}
-                style={[styles.actionCard, { borderLeftColor: action.color }]}
+                style={styles.actionCard}
                 onPress={action.action}
                 activeOpacity={0.8}
               >
-                <View style={[styles.actionIcon, { backgroundColor: action.color }]}>
-                  <FontAwesome5 name={action.icon} size={20} color="#FFFFFF" />
+                <View style={styles.actionIcon}>
+                  <FontAwesome5 name={action.icon} size={20} color="#4F378A" />
                 </View>
                 <View style={styles.actionContent}>
                   <Text style={styles.actionTitle}>{action.title}</Text>
                   <Text style={styles.actionDescription}>{action.description}</Text>
                 </View>
-                <FontAwesome5 name="chevron-right" size={16} color="#CDF6FF" />
+                <FontAwesome5 name="chevron-right" size={16} color="#D0BCFF" />
               </TouchableOpacity>
             ))}
           </View>
@@ -335,7 +332,7 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 14,
-    color: '#4F378A',
+    color: '#D0BCFF', // Palette Pro - Mauve clair
     lineHeight: 20,
   },
 });
