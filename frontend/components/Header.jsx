@@ -22,62 +22,127 @@ function Header({ role }) {
   const userToken = useSelector((state) => state.user.value.token);
   const [modalVisible, setModalVisible] = useState(false);
 
+  // Pages d'accueil (affichent le menu burger)
   const isHome = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name);
 
-  const backgroundColor = role === 'pro' ? '#FFFAF5' : role === 'client' ? '#FFFCE9' : '#FDFBFF';
-  const titleColor = role === 'pro' ? '#4F378A' : role === 'client' ? '#D0BCFF' : '#BFA8F1';
+  // Couleurs selon l'UI Kit
+  const getBackgroundColor = () => {
+    if (role === 'pro') return '#FFFAF5';      // Pro - Rose très pâle
+    if (role === 'client') return '#FFFCE9';   // Client - Beige très clair
+    return '#FFFFFF';                          // Neutre - Fond blanc
+  };
 
+  const getTitleColor = () => {
+    if (role === 'pro') return '#4F378A';      // Pro - Violet foncé
+    if (role === 'client') return '#79B4C4';   // Client - Bleu clair doux
+    return '#444444';                          // Neutre - Gris foncé
+  };
+
+  // Gestion de la déconnexion
   const handleLogout = () => {
     dispatch(logout());
-    // C'est tout ! Laissez Navigation.jsx gérer automatiquement le changement
   };
+
+  // Navigation intelligente pour le retour
+  const handleGoBack = () => {
+    if (route.name === 'RelayInfoScreen') {
+      if (navigation.canGoBack()) {
+        navigation.goBack();
+      } else {
+        navigation.navigate('TabNavigatorClient');
+      }
+    } else {
+      navigation.goBack();
+    }
+  };
+
+  const backgroundColor = getBackgroundColor();
+  const titleColor = getTitleColor();
 
   return (
     <SafeAreaView style={[styles.safeContainer, { backgroundColor }]}>
       <View style={[styles.container, { backgroundColor }]}>
-        {isHome ? (
-          <TouchableOpacity onPress={() => navigation.openDrawer()}>
-            <FontAwesome5 name="bars" size={24} color="#444" />
-          </TouchableOpacity>
-        ) : (
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <FontAwesome5 name="arrow-left" size={24} color="#444" />
-          </TouchableOpacity>
-        )}
-
-        <TouchableOpacity onPress={() => navigation.navigate('HomeScreen')}>
-          <View style={styles.centerBox}>
-            <Image
-              source={require('../assets/logoTTC_sansTexte.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={[styles.title, { color: titleColor }]}>TROUVE TON COLIS</Text>
-          </View>
-        </TouchableOpacity>
-
-        <View style={styles.iconBox}>
-          {userToken ? (
-            <TouchableOpacity onPress={handleLogout}>
-              <FontAwesome name="sign-out" size={28} style={styles.logoLogout}color="#EC6E5B" />
-              <Text style={styles.hint}>Déconnexion</Text>
+        
+        {/* Bouton gauche : Menu ou Retour */}
+        <View style={styles.leftSection}>
+          {isHome ? (
+            <TouchableOpacity 
+              style={styles.iconButton}
+              onPress={() => navigation.openDrawer()}
+              activeOpacity={0.7}
+            >
+              <FontAwesome5 name="bars" size={24} color="#444" />
             </TouchableOpacity>
           ) : (
-            <>
-              <TouchableOpacity onPress={() => setModalVisible(true)}>
-                <FontAwesome name="user-circle-o" size={28} color="#555" />
-              </TouchableOpacity>
-              <Text style={styles.hint}>Connexion</Text>
-            </>
+            <TouchableOpacity 
+              style={styles.iconButton}
+              onPress={handleGoBack}
+              activeOpacity={0.7}
+            >
+              <FontAwesome5 name="arrow-left" size={24} color="#444" />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Centre : Logo + Titre */}
+        <TouchableOpacity 
+          style={styles.centerSection}
+          onPress={() => navigation.navigate('HomeScreen')}
+          activeOpacity={0.8}
+        >
+          <Image
+            source={require('../assets/logoTTC_sansTexte.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={[styles.title, { color: titleColor }]}>
+            TROUVE TON COLIS
+          </Text>
+        </TouchableOpacity>
+
+        {/* Bouton droit : Connexion/Déconnexion */}
+        <View style={styles.rightSection}>
+          {userToken ? (
+            <TouchableOpacity 
+              style={styles.authButton}
+              onPress={handleLogout}
+              activeOpacity={0.7}
+            >
+              <FontAwesome 
+                name="sign-out" 
+                size={26} 
+                color="#EC6E5B" 
+              />
+              <Text style={styles.authText}>Déconnexion</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity 
+              style={styles.authButton}
+              onPress={() => setModalVisible(true)}
+              activeOpacity={0.7}
+            >
+              <FontAwesome 
+                name="user-circle-o" 
+                size={26} 
+                color="#555" 
+              />
+              <Text style={styles.authText}>Connexion</Text>
+            </TouchableOpacity>
           )}
         </View>
       </View>
-      <SignInModal visible={modalVisible} onClose={() => setModalVisible(false)} />
+
+      {/* Modal de connexion */}
+      <SignInModal 
+        visible={modalVisible} 
+        onClose={() => setModalVisible(false)} 
+      />
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  // Container principal
   safeContainer: {
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
@@ -89,15 +154,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 3 },
+    shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
-    shadowRadius: 5,
-    elevation: 6,
+    shadowRadius: 6,
+    elevation: 8,
   },
-  centerBox: {
+
+  // Sections du header
+  leftSection: {
+    width: 50,
+    alignItems: 'flex-start',
+  },
+  centerSection: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 10,
   },
+  rightSection: {
+    width: 80,
+    alignItems: 'center',
+  },
+
+  // Boutons
+  iconButton: {
+    padding: 8,
+    borderRadius: 8,
+  },
+  authButton: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+  },
+
+  // Logo et titre
   logo: {
     width: 60,
     height: 60,
@@ -106,22 +198,16 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     marginLeft: 8,
+    textAlign: 'center',
   },
-  iconBox: {
-    flexDirection: 'column',
-    marginTop: 18,
-    alignItems: 'center',
-    marginLeft: 8,
-    justifyContent: 'center',
-  },
-  logoLogout: {
-    marginRight: 18,
-  },
-  hint: {
+
+  // Texte de connexion
+  authText: {
     fontSize: 10,
-    marginLeft: 2,
     color: '#888',
-    marginTop: 1,
+    textAlign: 'center',
+    fontWeight: '500',
+    marginTop: 2,
   },
 });
 

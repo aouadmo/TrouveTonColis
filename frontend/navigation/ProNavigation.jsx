@@ -31,6 +31,7 @@ function ProfilProStackScreen() {
       <ProfilProStack.Screen name="ProfilProHome" component={ProfilProScreen} />
       <ProfilProStack.Screen name="SmsReplyScreen" component={SmsReplyScreen} />
       <ProfilProStack.Screen name="ProHorairesScreen" component={ProHoraires} />
+      <ProfilProStack.Screen name="HomeScreen" component={HomeScreen} />
       <ProfilProStack.Screen name="AbsencesScreen" component={Absences} />
       <ProfilProStack.Screen name="ProCoordonneesScreen" component={ProCoordonnees} />
       <ProfilProStack.Screen name="EditMessageAccueilScreen" component={EditMessageAccueil} />

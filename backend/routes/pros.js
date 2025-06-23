@@ -108,12 +108,91 @@ router.put('/sms', authenticatePro, async (req, res) => {
 }
 );
 
-
 router.get('/sms', authenticatePro, async (req, res) => {
   const sms = await SmsMessage.findOne({ user: req.pro._id });
   if (!sms) return res.status(404).json({ result: false, error: 'Aucun message trouvé' });
   res.json({ result: true, data: sms });
 });
 
-module.exports = router;
+//Route PUT pour MAJ des coordonnées du Relais Pro
+router.put('/update', (req, res) => {
+  const { token, nomRelais, adresse, codePostal, ville, phone } = req.body;
+
+  if (!token) {
+    return res.json({ result: false, error: 'Token manquant' });
+  }
+
+  Pro.findOneAndUpdate(
+    { token },
+    { nomRelais, adresse, codePostal, ville, phone },
+    { new: true }
+  )
+    .then(updated => {
+      if (updated) {
+        res.json({ result: true });
+      } else {
+        res.json({ result: false, error: 'Point relais non trouvé' });
+      }
+    })
+    .catch(err => res.json({ result: false, error: 'Erreur serveur' }));
+});
+
+//Route POST pour les absences programmées du relais
+router.post('/absence', (req, res) => {
+  const { token, startDate, endDate, reason } = req.body;
+
+  if (!token || !startDate || !endDate) {
+    return res.json({ result: false, error: 'Champs manquants' });
+  }
+
+  Pro.findOne({ token }).then(pro => {
+    if (!pro) {
+      return res.json({ result: false, error: 'Point relais introuvable' });
+    }
+    if (!pro.absences) pro.absences = [];
+
+    pro.absences.push({ startDate, endDate, reason });
+
+    pro.save().then(() => {
+      res.json({ result: true });
+    })
+  });
+});
+
+
+// Route publique pour récupérer les infos d'un point relais (accessible sans authentification)
+router.get('/info/:id', (req, res) => {
+  const proId = req.params.id;
+  
+  // Vérifier que l'ID est valide
+  if (!proId) {
+    return res.status(400).json({ result: false, error: 'ID du point relais manquant' });
+  }
+
+  Pro.findById(proId)
+    .select('nomRelais phone2 adresse ville codePostal') // Sélectionner UNIQUEMENT les champs demandés
+    .then(data => {
+      if (!data) {
+        return res.status(404).json({ result: false, error: 'Point relais non trouvé' });
+      }
+      
+      // Retourner les données formatées
+      res.json({ 
+        result: true, 
+        data: {
+          id: data._id,
+          nomRelais: data.nomRelais,
+          phone2: data.phone2,
+          adresse: data.adresse,
+          ville: data.ville,
+          codePostal: data.codePostal,
+          adresseComplete: `${data.adresse}, ${data.codePostal} ${data.ville}`
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Erreur lors de la récupération du pro:', error);
+      res.status(500).json({ result: false, error: 'Erreur serveur' });
+    });
+});module.exports = router;
 

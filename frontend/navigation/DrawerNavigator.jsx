@@ -37,7 +37,7 @@ export default function DrawerNavigator() {
       <Drawer.Screen
         name="FAQ"
         component={FAQScreen}
-        options={{ title: 'FAQ' }}
+        options={{ title: 'FAQScreen' }}
       />
 
       <Drawer.Screen
@@ -68,8 +68,22 @@ export default function DrawerNavigator() {
         component={SmsReplyScreen}
         options={{ title: 'Prenez vos plus belles photos !' }}
       />
-      
+      <Drawer.Screen
+        name="TableauBordScreen"
+        component={TableauBordScreen}
+        options={{ title: 'Tableau de bord pros' }}
+      />
+      <Drawer.Screen
+        name="ClientProfileScreen"
+        component={ClientProfileScreen}
+        options={{ title: 'Profil client' }}
+      />
+      <Drawer.Screen
+        name="RelayInfoScreen"
+        component={RelayInfoScreen}
+        options={{ title: 'Informations sur le point relais' }}
+      />
     </Drawer.Navigator>
-    
+
   );
 }

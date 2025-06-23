@@ -7,7 +7,7 @@ const clientsSchema = mongoose.Schema({
     email: String,
     password: String,
     token: String,
-    phone: Number,
+    phone: String,
     phoneConfirm: Number,
 
 });

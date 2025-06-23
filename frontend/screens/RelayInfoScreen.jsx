@@ -14,110 +14,253 @@ import Header from "../components/Header";
 
 const RelayInfoScreen = () => {
   const route = useRoute();
-  const { relais } = route.params;
-
+  const navigation = useNavigation();
+  
+  // Récupération de l'ID du point relais
+  const relayId = route.params?.relayId || route.params?.relais?.id;
+  
+  // States pour la gestion des données
+  const [relayData, setRelayData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [distanceInfo, setDistanceInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
   const [showHoraires, setShowHoraires] = useState(false);
 
-  // Récupération de la position de l’utilisateur dès le chargement de la page
+  // Récupération des données du point relais
   useEffect(() => {
-    const getDistance = async () => {
+    const fetchRelayData = async () => {
       try {
         setLoading(true);
-
-        // Demande d'autorisation
-        const { status } = await Location.requestForegroundPermissionsAsync();
-        if (status !== "granted") {
-          Alert.alert("Permission refusée", "Autorise la localisation !");
-          return;
+        
+        const response = await fetch(`http://192.168.1.10:3005/pros/info/${relayId}`);
+        const result = await response.json();
+        
+        console.log("Fetch result:", result);
+        
+        if (result.result && result.data) {
+          // Formatage de l'adresse complète
+          const adresseComplete = `${result.data.adresse}, ${result.data.ville} ${result.data.codePostal}`;
+          
+          setRelayData({
+            ...result.data,
+            adresseComplete: adresseComplete
+          });
+        } else {
+          throw new Error(result.error || 'Erreur lors de la récupération des données');
         }
-
-        // Coordonnées actuelles
-        const location = await Location.getCurrentPositionAsync({});
-        const { latitude, longitude } = location.coords;
-        const userCoords = `${latitude},${longitude}`;
-        const destination = encodeURIComponent(relais.adresse);
-
-        setDistanceInfo({ userCoords, destination });
       } catch (error) {
-        console.error(error);
-        Alert.alert("Erreur", "Impossible de récupérer la position.");
+        console.error("Erreur fetch pro:", error);
+        Alert.alert(
+          "Erreur", 
+          "Impossible de charger les informations du point relais.",
+          [{ text: "Retour", onPress: () => navigation.goBack() }]
+        );
       } finally {
         setLoading(false);
       }
     };
 
-    getDistance();
-  }, []);
+    if (relayId) {
+      fetchRelayData();
+    } else {
+      Alert.alert("Erreur", "Point relais non spécifié", [
+        { text: "Retour", onPress: () => navigation.goBack() }
+      ]);
+    }
+  }, [relayId, navigation]);
 
-  // Ouvre Google Maps avec itinéraire
-  const handleItineraire = () => {
-    if (!distanceInfo) return;
-    const url = `https://www.google.com/maps/dir/?api=1&origin=${distanceInfo.userCoords}&destination=${distanceInfo.destination}&travelmode=driving`;
-    Linking.openURL(url);
+  // Récupération de la géolocalisation pour l'itinéraire
+  useEffect(() => {
+    if (!relayData?.adresseComplete) return;
+
+    const getDistance = async () => {
+      try {
+        setLocationLoading(true);
+
+        const serviceEnabled = await Location.hasServicesEnabledAsync();
+        if (!serviceEnabled) return;
+
+        let { status } = await Location.getForegroundPermissionsAsync();
+        if (status !== "granted") {
+          const { status: requestStatus } = await Location.requestForegroundPermissionsAsync();
+          if (requestStatus !== "granted") return;
+          status = requestStatus;
+        }
+
+        const location = await Location.getCurrentPositionAsync({
+          accuracy: Location.Accuracy.Balanced,
+          timeout: 15000,
+          maximumAge: 60000,
+        });
+
+        const { latitude, longitude } = location.coords;
+        const userCoords = `${latitude},${longitude}`;
+        const destination = encodeURIComponent(relayData.adresseComplete);
+
+        setDistanceInfo({ userCoords, destination });
+        
+      } catch (error) {
+        console.log("Géolocalisation non disponible:", error);
+      } finally {
+        setLocationLoading(false);
+      }
+    };
+
+    getDistance();
+  }, [relayData?.adresseComplete]);
+
+  // Appel téléphonique
+  const handleCall = () => {
+    if (!relayData?.phone2) {
+      Alert.alert("Erreur", "Numéro de téléphone non disponible");
+      return;
+    }
+    const phoneNumber = `tel:${relayData.phone2}`;
+    Linking.openURL(phoneNumber);
   };
 
+  // Ouverture de Google Maps
+  const handleItineraire = () => {
+    if (!relayData?.adresseComplete) {
+      Alert.alert("Erreur", "Adresse non disponible");
+      return;
+    }
+
+    if (distanceInfo) {
+      const url = `https://www.google.com/maps/dir/?api=1&origin=${distanceInfo.userCoords}&destination=${distanceInfo.destination}&travelmode=driving`;
+      Linking.openURL(url);
+    } else {
+      const destination = encodeURIComponent(relayData.adresseComplete);
+      const url = `https://www.google.com/maps/search/?api=1&query=${destination}`;
+      Linking.openURL(url);
+    }
+  };
+
+  // Affichage du chargement
+  if (loading) {
+    return (
+      <View style={styles.fullContainer}>
+        <Header />
+        <View style={styles.loadingContainer}>
+          <Text style={styles.loadingText}>Chargement des informations...</Text>
+        </View>
+      </View>
+    );
+  }
+
+  // Affichage d'erreur
+  if (!relayData) {
+    return (
+      <View style={styles.fullContainer}>
+        <Header />
+        <View style={styles.errorContainer}>
+          <Text style={styles.errorText}>Point relais introuvable</Text>
+          <TouchableOpacity 
+            style={styles.backButton} 
+            onPress={() => navigation.goBack()}
+            activeOpacity={0.8}
+          >
+            <Text style={styles.buttonText}>Retour</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    );
+  }
+
   return (
-    <View style={{ flex: 1 }}>
+    <View style={styles.fullContainer}>
       <Header />
 
       <ScrollView contentContainerStyle={styles.container}>
-        <Text style={styles.title}>📍 Infos Point Relais</Text>
+        <Text style={styles.title}>Informations Point Relais</Text>
 
         <View style={styles.card}>
-          {/* Nom du relais */}
+          {/* Nom du point relais */}
           <View style={styles.infoBox}>
-            <Text style={styles.label}>🏠 Nom :</Text>
-            <Text style={styles.value}>{relais.nom}</Text>
+            <Text style={styles.label}>Point Relais</Text>
+            <Text style={styles.value}>{relayData.nomRelais}</Text>
           </View>
 
           {/* Adresse */}
           <View style={styles.infoBox}>
-            <Text style={styles.label}>📍 Adresse :</Text>
-            <Text style={styles.value}>{relais.adresse}</Text>
+            <Text style={styles.label}>Adresse</Text>
+            <Text style={styles.value}>{relayData.adresseComplete}</Text>
           </View>
 
-          {/* Horaires affichés en toggle */}
+          {/* Téléphone */}
+          {relayData.phone2 && (
+            <View style={styles.infoBox}>
+              <Text style={styles.label}>Téléphone</Text>
+              <TouchableOpacity onPress={handleCall} activeOpacity={0.8}>
+                <Text style={[styles.value, styles.phoneLink]}>{relayData.phone2}</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Horaires */}
           <View style={styles.infoBox}>
-            <TouchableOpacity onPress={() => setShowHoraires(!showHoraires)}>
-              <Text style={styles.label}>🕒 Horaires {showHoraires ? '▲' : '▼'}</Text>
+            <TouchableOpacity 
+              style={styles.horaireToggle}
+              onPress={() => setShowHoraires(!showHoraires)}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.label}>Horaires</Text>
+              <Text style={styles.toggleIcon}>{showHoraires ? '▲' : '▼'}</Text>
             </TouchableOpacity>
+            
             {showHoraires && (
-              <Text style={styles.value}>
-                {relais.horaires?.replace(/<br\/>/g, '\n')}
-              </Text>
+              <View style={styles.horaireContent}>
+                <Text style={styles.horaireText}>
+                  <Text style={styles.horaireBold}>Lundi - Vendredi :</Text> 10h00 - 16h00{'\n'}
+                  <Text style={styles.horaireBold}> puis :</Text> 21h45 - 22h00 (sauf vendredi){'\n'}
+                  <Text style={styles.horaireBold}>Mardi :</Text> 10h00 - 20h00{'\n'}
+                  <Text style={styles.horaireBold}>Samedi :</Text> 14h00 - 17h00{'\n'}
+                  <Text style={styles.horaireBold}>Dimanche :</Text> Fermé{'\n\n'}
+                  <Text style={styles.horaireNote}>
+                    💬 Contactez le {relayData.phone2 || "point relais"} pour toute autre demande
+                  </Text>
+                </Text>
+              </View>
             )}
           </View>
 
-          {/* Infos pratiques */}
+          {/* Informations pratiques */}
           <View style={styles.infoBox}>
-            <Text style={styles.label}>ℹ️ Infos pratiques :</Text>
+            <Text style={styles.label}>Informations pratiques</Text>
             <Text style={styles.value}>
-              {relais.infos?.replace(/<br\/>/g, '\n')}
+              🆔 Pièce d'identité obligatoire{'\n'}
+              📱 SMS 10 min avant d'arriver{'\n'}
+              📧 Reçu par SMS après dépôt possible
             </Text>
           </View>
 
-          {/* Chargement de la position */}
-          {loading && (
-            <Text style={{ marginTop: 10, color: "#666" }}>
-              ⏳ Récupération de la position...
-            </Text>
+          {/* Indicateur géolocalisation */}
+          {locationLoading && (
+            <View style={styles.geoLoading}>
+              <Text style={styles.geoLoadingText}>📍 Calcul de l'itinéraire...</Text>
+            </View>
           )}
 
-          {/* Bouton Prendre RDV (inactif pour l’instant) */}
-          <TouchableOpacity style={styles.buttonInactive} onPress={() => {}}>
-            <Text style={styles.buttonText}>📅 Prendre RDV</Text>
-          </TouchableOpacity>
+          {/* Boutons d'action */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={handleItineraire}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>
+                🗺️ {distanceInfo ? 'Itinéraire' : 'Voir sur la carte'}
+              </Text>
+            </TouchableOpacity>
 
-          {/* Bouton vers Google Maps */}
-          <TouchableOpacity
-            style={styles.buttonItineraire}
-            onPress={handleItineraire}
-            disabled={!distanceInfo}
-          >
-            <Text style={styles.buttonText}>🗺️ Itinéraire</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionButton, styles.rdvButton]}
+              onPress={handlePriseRDV}
+              activeOpacity={0.8}
+            >
+              <Text style={styles.buttonText}>📅 Prendre RDV</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </View>
@@ -125,60 +268,184 @@ const RelayInfoScreen = () => {
 };
 
 const styles = StyleSheet.create({
+  // Container principal
+  fullContainer: {
+    flex: 1,
+    backgroundColor: "#FFFFFF",
+  },
+  
   container: {
-    backgroundColor: "#fff",
-    padding: 24,
+    backgroundColor: "#FFFFFF",
+    padding: 20,
     alignItems: "center",
     paddingBottom: 40,
   },
+  
+  // Titre principal
   title: {
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: "bold",
     textAlign: "center",
     marginVertical: 20,
+    color: "#444444",
   },
+  
+  // Carte principale
   card: {
-    backgroundColor: "#f9f9f9",
+    backgroundColor: "#FFFFFF",
     padding: 20,
-    borderRadius: 12,
+    borderRadius: 16,
     width: "100%",
     maxWidth: 500,
-    elevation: 3,
-    marginBottom: 30,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 6,
+    borderLeftWidth: 4,
+    borderLeftColor: "#B48DD3",
   },
+  
+  // Boîtes d'information
   infoBox: {
-    marginBottom: 20,
+    marginBottom: 18,
   },
+  
   label: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#555",
+    color: "#444444",
+    marginBottom: 6,
+  },
+  
+  value: {
+    fontSize: 16,
+    color: "#666666",
+    lineHeight: 22,
+  },
+  
+  phoneLink: {
+    color: "#B48DD3",
+    textDecorationLine: "underline",
+    fontWeight: "600",
+  },
+  
+  // Section horaires
+  horaireToggle: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     marginBottom: 4,
   },
-  value: {
-    fontSize: 18,
-    color: "#222",
-    marginTop: 4,
+  
+  toggleIcon: {
+    fontSize: 16,
+    color: "#79B4C4",
+    fontWeight: "bold",
   },
-  buttonInactive: {
-    marginTop: 30,
-    backgroundColor: "#6a0dad",
-    paddingVertical: 12,
-    paddingHorizontal: 24,
+  
+  horaireContent: {
+    marginTop: 12,
+    padding: 14,
+    backgroundColor: "#F8F9FA",
     borderRadius: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: "#79B4C4",
   },
-  buttonItineraire: {
-    marginTop: 16,
-    backgroundColor: "#5E4AE3",
-    paddingVertical: 12,
+  
+  horaireText: {
+    fontSize: 15,
+    color: "#444444",
+    lineHeight: 22,
+  },
+  
+  horaireBold: {
+    fontWeight: "bold",
+    color: "#333333",
+  },
+  
+  horaireNote: {
+    fontStyle: "italic",
+    color: "#666666",
+    fontSize: 14,
+  },
+  
+  // Géolocalisation
+  geoLoading: {
+    padding: 12,
+    backgroundColor: "#F0F8FF",
+    borderRadius: 8,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  
+  geoLoadingText: {
+    color: "#79B4C4",
+    fontSize: 14,
+  },
+  
+  // Boutons d'action
+  buttonContainer: {
+    marginTop: 24,
+    gap: 14,
+  },
+  
+  actionButton: {
+    backgroundColor: "#B48DD3",
+    paddingVertical: 16,
     paddingHorizontal: 24,
-    borderRadius: 10,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
   },
+  
+  rdvButton: {
+    backgroundColor: "#79B4C4",
+  },
+  
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
+  },
+  
+  // États de chargement et d'erreur
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+  },
+  
+  loadingText: {
+    fontSize: 16,
+    color: "#666666",
+  },
+  
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
+    padding: 24,
+  },
+  
+  errorText: {
+    fontSize: 18,
+    color: "#D32F2F",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  
+  backButton: {
+    backgroundColor: "#B48DD3",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
   },
 });
 
