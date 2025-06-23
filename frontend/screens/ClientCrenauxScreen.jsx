@@ -14,11 +14,17 @@ import { useDispatch } from 'react-redux';
 import { setRdv } from '../reducers/rdv';
 
 const timeSlots = [
-    '10h00 - 11h00',
-    '11h00 - 12h00',
-    '13h00 - 14h00',
-    '14h00 - 15h00',
-    '15h00 - 16h00',
+    '10h00 - 10h30',
+    '10h30 - 11h00',
+    '11h00 - 11h30',
+    '11h30 - 12h00',
+    '12h00 - 13h00',
+    '13h00 - 13h30',
+    '13h30 - 14h00',
+    '14h00 - 14h30',
+    '14h30 - 15h00',
+    '15h00 - 15h30',
+    '15h30 - 16h00',
 ];
 
 export default function ClientCrenauxClient() {
