@@ -10,9 +10,6 @@ import SearchScreen from '../screens/SearchScreen';
 import CameraScreen from '../screens/CameraScreen';
 import MapScreen from '../screens/MapScreen';
 import SmsReplyScreen from '../screens/SmsReplyScreen';
-import TableauBordScreen from '../screens/TableauBordScreen';
-import ClientProfileScreen from '../screens/ClientProfileScreen';
-import RelayInfoScreen from '../screens/RelayInfoScreen';
 
 // Menu customisé
 import CustomDrawer from '../components/DrawerMenu';

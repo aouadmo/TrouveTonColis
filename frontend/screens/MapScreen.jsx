@@ -1,16 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  View, 
-  Alert 
-} from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faRoute, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import Header from '../components/Header.jsx';
+import { Polyline } from 'react-native-maps';
+import { useNavigation } from '@react-navigation/native';
+//dotenv.config();
+const OPENROUTESERVICE_API_KEY = process.env.OPENROUTESERVICE_API_KEY; //'5b3ce3597851110001cf6248d0b7b3ff939b4f9c8f75934127de1d06';//
+
 
 export default function MapScreen() {
   // States pour la gestion de la carte
@@ -54,44 +53,83 @@ export default function MapScreen() {
 
     getCurrentLocation();
   }, []);
-
-  // Récupération des points relais
-  useEffect(() => {
-    const fetchRelayPoints = async () => {
-      try {
-        const response = await fetch('http://192.168.1.10:3005/pros/adressepro');
-        const data = await response.json();
-        
-        if (data.result && data.data) {
-          setRelayPoints(data.data);
-        }
-      } catch (error) {
-        console.error('Erreur récupération points relais:', error);
-        Alert.alert('Erreur', 'Impossible de charger les points relais');
+  // redirection vers la page infos point relais
+  // 1ere partie: convertir ladresse (string) en coordonnees (latitude, longitude)
+  const handleInforPr = async () => {
+    navigation.navigate('RelayInfoScreen');
+  };
+  const getPrAdresse = async () => {
+    try {
+      const response = await fetch('http://192.168.18.102:3000/pros/adressepro');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
-
-    fetchRelayPoints();
-  }, []);
-
-  // Calcul d'itinéraire vers le point relais le plus proche
-  const handleItinerary = () => {
-    if (!currentPosition) {
-      Alert.alert('Erreur', 'Position non disponible');
-      return;
+      const data = await response.json();
+      console.log(data.adresse);
+      setPrAdresse(data.adresse);
+    } catch (error) {
+      console.error('Error fetching the address of the relay point:', error);
     }
+  }
+  // 2eme partie: generer l'itineraire entre deux points
+  const getRoute = async (startCoords, endCoords) => {
+    try {
+      const body = {
+        coordinates: [
+          [startCoords.longitude, startCoords.latitude],
+          [endCoords.longitude, endCoords.latitude],
+        ],
+      };
 
-    if (relayPoints.length === 0) {
-      Alert.alert('Erreur', 'Aucun point relais disponible');
-      return;
+      const response = await fetch('https://api.openrouteservice.org/v2/directions/foot-walking/geojson', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENROUTESERVICE_API_KEY}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      return data.features[0].geometry.coordinates; // list of [lon, lat]
+    } catch (error) {
+      console.error("Error fetching route:", error);
+      return [];
     }
+  };
+  // formater les coordonnees de la polyligne
+  const formatPolylineCoords = (coords) =>
+    coords.map(coord => ({
+      latitude: coord[1],
+      longitude: coord[0],
+    }));
 
-    // TODO: Implémenter la logique de calcul du point relais le plus proche
-    Alert.alert(
-      'Itinéraire', 
-      'Fonctionnalité en cours de développement',
-      [{ text: 'OK' }]
-    );
+  // recuperation de la position du point relais && appeler les fonctions precedentes pour afficher l'itineraire
+  const geocodeAddress = async (address) => {
+    try {
+      const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${OPENROUTESERVICE_API_KEY}&text=${encodeURIComponent(address)}`);
+      const data = await response.json();
+      const coords = data.features[0].geometry.coordinates; // [lon, lat]
+      return { latitude: coords[1], longitude: coords[0] };
+    } catch (error) {
+      console.error("Error geocoding address:", error);
+      return null;
+    }
+  };
+
+  const handleItinerary = async () => {
+    console.log('handleItinerary called');
+    getPrAdresse();
+    if (!currentPosition || !prAdresse) return;
+    console.log('Current Position:', currentPosition);
+    console.log('Point Relais Adresse:', prAdresse);
+    const destination = await geocodeAddress(prAdresse);
+    if (!destination) return;
+    console.log('Destination Coordinates:', destination);
+    const routeCoords = await getRoute(currentPosition, destination);
+    const formattedCoords = formatPolylineCoords(routeCoords);
+    setTempCoordinates(destination);  // optional, for marker
+    setPolylineCoords(formattedCoords); // this is a new state you'll add
   };
 
   // Affichage des informations sur les points relais
@@ -132,20 +170,13 @@ export default function MapScreen() {
               pinColor="#B48DD3"
             />
           )}
-
-          {/* Marqueurs des points relais */}
-          {relayPoints.map((point, index) => (
-            <Marker
-              key={index}
-              coordinate={{
-                latitude: point.latitude || 47.9025,
-                longitude: point.longitude || 1.9090,
-              }}
-              title={point.nomRelais || 'Point Relais'}
-              description={point.adresse || 'Adresse non disponible'}
-              pinColor="#79B4C4"
+          {polylineCoords.length > 0 && (
+            <Polyline
+              coordinates={polylineCoords}
+              strokeColor="#4F89E6"
+              strokeWidth={4}
             />
-          ))}
+          )}
         </MapView>
 
         {/* Boutons d'action */}
