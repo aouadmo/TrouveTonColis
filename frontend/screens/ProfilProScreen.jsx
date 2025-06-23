@@ -32,7 +32,7 @@ export default function ProDashboardScreen() {
   };  
   
   const handleUrgence = () => {
-    fetch('http://192.168.1.157:3002/pros/status', {
+    fetch('http://192.168.1.10:3005/pros/status', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isAvailable: false }),

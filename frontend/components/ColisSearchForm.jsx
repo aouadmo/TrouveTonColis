@@ -1,4 +1,3 @@
-// ColisSearchForm.jsx
 import React, { useState } from "react";
 import {
   View,
@@ -6,26 +5,31 @@ import {
   TextInput,
   TouchableOpacity,
   StyleSheet,
+  Animated,
 } from "react-native";
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
 
 const ColisSearchForm = () => {
+  // States pour la recherche
   const [searchMode, setSearchMode] = useState("tracking");
   const [trackingNumber, setTrackingNumber] = useState("");
   const [nom, setNom] = useState("");
   const [prenom, setPrenom] = useState("");
   const [result, setResult] = useState("");
   const [colisTrouves, setColisTrouves] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
   const navigation = useNavigation();
 
+  // Gestion de la recherche
   const handleSearch = async () => {
+    setIsLoading(true);
     let response;
     let data;
 
     try {
-      // Nettoyage des entrées utilisateur
       if (searchMode === "tracking") {
         const cleanedTracking = trackingNumber.trim();
         response = await fetch(`http://192.168.1.191:3002/colis/search/${cleanedTracking}`);
@@ -40,98 +44,117 @@ const ColisSearchForm = () => {
       }
 
       data = await response.json();
-
+      
       if (data.found) {
         setResult(`${Array.isArray(data.colis) ? data.colis.length : 1} colis trouvé(s)`);
         const colisArray = Array.isArray(data.colis) ? data.colis : [data.colis];
         setColisTrouves(colisArray);
       } else {
-        setResult(" Aucun colis trouvé.");
+        setResult("Aucun colis trouvé.");
         setColisTrouves([]);
       }
     } catch (error) {
-      setResult(" Erreur lors de la recherche.");
+      setResult("Erreur lors de la recherche.");
       setColisTrouves([]);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  // Changement de mode de recherche
+  const switchSearchMode = (mode) => {
+    setSearchMode(mode);
+    setTrackingNumber("");
+    setNom("");
+    setPrenom("");
+    setResult("");
+    setColisTrouves([]);
   };
 
   return (
     <View style={styles.container}>
-      {/* Onglets de recherche */}
+      
+      {/* Onglets de sélection */}
       <View style={styles.switchContainer}>
         <TouchableOpacity
           style={[styles.switchButton, searchMode === "tracking" && styles.active]}
-          onPress={() => {
-            setSearchMode("tracking");
-            setTrackingNumber("");
-            setNom("");
-            setPrenom("");
-            setResult("");
-            setColisTrouves([]);
-          }}
+          onPress={() => switchSearchMode("tracking")}
+          activeOpacity={0.8}
         >
           <Text style={styles.switchText}>Numéro de suivi</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           style={[styles.switchButton, searchMode === "name" && styles.active]}
-          onPress={() => {
-            setSearchMode("name");
-            setTrackingNumber("");
-            setNom("");
-            setPrenom("");
-            setResult("");
-            setColisTrouves([]);
-          }}
+          onPress={() => switchSearchMode("name")}
+          activeOpacity={0.8}
         >
           <Text style={styles.switchText}>Nom + Prénom</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Champs de recherche */}
+      {/* Champs de saisie */}
       {searchMode === "tracking" ? (
         <TextInput
           style={styles.input}
           placeholder="Numéro de suivi"
+          placeholderTextColor="#999"
           value={trackingNumber}
           onChangeText={setTrackingNumber}
+          autoCapitalize="none"
         />
       ) : (
         <>
           <TextInput
             style={styles.input}
             placeholder="Nom"
+            placeholderTextColor="#999"
             value={nom}
             onChangeText={setNom}
+            autoCapitalize="words"
           />
           <TextInput
             style={styles.input}
             placeholder="Prénom"
+            placeholderTextColor="#999"
             value={prenom}
             onChangeText={setPrenom}
+            autoCapitalize="words"
           />
         </>
       )}
 
       {/* Bouton de recherche */}
-      <TouchableOpacity style={styles.button} onPress={handleSearch}>
+      <TouchableOpacity 
+        style={[styles.button, isLoading && styles.buttonDisabled]} 
+        onPress={handleSearch}
+        disabled={isLoading}
+        activeOpacity={0.8}
+      >
         <FontAwesomeIcon icon={faSearch} size={20} color="#fff" />
-        <Text style={styles.buttonText}>  Rechercher</Text>
+        <Text style={styles.buttonText}>
+          {isLoading ? "Recherche..." : "Rechercher"}
+        </Text>
       </TouchableOpacity>
 
-      {/* Message résultat */}
+      {/* Résultat de la recherche */}
       {result && <Text style={styles.result}>{result}</Text>}
 
-      {/* Liste des colis */}
+      {/* Liste des colis trouvés */}
       {colisTrouves.length > 0 && colisTrouves.map((colis, index) => (
         <View key={index} style={styles.colisCard}>
-          <Text style={styles.colisText}>📦 {colis.trackingNumber}</Text>
-          <Text style={styles.colisText}>👤 {colis.nom} {colis.prenom}</Text>
+          <Text style={styles.colisText}>{colis.trackingNumber}</Text>
+          <Text style={styles.colisText}>{colis.nom} {colis.prenom}</Text>
+          <Text style={styles.statusText}>Disponible en point relais</Text>
+          
           <TouchableOpacity
             style={styles.relayButton}
-            onPress={() => navigation.navigate("RelayInfoScreen", { relais: colis.relais })}
+            onPress={() => navigation.navigate("RelayInfoScreen", { 
+              relayId: colis.relais || '6841e0438bc7de726f971515' 
+            })}
+            activeOpacity={0.8}
           >
-            <Text style={styles.relayButtonText}>Voir les infos du point relais</Text>
+            <Text style={styles.relayButtonText}>📍 Voir les infos du point relais</Text>
           </TouchableOpacity>
         </View>
       ))}
@@ -143,87 +166,133 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     alignItems: "center",
-    backgroundColor: '#FFFCF2',
+    backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
     flex: 1,
   },
+  
+  // Onglets de sélection
   switchContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 16,
+    marginBottom: 20,
     gap: 12,
   },
   switchButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    backgroundColor: "#DCD6F2",
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    backgroundColor: "#D0BCFF", // Palette Neutre - Accent alternatif
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   active: {
-    backgroundColor: "#A79ABF",
+    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    shadowOpacity: 0.15,
+    elevation: 4,
   },
   switchText: {
     color: "#fff",
     fontWeight: "bold",
-  },
-  input: {
-    borderColor: "#D0BCFF",
-    borderWidth: 1,
-    padding: 12,
-    width: '85%',
-    marginBottom: 12,
-    borderRadius: 10,
-    backgroundColor: "#FFF",
     fontSize: 14,
   },
-  button: {
-    backgroundColor: "#A79ABF",
+  
+  // Champs de saisie
+  input: {
+    borderColor: "#D0BCFF",
+    borderWidth: 2,
     padding: 14,
+    width: '90%',
+    marginBottom: 14,
+    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
+    fontSize: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  
+  // Bouton de recherche
+  button: {
+    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    padding: 16,
     borderRadius: 12,
     alignItems: "center",
     flexDirection: "row",
-    gap: 10,
-    marginBottom: 20,
+    gap: 12,
+    marginBottom: 24,
+    marginTop: 8,
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 4,
+    minWidth: 160,
+  },
+  buttonDisabled: {
+    backgroundColor: "#999",
+    elevation: 1,
   },
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 15,
+    fontSize: 16,
   },
+  
+  // Résultat de recherche
   result: {
     fontSize: 16,
     textAlign: "center",
-    marginBottom: 14,
-    color: "#4F378A",
+    marginBottom: 16,
+    color: "#444444", // Palette Neutre - Texte principal
+    fontWeight: "600",
   },
+  
+  // Cartes de colis
   colisCard: {
-    marginTop: 10,
-    padding: 14,
-    borderRadius: 12,
-    width: '90%',
-    backgroundColor: "#F3F0FC",
+    marginTop: 12,
+    padding: 18,
+    borderRadius: 14,
+    width: '95%',
+    backgroundColor: "#F8F9FA",
     alignItems: "center",
     shadowColor: '#000',
-    shadowOpacity: 0.08,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
+    borderLeftWidth: 4,
+    borderLeftColor: "#79B4C4", // Palette Neutre - Accent secondaire
   },
   colisText: {
-    fontSize: 15,
-    marginBottom: 4,
-    color: "#3E3A6D",
+    fontSize: 16,
+    marginBottom: 6,
+    color: "#444444",
+    fontWeight: "500",
   },
+  statusText: {
+    fontSize: 14,
+    marginBottom: 12,
+    color: "#79B4C4", // Palette Neutre - Accent secondaire
+    fontStyle: "italic",
+  },
+  
+  // Bouton point relais
   relayButton: {
-    backgroundColor: "#0E56B4",
-    paddingVertical: 10,
-    paddingHorizontal: 18,
-    borderRadius: 8,
-    marginTop: 10,
+    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   relayButtonText: {
     color: "#fff",

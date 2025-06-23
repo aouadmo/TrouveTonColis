@@ -106,7 +106,6 @@ router.put('/sms', authenticatePro, async (req, res) => {
 }
 );
 
-
 router.get('/sms', authenticatePro, async (req, res) => {
   const sms = await SmsMessage.findOne({ user: req.pro._id });
   if (!sms) return res.status(404).json({ result: false, error: 'Aucun message trouvé' });
@@ -159,5 +158,39 @@ router.post('/absence', (req, res) => {
 });
 
 
-module.exports = router;
+// Route publique pour récupérer les infos d'un point relais (accessible sans authentification)
+router.get('/info/:id', (req, res) => {
+  const proId = req.params.id;
+  
+  // Vérifier que l'ID est valide
+  if (!proId) {
+    return res.status(400).json({ result: false, error: 'ID du point relais manquant' });
+  }
+
+  Pro.findById(proId)
+    .select('nomRelais phone2 adresse ville codePostal') // Sélectionner UNIQUEMENT les champs demandés
+    .then(data => {
+      if (!data) {
+        return res.status(404).json({ result: false, error: 'Point relais non trouvé' });
+      }
+      
+      // Retourner les données formatées
+      res.json({ 
+        result: true, 
+        data: {
+          id: data._id,
+          nomRelais: data.nomRelais,
+          phone2: data.phone2,
+          adresse: data.adresse,
+          ville: data.ville,
+          codePostal: data.codePostal,
+          adresseComplete: `${data.adresse}, ${data.codePostal} ${data.ville}`
+        }
+      });
+    })
+    .catch(error => {
+      console.error('Erreur lors de la récupération du pro:', error);
+      res.status(500).json({ result: false, error: 'Erreur serveur' });
+    });
+});module.exports = router;
 
