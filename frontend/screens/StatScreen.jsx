@@ -22,7 +22,7 @@ export default function StatScreen() {
     else if (filter === "annee") setLabels(["2021", "2022", "2023", "2024"]);
 
     // Fetch stat colis
-    fetch(`http://192.168.1.157:3006/colis/stats`)
+    fetch(`http://192.168.1.157:3000/colis/stats`)
       .then(res => res.json())
       .then(data => {
         if (data.result) {
@@ -32,7 +32,7 @@ export default function StatScreen() {
       })
 
     // Fetch stat clients
-    fetch(`http://192.168.1.157:3006/users/stats`)
+    fetch(`http://192.168.1.157:3000/users/stats`)
       .then(res => res.json())
       .then(data => {
         if (data.result) {

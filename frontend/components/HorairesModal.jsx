@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
 export default function HorairesModal({ visible, onClose, onSave }) {
-  const token = useSelector(state => state.user.value.token); // ✅ ici et pas en dehors
+  const token = useSelector(state => state.user.value.token); 
 
   const [horaires, setHoraires] = useState(
     jours.reduce((acc, jour) => {
@@ -69,7 +69,7 @@ export default function HorairesModal({ visible, onClose, onSave }) {
     }
 
     try {
-      const response = await fetch('http://192.168.1.157:3006/pros/horaires', {
+      const response = await fetch('http://192.168.1.157:3000/pros/horaires', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
