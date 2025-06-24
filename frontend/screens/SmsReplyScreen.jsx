@@ -7,7 +7,6 @@ import {
   Platform,
   ScrollView,
   View,
-  TextInput,
   SafeAreaView,
   KeyboardAvoidingView,
 } from 'react-native';
@@ -15,6 +14,7 @@ import { useSelector } from 'react-redux';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Header from '../components/Header';
 import Constants from 'expo-constants';
+import MessageCard from "../components/MessageCardModal";
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
@@ -37,6 +37,7 @@ export default function SmsReplyScreen() {
   const [activeTab, setActiveTab] = useState("colis");
   const [loading, setLoading] = useState(false);
 
+  console.log("API_URL →", API_URL);
   // Charger les messages depuis l'API
   useEffect(() => {
     if (!token) return;
@@ -152,71 +153,18 @@ export default function SmsReplyScreen() {
     );
   };
 
-  // Composant pour un message
-  const MessageCard = ({ title, message, setMessage, messageType, icon, description }) => (
-    <View style={styles.messageCard}>
-      <View style={styles.messageHeader}>
-        <View style={styles.titleContainer}>
-          <FontAwesome5 name={icon} size={18} color="#4F378A" />
-          <Text style={styles.messageTitle}>{title}</Text>
-        </View>
-        <View style={styles.actionButtons}>
-          <TouchableOpacity
-            style={styles.resetButton}
-            onPress={() => resetMessage(messageType)}
-          >
-            <FontAwesome5 name="undo" size={14} color="#D0BCFF" />
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.editToggleButton}
-            onPress={() => toggleEditing(messageType)}
-          >
-            <FontAwesome5 
-              name={editingStates[messageType] ? "check" : "edit"} 
-              size={14} 
-              color="#4F378A" 
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
-      
-      <Text style={styles.messageDescription}>{description}</Text>
-      
-      <TextInput
-        style={[
-          styles.messageInput,
-          editingStates[messageType] && styles.messageInputEditing
-        ]}
-        value={message}
-        onChangeText={setMessage}
-        multiline
-        editable={editingStates[messageType]}
-        placeholder={`Votre message ${title.toLowerCase()}`}
-        placeholderTextColor="#D0BCFF"
-        textAlignVertical="top"
-      />
-      
-      <View style={styles.characterCount}>
-        <Text style={styles.characterCountText}>
-          {message.length} caractères
-        </Text>
-      </View>
-    </View>
-  );
 
   return (
     <SafeAreaView style={styles.wrapper}>
       <Header />
       
-      <KeyboardAvoidingView
+       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
         keyboardVerticalOffset={Platform.OS === "ios" ? 80 : 0}
       >
         <Text style={styles.title}>📱 Mes Messages SMS</Text>
-        <Text style={styles.subtitle}>
-          Personnalisez vos réponses automatiques
-        </Text>
+        <Text style={styles.subtitle}>Personnalisez vos réponses automatiques</Text>
 
         {/* Onglets */}
         <View style={styles.tabContainer}>
@@ -225,25 +173,33 @@ export default function SmsReplyScreen() {
             onPress={() => setActiveTab("colis")}
             activeOpacity={0.8}
           >
-            <FontAwesome5 name="box" size={16} color={activeTab === "colis" ? "#4F378A" : "#D0BCFF"} />
+            <FontAwesome5
+              name="box"
+              size={16}
+              color={activeTab === "colis" ? "#4F378A" : "#D0BCFF"}
+            />
             <Text style={[styles.tabText, activeTab === "colis" && styles.activeTabText]}>
               Colis
             </Text>
           </TouchableOpacity>
-          
+
           <TouchableOpacity
             style={[styles.tabButton, activeTab === "absence" && styles.activeTab]}
             onPress={() => setActiveTab("absence")}
             activeOpacity={0.8}
           >
-            <FontAwesome5 name="calendar-times" size={16} color={activeTab === "absence" ? "#4F378A" : "#D0BCFF"} />
+            <FontAwesome5
+              name="calendar-times"
+              size={16}
+              color={activeTab === "absence" ? "#4F378A" : "#D0BCFF"}
+            />
             <Text style={[styles.tabText, activeTab === "absence" && styles.activeTabText]}>
               Absences
             </Text>
           </TouchableOpacity>
         </View>
 
-        <ScrollView 
+        <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
@@ -257,8 +213,11 @@ export default function SmsReplyScreen() {
                 messageType="reception"
                 icon="box-open"
                 description="Message envoyé quand un nouveau colis arrive"
+                editing={editingStates.reception}
+                toggleEditing={toggleEditing}
+                resetMessage={resetMessage}
               />
-              
+
               <MessageCard
                 title="Relance client"
                 message={reminderMessage}
@@ -266,6 +225,9 @@ export default function SmsReplyScreen() {
                 messageType="reminder"
                 icon="bell"
                 description="Message de rappel pour les colis non récupérés"
+                editing={editingStates.reminder}
+                toggleEditing={toggleEditing}
+                resetMessage={resetMessage}
               />
             </>
           ) : (
@@ -277,8 +239,11 @@ export default function SmsReplyScreen() {
                 messageType="urgent"
                 icon="exclamation-triangle"
                 description="Message d'urgence en cas d'imprévu"
+                editing={editingStates.urgent}
+                toggleEditing={toggleEditing}
+                resetMessage={resetMessage}
               />
-              
+
               <MessageCard
                 title="Absence prévue"
                 message={absentPlannedMessage}
@@ -286,6 +251,9 @@ export default function SmsReplyScreen() {
                 messageType="planned"
                 icon="calendar-alt"
                 description="Message pour les congés et absences planifiées"
+                editing={editingStates.planned}
+                toggleEditing={toggleEditing}
+                resetMessage={resetMessage}
               />
             </>
           )}
@@ -293,16 +261,14 @@ export default function SmsReplyScreen() {
 
         {/* Bouton de sauvegarde */}
         <View style={styles.saveContainer}>
-          <TouchableOpacity 
-            style={[styles.saveButton, loading && styles.saveButtonDisabled]} 
+          <TouchableOpacity
+            style={[styles.saveButton, loading && styles.saveButtonDisabled]}
             onPress={saveMessages}
             disabled={loading}
             activeOpacity={0.8}
           >
             {loading ? (
-              <View style={styles.loadingContainer}>
-                <Text style={styles.saveButtonText}>Sauvegarde...</Text>
-              </View>
+              <Text style={styles.saveButtonText}>Sauvegarde...</Text>
             ) : (
               <>
                 <FontAwesome5 name="save" size={16} color="#4F378A" />
@@ -385,90 +351,6 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
     paddingHorizontal: 20,
-  },
-
-  // Messages
-  messageCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: '#D0BCFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  messageHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1,
-  },
-  messageTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4F378A',
-  },
-  actionButtons: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  resetButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#FFFAF5',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#D0BCFF',
-  },
-  editToggleButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: '#D0BCFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  messageDescription: {
-    fontSize: 14,
-    color: '#D0BCFF',
-    marginBottom: 12,
-    fontStyle: 'italic',
-  },
-  messageInput: {
-    backgroundColor: '#FFFAF5',
-    borderWidth: 1,
-    borderColor: '#D0BCFF',
-    borderRadius: 8,
-    padding: 12,
-    minHeight: 80,
-    fontSize: 16,
-    color: '#4F378A',
-    textAlignVertical: 'top',
-  },
-  messageInputEditing: {
-    borderColor: '#4F378A',
-    borderWidth: 2,
-    backgroundColor: '#FFFFFF',
-  },
-  characterCount: {
-    alignItems: 'flex-end',
-    marginTop: 4,
-  },
-  characterCountText: {
-    fontSize: 12,
-    color: '#D0BCFF',
   },
 
   // Sauvegarde

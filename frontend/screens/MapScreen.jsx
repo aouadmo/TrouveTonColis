@@ -17,6 +17,8 @@ export default function MapScreen() {
   const [relayPoints, setRelayPoints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [prAdresse, setPrAdresse] = useState('');
+  const [tempCoordinates, setTempCoordinates] = useState(null);
+  const [polylineCoords, setPolylineCoords] = useState([]);
   const navigation = useNavigation();
 
   // Récupération de la position utilisateur
@@ -60,6 +62,7 @@ export default function MapScreen() {
   const handleInforPr = async () => {
     navigation.navigate('RelayInfoScreen');
   };
+  
   const getPrAdresse = async () => {
     try {
       const response = await fetch('http://192.168.18.102:3006/pros/adressepro');
