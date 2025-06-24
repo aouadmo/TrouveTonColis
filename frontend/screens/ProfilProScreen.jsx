@@ -4,7 +4,9 @@ import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
 import CoordonneesModal from '../components/CoordonneesModal';
 import AbsenceModal from '../components/AbsenceModal';
+import Constants from 'expo-constants';
 
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function ProDashboardScreen() {
   const navigation = useNavigation();
@@ -32,7 +34,7 @@ export default function ProDashboardScreen() {
   };  
   
   const handleUrgence = () => {
-    fetch('http://192.168.1.10:3005/pros/status', {
+    fetch(`${API_URL}/pros/status`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isAvailable: false }),

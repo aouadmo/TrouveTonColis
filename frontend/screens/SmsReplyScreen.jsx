@@ -14,6 +14,9 @@ import {
 import { useSelector } from 'react-redux';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Header from '../components/Header';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function SmsReplyScreen() {
   const token = useSelector((state) => state.user.value.token);
@@ -40,7 +43,7 @@ export default function SmsReplyScreen() {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch("http://192.168.1.10:3002/pros/sms", {
+        const response = await fetch(`${API_URL}/pros/sms`, {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,7 +93,7 @@ export default function SmsReplyScreen() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://192.168.1.10:3002/pros/sms", {
+      const response = await fetch(`${API_URL}/pros/sms`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

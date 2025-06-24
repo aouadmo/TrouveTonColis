@@ -18,6 +18,9 @@ import Header from '../components/Header';
 import ClientSmsModal from '../components/ClientSmSModal';
 import { updateClientProfile } from '../reducers/userProfile';
 import { navigate } from '../navigation/navigationRef';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function ClientProfileScreen() {
   const token = useSelector(state => state.user.value.token);
@@ -39,7 +42,7 @@ export default function ClientProfileScreen() {
   useEffect(() => {
      if (!token) return;
 
-    fetch(`http://192.168.1.191:3002/users/client/${token}`)
+    fetch(`${API_URL}/users/client/${token}`)
       .then(res => res.json())
       .then(data => {
         if (data?.result && data?.client) {
@@ -73,7 +76,7 @@ export default function ClientProfileScreen() {
   }, [token, dispatch]);
 
   const handleSave = () => {
-    fetch('http://192.168.1.191:3002/users/update', {
+    fetch(`${API_URL}/users/update`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

@@ -11,6 +11,9 @@ import { faRoute, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import Header from '../components/Header.jsx';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function MapScreen() {
   // States pour la gestion de la carte
@@ -59,7 +62,7 @@ export default function MapScreen() {
   useEffect(() => {
     const fetchRelayPoints = async () => {
       try {
-        const response = await fetch('http://192.168.1.10:3005/pros/adressepro');
+        const response = await fetch(`${API_URL}/pros/adressepro`);
         const data = await response.json();
         
         if (data.result && data.data) {
