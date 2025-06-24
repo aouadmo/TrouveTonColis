@@ -99,9 +99,6 @@ export default function MonStockScreen() {
           text: 'Supprimer',
           style: 'destructive',
           onPress: () => {
-            // TODO: Ajouter la route DELETE dans le backend
-            // fetch(`http://192.168.1.10:3005/colis/${trackingNumber}`, { method: 'DELETE' })
-            console.log(`TODO: Supprimer le colis ${trackingNumber} via API`);
             
             // Pour l'instant, on supprime juste du store local
             const colisUpdated = colis.filter(c => c.trackingNumber !== trackingNumber);

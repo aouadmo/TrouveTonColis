@@ -60,8 +60,8 @@ export default function ClientProfileScreen() {
         }
       })
       .catch(err => {
-        console.log('❌ Erreur fetch client :', err);
-        Alert.alert('❌ Erreur', 'Impossible de charger votre profil');
+        console.log(' Erreur fetch client :', err);
+        Alert.alert(' Erreur', 'Impossible de charger votre profil');
       });
 
     // Fetch statistiques (factices pour l'instant)

@@ -60,7 +60,7 @@ export default function MapScreen() {
   };
   const getPrAdresse = async () => {
     try {
-      const response = await fetch('http://192.168.18.102:3000/pros/adressepro');
+      const response = await fetch('http://192.168.18.102:3006/pros/adressepro');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

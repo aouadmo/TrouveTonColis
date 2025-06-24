@@ -40,7 +40,7 @@ export default function SmsReplyScreen() {
 
     const fetchMessages = async () => {
       try {
-        const response = await fetch("http://192.168.1.157:3000/pros/sms", {
+        const response = await fetch("http://192.168.1.10:3006/pros/sms", {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
@@ -90,7 +90,7 @@ export default function SmsReplyScreen() {
     setLoading(true);
 
     try {
-      const response = await fetch("http://192.168.1.157:3000/pros/sms", {
+      const response = await fetch("http://192.168.1.10:3006/pros/sms", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

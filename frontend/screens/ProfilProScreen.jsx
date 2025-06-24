@@ -33,7 +33,7 @@ export default function ProfilProScreen() {
   };  
   
   const handleUrgence = () => {
-    fetch('http://192.168.1.10:3005/pros/status', {
+    fetch('http://192.168.1.10:3006/pros/status', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ isAvailable: false }),
