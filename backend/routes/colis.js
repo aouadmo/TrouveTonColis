@@ -4,6 +4,7 @@ const Colis = require('../models/colis');
 const dotenv = require('dotenv');
 const FormData = require('form-data');
 const fetch = require('node-fetch');
+const {groupByPeriod} = require('../modules/groupByPeriod')
 const { InferenceClient } = require('@huggingface/inference');
 
 dotenv.config();

@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { 
-  StyleSheet, 
-  Text, 
-  TouchableOpacity, 
-  View, 
-  Alert 
-} from 'react-native';
+import { useEffect, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
 import { faRoute, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 import Header from '../components/Header.jsx';
-import Constants from 'expo-constants';
+import { Polyline } from 'react-native-maps';
+import { useNavigation } from '@react-navigation/native';
+//dotenv.config();
+const OPENROUTESERVICE_API_KEY = process.env.OPENROUTESERVICE_API_KEY; //'5b3ce3597851110001cf6248d0b7b3ff939b4f9c8f75934127de1d06';//
 
-const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function MapScreen() {
   // States pour la gestion de la carte
   const [currentPosition, setCurrentPosition] = useState(null);
   const [relayPoints, setRelayPoints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [prAdresse, setPrAdresse] = useState('');
+  const navigation = useNavigation();
 
   // Récupération de la position utilisateur
   useEffect(() => {
@@ -31,7 +29,7 @@ export default function MapScreen() {
           const location = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.Balanced
           });
-          
+
           setCurrentPosition({
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -57,44 +55,83 @@ export default function MapScreen() {
 
     getCurrentLocation();
   }, []);
-
-  // Récupération des points relais
-  useEffect(() => {
-    const fetchRelayPoints = async () => {
-      try {
-        const response = await fetch(`${API_URL}/pros/adressepro`);
-        const data = await response.json();
-        
-        if (data.result && data.data) {
-          setRelayPoints(data.data);
-        }
-      } catch (error) {
-        console.error('Erreur récupération points relais:', error);
-        Alert.alert('Erreur', 'Impossible de charger les points relais');
+  // redirection vers la page infos point relais
+  // 1ere partie: convertir ladresse (string) en coordonnees (latitude, longitude)
+  const handleInforPr = async () => {
+    navigation.navigate('RelayInfoScreen');
+  };
+  const getPrAdresse = async () => {
+    try {
+      const response = await fetch('http://192.168.18.102:3006/pros/adressepro');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
-    };
-
-    fetchRelayPoints();
-  }, []);
-
-  // Calcul d'itinéraire vers le point relais le plus proche
-  const handleItinerary = () => {
-    if (!currentPosition) {
-      Alert.alert('Erreur', 'Position non disponible');
-      return;
+      const data = await response.json();
+      console.log(data.adresse);
+      setPrAdresse(data.adresse);
+    } catch (error) {
+      console.error('Error fetching the address of the relay point:', error);
     }
+  }
+  // 2eme partie: generer l'itineraire entre deux points
+  const getRoute = async (startCoords, endCoords) => {
+    try {
+      const body = {
+        coordinates: [
+          [startCoords.longitude, startCoords.latitude],
+          [endCoords.longitude, endCoords.latitude],
+        ],
+      };
 
-    if (relayPoints.length === 0) {
-      Alert.alert('Erreur', 'Aucun point relais disponible');
-      return;
+      const response = await fetch('https://api.openrouteservice.org/v2/directions/foot-walking/geojson', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${OPENROUTESERVICE_API_KEY}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      const data = await response.json();
+      return data.features[0].geometry.coordinates; // list of [lon, lat]
+    } catch (error) {
+      console.error("Error fetching route:", error);
+      return [];
     }
+  };
+  // formater les coordonnees de la polyligne
+  const formatPolylineCoords = (coords) =>
+    coords.map(coord => ({
+      latitude: coord[1],
+      longitude: coord[0],
+    }));
 
-    // TODO: Implémenter la logique de calcul du point relais le plus proche
-    Alert.alert(
-      'Itinéraire', 
-      'Fonctionnalité en cours de développement',
-      [{ text: 'OK' }]
-    );
+  // recuperation de la position du point relais && appeler les fonctions precedentes pour afficher l'itineraire
+  const geocodeAddress = async (address) => {
+    try {
+      const response = await fetch(`https://api.openrouteservice.org/geocode/search?api_key=${OPENROUTESERVICE_API_KEY}&text=${encodeURIComponent(address)}`);
+      const data = await response.json();
+      const coords = data.features[0].geometry.coordinates; // [lon, lat]
+      return { latitude: coords[1], longitude: coords[0] };
+    } catch (error) {
+      console.error("Error geocoding address:", error);
+      return null;
+    }
+  };
+
+  const handleItinerary = async () => {
+    console.log('handleItinerary called');
+    getPrAdresse();
+    if (!currentPosition || !prAdresse) return;
+    console.log('Current Position:', currentPosition);
+    console.log('Point Relais Adresse:', prAdresse);
+    const destination = await geocodeAddress(prAdresse);
+    if (!destination) return;
+    console.log('Destination Coordinates:', destination);
+    const routeCoords = await getRoute(currentPosition, destination);
+    const formattedCoords = formatPolylineCoords(routeCoords);
+    setTempCoordinates(destination);  // optional, for marker
+    setPolylineCoords(formattedCoords); // this is a new state you'll add
   };
 
   // Affichage des informations sur les points relais
@@ -117,10 +154,10 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <Header />
-      
+
       <View style={styles.mapContainer}>
         <Text style={styles.title}>Localisation des Points Relais</Text>
-        
+
         <MapView
           style={styles.map}
           initialRegion={defaultRegion}
@@ -129,33 +166,26 @@ export default function MapScreen() {
         >
           {/* Marqueur position utilisateur */}
           {currentPosition && (
-            <Marker 
-              coordinate={currentPosition} 
-              title="Ma position" 
+            <Marker
+              coordinate={currentPosition}
+              title="Ma position"
               pinColor="#B48DD3"
             />
           )}
-
-          {/* Marqueurs des points relais */}
-          {relayPoints.map((point, index) => (
-            <Marker
-              key={index}
-              coordinate={{
-                latitude: point.latitude || 47.9025,
-                longitude: point.longitude || 1.9090,
-              }}
-              title={point.nomRelais || 'Point Relais'}
-              description={point.adresse || 'Adresse non disponible'}
-              pinColor="#79B4C4"
+          {polylineCoords.length > 0 && (
+            <Polyline
+              coordinates={polylineCoords}
+              strokeColor="#4F89E6"
+              strokeWidth={4}
             />
-          ))}
+          )}
         </MapView>
 
         {/* Boutons d'action */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            onPress={handleItinerary} 
-            style={styles.button} 
+          <TouchableOpacity
+            onPress={handleItinerary}
+            style={styles.button}
             activeOpacity={0.8}
             disabled={isLoading}
           >
@@ -163,9 +193,9 @@ export default function MapScreen() {
             <Text style={styles.textButton}>Calculer l'itinéraire</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={handlePointRelaisInfo} 
-            style={[styles.button, styles.secondaryButton]} 
+          <TouchableOpacity
+            onPress={handlePointRelaisInfo}
+            style={[styles.button, styles.secondaryButton]}
             activeOpacity={0.8}
           >
             <FontAwesomeIcon icon={faInfoCircle} size={18} color="#fff" />
@@ -182,13 +212,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
   },
-  
+
   // Container de la carte
   mapContainer: {
     flex: 1,
     padding: 16,
   },
-  
+
   // Titre
   title: {
     fontSize: 20,
@@ -197,7 +227,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-  
+
   // Carte
   map: {
     flex: 1,
@@ -209,12 +239,12 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
-  
+
   // Container des boutons
   buttonContainer: {
     gap: 12,
   },
-  
+
   // Boutons principaux
   button: {
     flexDirection: 'row',
@@ -229,12 +259,12 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
-  
+
   // Bouton secondaire
   secondaryButton: {
     backgroundColor: '#79B4C4', // Palette Neutre - Accent secondaire
   },
-  
+
   // Texte des boutons
   textButton: {
     color: '#ffffff',

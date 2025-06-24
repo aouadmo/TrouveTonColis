@@ -32,43 +32,34 @@ export default function MonStockScreen() {
   moment.locale('fr');
 
   // Récupération des colis
-  const fetchColis = async () => {
-    try {
-      const response = await fetch(`${API_URL}/colis`);
-      const data = await response.json();
-      
-      if (data.result) {
-        const today = moment();
-        const enrichedColis = data.stock.map(item => {
-          if (item.status === 'réservé') {
-            return { ...item, computedStatus: 'réservé' };
-          }
-
-          const arrival = moment(item.arrivalDate);
-          const days = today.diff(arrival, 'days');
-          
-          let computedStatus = 'en attente';
-          if (days >= 7) {
-            computedStatus = 'relance possible';
-          } else if (days >= 5) {
-            computedStatus = 'j+5';
-          }
-
-          return { ...item, computedStatus, daysInStock: days };
-        });
-        
-        dispatch(setColis(enrichedColis));
-      }
-    } catch (error) {
-      console.error('Erreur lors du fetch des colis:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
   useEffect(() => {
-    fetchColis();
+    fetch(`${API_URL}/colis`) 
+      .then(res => res.json())
+      .then(data => {
+        if (data.result) {
+          const today = moment();
+          // On ajoute chaque colis avec un champ "computedStatus"
+          const enrichedColis = data.stock.map(item => {
+            if (item.status === 'réservé') {
+              return { ...item, computedStatus: 'réservé' }; // Partie colis réservés à dynamiser plus tard en fonction de la prise de RDV client
+            }
+  
+            const arrival = moment(item.arrivalDate); // Date d'arrivée du colis
+            const days = today.diff(arrival, 'days'); // Calcul du nombre de jours écoulés
+            // Attribution du statut dynamique selon l'ancienneté
+            let computedStatus = 'en attente';
+            if (days >= 7) {
+              computedStatus = 'relance possible';
+            } else if (days >= 5) {
+              computedStatus = 'j+5';
+            }
+  
+            return { ...item, computedStatus };
+          });
+        // Envoi des colis avec leur statut dans le store Redux
+          dispatch(setColis(enrichedColis));
+        }
+      })
   }, []);
 
   const onRefresh = () => {

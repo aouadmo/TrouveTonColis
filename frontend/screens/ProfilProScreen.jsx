@@ -5,12 +5,14 @@ import Header from '../components/Header';
 import CoordonneesModal from '../components/CoordonneesModal';
 import AbsenceModal from '../components/AbsenceModal';
 import Constants from 'expo-constants';
+import HorairesModal from '../components/HorairesModal';
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
-export default function ProDashboardScreen() {
+export default function ProfilProScreen() {
   const navigation = useNavigation();
   const [isUnavailable, setIsUnavailable] = useState(false);
+  const [horairesModalVisible, setHorairesModalVisible] = useState(false);
   const [options, setOptions] = useState([
     { label: 'Ajouter le nom et prénom du client', checked: false },
     { label: 'Ajouter les horaires de la semaine', checked: false },
@@ -53,7 +55,7 @@ export default function ProDashboardScreen() {
       <Header role="pro" />
       <Text style={styles.title}>Gestion de ton point relais</Text>
 
-      <TouchableOpacity style={styles.mainButton} onPress={() => navigation.navigate('ProHorairesScreen')}>
+      <TouchableOpacity style={styles.mainButton} onPress={() => setHorairesModalVisible(true)}>
         <Text style={styles.mainButtonText}>Modifie les horaires de la semaine</Text>
       </TouchableOpacity>
 
@@ -99,6 +101,7 @@ export default function ProDashboardScreen() {
       )}
         <CoordonneesModal visible={coordonnesModal} onClose={() => setCoordonneesModal(false)} />
         <AbsenceModal visible={absenceModal} onClose={() => setAbsenceModal(false)} />
+        <HorairesModal visible={horairesModalVisible} onClose={() => setHorairesModalVisible(false)} />
     </ScrollView>
   );
 }
