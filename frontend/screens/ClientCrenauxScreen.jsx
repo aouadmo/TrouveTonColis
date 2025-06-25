@@ -34,7 +34,6 @@ export default function ClientCrenauxClient() {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
-    const goToSearch = () => navigate('SearchScreen');
 
     const handleDateChange = (event, date) => {
         setShowDatePicker(false);

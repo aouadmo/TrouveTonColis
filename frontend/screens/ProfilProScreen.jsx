@@ -6,6 +6,7 @@ import CoordonneesModal from '../components/CoordonneesModal';
 import AbsenceModal from '../components/AbsenceModal';
 import Constants from 'expo-constants';
 import HorairesModal from '../components/HorairesModal';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
@@ -51,8 +52,9 @@ export default function ProfilProScreen() {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.wrapper}>
       <Header role="pro" />
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Gestion de ton point relais</Text>
 
       <TouchableOpacity style={styles.mainButton} onPress={() => setHorairesModalVisible(true)}>
@@ -103,12 +105,18 @@ export default function ProfilProScreen() {
         <AbsenceModal visible={absenceModal} onClose={() => setAbsenceModal(false)} />
         <HorairesModal visible={horairesModalVisible} onClose={() => setHorairesModalVisible(false)} />
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  wrapper: {
+    flex: 1,
+    backgroundColor: '#FFFAF5', // Palette Pro - Fond rose très pâle
+  },
   container: {
-    backgroundColor: '#FFF4ED',
+    flex: 1,
+    backgroundColor: '#FFFAF5',
     paddingHorizontal: 20,
     paddingBottom: 40,
   },
@@ -132,7 +140,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   section: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFFFFF',
     padding: 16,
     borderRadius: 12,
     marginBottom: 20,

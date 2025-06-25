@@ -59,12 +59,13 @@ export default function MonStockScreen() {
         // Envoi des colis avec leur statut dans le store Redux
           dispatch(setColis(enrichedColis));
         }
+        setLoading(false);
       })
   }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchColis();
+    fetchColis(); // CLOTILDE: Mettre ici la fonction de rafraîchissement des colis, tu apelles la fonction fetchColis mais pas créer. c'est quoi ce boulot ? :p
   };
 
   // Statistiques
