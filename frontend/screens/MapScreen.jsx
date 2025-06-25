@@ -16,7 +16,9 @@ export default function MapScreen() {
   const [currentPosition, setCurrentPosition] = useState(null);
   const [relayPoints, setRelayPoints] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const [prAdresse, setPrAdresse] = useState('');
+  const [tempCoordinates, setTempCoordinates] = useState(null);
+  const [polylineCoords, setPolylineCoords] = useState([]); // pour stock
   // Récupération de la position utilisateur
   useEffect(() => {
     const getCurrentLocation = async () => {
@@ -55,6 +57,7 @@ export default function MapScreen() {
   }, []);
   // redirection vers la page infos point relais
   // 1ere partie: convertir ladresse (string) en coordonnees (latitude, longitude)
+  const navigation = useNavigation();
   const handleInforPr = async () => {
     navigation.navigate('RelayInfoScreen');
   };
