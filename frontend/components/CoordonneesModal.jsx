@@ -18,7 +18,7 @@ export default function CoordonneesModal({ visible, onClose }) {
   };
 
   const handleSubmit = () => {
-    fetch('http://192.168.1.10:3006/pros/update', {
+    fetch('http://192.168.1.10:3002/pros/update', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: user.token, ...form }),

@@ -32,11 +32,11 @@ const ColisSearchForm = () => {
     try {
       if (searchMode === "tracking") {
         const cleanedTracking = trackingNumber.trim();
-        response = await fetch(`http://192.168.1.157:3000/colis/search/${cleanedTracking}`);
+        response = await fetch(`http://192.168.1.10:3002/colis/search/${cleanedTracking}`);
       } else {
         const cleanedNom = nom.trim().toLowerCase();
         const cleanedPrenom = prenom.trim().toLowerCase();
-        response = await fetch("http://192.168.1.157:3000/colis/search/name", {
+        response = await fetch("http://192.168.1.10:3002/colis/searchname", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nom: cleanedNom, prenom: cleanedPrenom }),
