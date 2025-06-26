@@ -10,6 +10,9 @@ import SearchScreen from '../screens/SearchScreen';
 import CameraScreen from '../screens/CameraScreen';
 import MapScreen from '../screens/MapScreen';
 import SmsReplyScreen from '../screens/SmsReplyScreen';
+import TableauBordScreen from '../screens/TableauBordScreen';
+//import ClientProfileScreen from '../screens/ClientProfileScreenn';
+import RelayInfoScreen from '../screens/RelayInfoScreen';
 
 // Menu customisé
 import CustomDrawer from '../components/DrawerMenu';
@@ -73,11 +76,7 @@ export default function DrawerNavigator() {
         component={TableauBordScreen}
         options={{ title: 'Tableau de bord pros' }}
       />
-      <Drawer.Screen
-        name="ClientProfileScreen"
-        component={ClientProfileScreen}
-        options={{ title: 'Profil client' }}
-      />
+       {/* <Drawer.Screen name="ClientProfileScreen" component={ClientProfileScreen} options={{ title: 'Profil client' }}/>*/}
       <Drawer.Screen
         name="RelayInfoScreen"
         component={RelayInfoScreen}

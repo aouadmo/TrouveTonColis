@@ -25,44 +25,43 @@ export default function MonStockScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Configuration moment en français
   moment.locale('fr');
 
-  // Récupération des colis
-  useEffect(() => {
+  const fetchColis = () => {
     fetch('http://192.168.1.157:3000/colis') 
       .then(res => res.json())
       .then(data => {
         if (data.result) {
           const today = moment();
-          // On ajoute chaque colis avec un champ "computedStatus"
           const enrichedColis = data.stock.map(item => {
-            if (item.status === 'réservé') {
-              return { ...item, computedStatus: 'réservé' }; // Partie colis réservés à dynamiser plus tard en fonction de la prise de RDV client
+            if (item.status === 'réservé' || item.rdvConfirmed) {
+              return { ...item, computedStatus: 'réservé' };
             }
-  
-            const arrival = moment(item.arrivalDate); // Date d'arrivée du colis
-            const days = today.diff(arrival, 'days'); // Calcul du nombre de jours écoulés
-            // Attribution du statut dynamique selon l'ancienneté
+            const arrival = moment(item.arrivalDate);
+            const days = today.diff(arrival, 'days');
             let computedStatus = 'en attente';
-            if (days >= 7) {
-              computedStatus = 'relance possible';
-            } else if (days >= 5) {
-              computedStatus = 'j+5';
-            }
-  
+            if (days >= 7) computedStatus = 'relance possible';
+            else if (days >= 5) computedStatus = 'j+5';
             return { ...item, computedStatus };
           });
-        // Envoi des colis avec leur statut dans le store Redux
           dispatch(setColis(enrichedColis));
         }
       })
+      .finally(() => {
+        setRefreshing(false);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchColis();
   }, []);
 
   const onRefresh = () => {
     setRefreshing(true);
     fetchColis();
   };
+
 
   // Statistiques
   const getStats = () => {

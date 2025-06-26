@@ -8,9 +8,9 @@ const screenWidth = Dimensions.get("window").width;
 
 export default function StatScreen() {
   const [filter, setFilter] = useState('semaine');
-  const [colisData, setColisData] = useState([]);
-  const [clientData, setClientData] = useState([]);
-  const [tipsData, setTipsData] = useState([]);
+  const [colisData, setColisData] = useState([0, 0, 0, 0]);
+  const [clientData, setClientData] = useState([0, 0, 0, 0]);
+  const [tipsData, setTipsData] = useState([0, 0, 0, 0]);
   const [labels, setLabels] = useState([]);
   const [totalClients, setTotalClients] = useState(0);
   const [bestColisScore, setBestColisScore] = useState(0);
@@ -44,16 +44,21 @@ export default function StatScreen() {
 
     // Données pourboires (à dynamiser)
     if (filter === "semaine") setTipsData([5, 15, 10, 20]);
-    else if (filter === "mois") setTipsData([200, 180, 300, 220]);
-    else if (filter === "annee") setTipsData([800, 1200, 900, 1500]);
+    else if (filter === "mois") setTipsData([20, 30, 40, 50]);
+    else if (filter === "annee") setTipsData([20, 50, 80, 100]);
   }, [filter]);
 
+  const safeArray = (arr) =>
+    Array.isArray(arr) && arr.length > 0
+      ? arr.map((x) => (isNaN(x) ? 0 : x))
+      : [0, 0, 0, 0];
+  
   const data = {
     labels,
     datasets: [
-      { data: colisData, strokeWidth: 2, color: () => `#4B1D9A` },
-      { data: clientData, strokeWidth: 2, color: () => `#00B0B9` },
-      { data: tipsData, strokeWidth: 2, color: () => `#50C878` },
+      { data: safeArray(colisData), strokeWidth: 2, color: () => `#4B1D9A` },
+      { data: safeArray(clientData), strokeWidth: 2, color: () => `#00B0B9` },
+      { data: safeArray(tipsData), strokeWidth: 2, color: () => `#50C878` },
     ],
     legend: ["Colis", "Inscriptions", "Pourboires"]
   };

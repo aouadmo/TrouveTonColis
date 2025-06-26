@@ -32,7 +32,7 @@ const RelayInfoScreen = () => {
       try {
         setLoading(true);
         
-        const response = await fetch(`http://192.168.1.10:3005/pros/info/${relayId}`);
+        const response = await fetch(`http://192.168.1.157:3000/pros/info/${relayId}`);
         const result = await response.json();
         
         console.log("Fetch result:", result);
@@ -208,20 +208,17 @@ const RelayInfoScreen = () => {
               <Text style={styles.toggleIcon}>{showHoraires ? '▲' : '▼'}</Text>
             </TouchableOpacity>
             
-            {showHoraires && (
-              <View style={styles.horaireContent}>
-                <Text style={styles.horaireText}>
-                  <Text style={styles.horaireBold}>Lundi - Vendredi :</Text> 10h00 - 16h00{'\n'}
-                  <Text style={styles.horaireBold}> puis :</Text> 21h45 - 22h00 (sauf vendredi){'\n'}
-                  <Text style={styles.horaireBold}>Mardi :</Text> 10h00 - 20h00{'\n'}
-                  <Text style={styles.horaireBold}>Samedi :</Text> 14h00 - 17h00{'\n'}
-                  <Text style={styles.horaireBold}>Dimanche :</Text> Fermé{'\n\n'}
-                  <Text style={styles.horaireNote}>
-                    💬 Contactez le {relayData.phone2 || "point relais"} pour toute autre demande
-                  </Text>
-                </Text>
-              </View>
-            )}
+            {showHoraires && relayData.horaires && (
+             <View style={styles.horaireContent}>
+               {Object.entries(relayData.horaires).map(([jour, data]) => (
+               <Text key={jour} style={styles.horaireText}>
+               <Text style={styles.horaireBold}>{jour.charAt(0).toUpperCase() + jour.slice(1)} :</Text>{' '}
+               {data.ferme ? 'Fermé' : `${data.matin.ouverture} - ${data.matin.fermeture} / ${data.apresMidi.ouverture} - ${data.apresMidi.fermeture}`}
+      </Text>
+    ))}
+  </View>
+)}
+        
           </View>
 
           {/* Informations pratiques */}
