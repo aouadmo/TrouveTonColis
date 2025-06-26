@@ -109,117 +109,113 @@ export default function TableauBordScreen() {
   return (
     <SafeAreaView style={styles.container}>
       <Header />
-      <ScrollView contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
-        <Text style={styles.title}>📊 Tableau de bord</Text>
-        <Text style={styles.subtitle}>Bonjour Cécile ! Voici un aperçu de votre activité</Text>
+      <View style={styles.twoColumnsContainer}>
 
-        {/* Rendez-vous */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>📅 Rendez-vous du jour</Text>
-          {todayRdvList.length > 0 ? (
-            todayRdvList.map((rdv, index) => (
-              <Text key={index} style={styles.rdv}>
-                - {rdv.time} : {rdv.client ?? 'Client'}
-              </Text>
-            ))
-          ) : (
-            <Text style={styles.rdv}>- Pas de rendez-vous pour aujourd'hui</Text>
-          )}
+        {/* Colonne gauche - Menu vertical */}
+        <View style={styles.leftColumn}>
+          <Text style={styles.sectionTitle}>🚀 Accès rapide</Text>
+          {quickActions.map((action) => (
+            <TouchableOpacity
+              key={action.id}
+              style={styles.verticalActionCard}
+              onPress={action.action}
+              activeOpacity={0.8}
+            >
+              <FontAwesome5 name={action.icon} size={20} color="#D0BCFF" />
+              <Text style={styles.verticalActionText}>{action.title}</Text>
+            </TouchableOpacity>
+          ))}
         </View>
 
-        {/* Statistiques */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>📈 Aujourd'hui</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <FontAwesome5 name="box-open" size={20} color="#4F378A" />
-              <Text style={styles.statNumber}>{stats.colisArrivesAujourdhui}</Text>
-              <Text style={styles.statLabel}>Arrivés</Text>
-            </View>
-            <View style={styles.statCard}>
-              <FontAwesome5 name="handshake" size={20} color="#059669" />
-              <Text style={styles.statNumber}>{stats.colisRecuperesAujourdhui}</Text>
-              <Text style={styles.statLabel}>Récupérés</Text>
+        {/* Colonne droite - Contenu principal */}
+        <ScrollView contentContainerStyle={styles.rightColumn} showsVerticalScrollIndicator={false}>
+          <Text style={styles.title}>📊 Tableau de bord</Text>
+          <Text style={styles.subtitle}>Bonjour Cécile ! Voici un aperçu de votre activité</Text>
+
+          {/* Rendez-vous */}
+          <View style={styles.statsSection}>
+            <Text style={styles.sectionTitle}>📅 Rendez-vous du jour</Text>
+            {todayRdvList.length > 0 ? (
+              todayRdvList.map((rdv, index) => (
+                <Text key={index} style={styles.rdv}>
+                  - {rdv.time} : {rdv.client ?? 'Client'}
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.rdv}>- Pas de rendez-vous pour aujourd'hui</Text>
+            )}
+          </View>
+
+          {/* Statistiques */}
+          <View style={styles.statsSection}>
+            <Text style={styles.sectionTitle}>📈 Aujourd'hui</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <FontAwesome5 name="box-open" size={20} color="#4F378A" />
+                <Text style={styles.statNumber}>{stats.colisArrivesAujourdhui}</Text>
+                <Text style={styles.statLabel}>Arrivés</Text>
+              </View>
+              <View style={styles.statCard}>
+                <FontAwesome5 name="handshake" size={20} color="#059669" />
+                <Text style={styles.statNumber}>{stats.colisRecuperesAujourdhui}</Text>
+                <Text style={styles.statLabel}>Récupérés</Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Statistiques générales */}
-        <View style={styles.statsSection}>
-          <Text style={styles.sectionTitle}>📦 Vue d'ensemble</Text>
-          <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <FontAwesome5 name="warehouse" size={20} color="#4F378A" />
-              <Text style={styles.statNumber}>{stats.totalColisEnStock}</Text>
-              <Text style={styles.statLabel}>En stock</Text>
-            </View>
-            <View style={[styles.statCard, stats.colisExpiresBientot > 0 && styles.alertCard]}>
-              <FontAwesome5
-                name="exclamation-triangle"
-                size={20}
-                color={stats.colisExpiresBientot > 0 ? "#DC2626" : "#4F378A"}
-              />
-              <Text style={[styles.statNumber, stats.colisExpiresBientot > 0 && styles.alertNumber]}>
-                {stats.colisExpiresBientot}
-              </Text>
-              <Text style={styles.statLabel}>Expirent bientôt</Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Actions rapides */}
-        <View style={styles.actionsSection}>
-          <Text style={styles.sectionTitle}>🚀 Actions rapides</Text>
-          <View style={styles.actionsGrid}>
-            {quickActions.map((action) => (
-              <TouchableOpacity
-                key={action.id}
-                style={styles.actionCard}
-                onPress={action.action}
-                activeOpacity={0.8}
-              >
-                <View style={styles.actionIcon}>
-                  <FontAwesome5 name={action.icon} size={20} color="#4F378A" />
-                </View>
-                <View style={styles.actionContent}>
-                  <Text style={styles.actionTitle}>{action.title}</Text>
-                  <Text style={styles.actionDescription}>{action.description}</Text>
-                </View>
-                <FontAwesome5 name="chevron-right" size={16} color="#D0BCFF" />
-              </TouchableOpacity>
-            ))}
-          </View>
-        </View>
-
-        {/* Bouton d'urgence */}
-        <TouchableOpacity
-          onPress={handleUrgence}
-          style={[styles.urgenceButton, isUrgenceActive && styles.urgenceButtonActive]}
-        >
-          <FontAwesomeIcon
-            icon={isUrgenceActive ? faTimesCircle : faExclamationTriangle}
-            size={20}
-            color="#fff"
-          />
-          <Text style={styles.urgenceText}>
-            {isUrgenceActive ? "Mettre fin à l'urgence" : "Envoyer un message d'urgence"}
-          </Text>
-        </TouchableOpacity>
-
-        {/* Infos utiles */}
-        <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>ℹ️ Infos utiles</Text>
-          <View style={styles.infoCard}>
-            <FontAwesome5 name="calendar-day" size={16} color="#4F378A" />
-            <View style={styles.infoContent}>
-              <Text style={styles.infoTitle}>Horaires aujourd'hui</Text>
-              <Text style={styles.infoText}>
-                {new Date().getDay() === 2 ? "10h-20h" : "10h-16h puis 21h45-22h"}
-              </Text>
+          {/* Vue d'ensemble */}
+          <View style={styles.statsSection}>
+            <Text style={styles.sectionTitle}>📦 Vue d'ensemble</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <FontAwesome5 name="warehouse" size={20} color="#4F378A" />
+                <Text style={styles.statNumber}>{stats.totalColisEnStock}</Text>
+                <Text style={styles.statLabel}>En stock</Text>
+              </View>
+              <View style={[styles.statCard, stats.colisExpiresBientot > 0 && styles.alertCard]}>
+                <FontAwesome5
+                  name="exclamation-triangle"
+                  size={20}
+                  color={stats.colisExpiresBientot > 0 ? "#DC2626" : "#4F378A"}
+                />
+                <Text style={[styles.statNumber, stats.colisExpiresBientot > 0 && styles.alertNumber]}>
+                  {stats.colisExpiresBientot}
+                </Text>
+                <Text style={styles.statLabel}>Expirent bientôt</Text>
+              </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
+
+          {/* Bouton d'urgence */}
+          <TouchableOpacity
+            onPress={handleUrgence}
+            style={[styles.urgenceButton, isUrgenceActive && styles.urgenceButtonActive]}
+          >
+            <FontAwesomeIcon
+              icon={isUrgenceActive ? faTimesCircle : faExclamationTriangle}
+              size={20}
+              color="#fff"
+            />
+            <Text style={styles.urgenceText}>
+              {isUrgenceActive ? "Mettre fin à l'urgence" : "Envoyer un message d'urgence"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* Infos utiles */}
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>ℹ️ Infos utiles</Text>
+            <View style={styles.infoCard}>
+              <FontAwesome5 name="calendar-day" size={16} color="#4F378A" />
+              <View style={styles.infoContent}>
+                <Text style={styles.infoTitle}>Horaires aujourd'hui</Text>
+                <Text style={styles.infoText}>
+                  {new Date().getDay() === 2 ? "10h-20h" : "10h-16h puis 21h45-22h"}
+                </Text>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </View>
     </SafeAreaView>
   );
 }
@@ -397,5 +393,47 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#D0BCFF',
     lineHeight: 20,
+  },
+  twoColumnsContainer: {
+    flex: 1,
+    flexDirection: 'row',
+  },
+
+  leftColumn: {
+    width: '30%',
+    padding: 12,
+    backgroundColor: '#F5F3FF', // doux violet clair
+    borderRightWidth: 1,
+    borderRightColor: '#E0D7F8',
+  },
+
+  rightColumn: {
+    flexGrow: 1,
+    padding: 20,
+    backgroundColor: '#FFFAF5',
+    paddingBottom: 40,
+  },
+  verticalActionCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#4F378A',
+    paddingVertical: 50,
+    paddingHorizontal: 8,
+    borderRadius: 30,
+    marginBottom: 30,
+    borderLeftWidth: 4,
+    borderLeftColor: '#D0BCFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+    gap: 10,
+  },
+
+  verticalActionText: {
+    fontSize: 14,
+    color: '#FFF',
+    fontWeight: '600',
   },
 });

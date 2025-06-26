@@ -15,6 +15,10 @@ import { useDispatch } from 'react-redux';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { login } from '../reducers/user';
 import { useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
+
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function SignInModal({ visible, onClose }) {
   const [email, setEmail] = useState('');
@@ -37,7 +41,7 @@ export default function SignInModal({ visible, onClose }) {
     setError('');
   
     try {
-      let response = await fetch('http://192.168.1.191:3006/pros/signin', {
+      let response = await fetch(`${API_URL}/pros/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),
@@ -54,7 +58,7 @@ export default function SignInModal({ visible, onClose }) {
         return;
       }
 
-      response = await fetch('http://192.168.1.191:3006/users/signin', {
+      response = await fetch(`${API_URL}/users/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),

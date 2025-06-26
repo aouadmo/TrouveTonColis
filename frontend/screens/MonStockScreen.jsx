@@ -59,6 +59,7 @@ export default function MonStockScreen() {
         // Envoi des colis avec leur statut dans le store Redux
           dispatch(setColis(enrichedColis));
         }
+        setLoading(false);
       })
   }, []);
 

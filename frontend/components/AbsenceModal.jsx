@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSelector } from 'react-redux';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function AbsenceModal({ visible, onClose }) {
   const user = useSelector(state => state.user.value);
@@ -11,7 +14,7 @@ export default function AbsenceModal({ visible, onClose }) {
   };
 
   const handleSubmit = () => {
-    fetch('http://192.168.1.10:3006/pros/absence', {
+    fetch(`${API_URL}/pros/absence`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: user.token, ...form }),
