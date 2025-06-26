@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Switch, Platform, ScrollView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSelector } from 'react-redux';
+import Constants from 'expo-constants';
+
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
@@ -69,7 +73,7 @@ export default function HorairesModal({ visible, onClose, onSave }) {
     }
 
     try {
-      const response = await fetch('http://192.168.1.157:3000/pros/horaires', {
+      const response = await fetch(`${API_URL}/pros/horaires`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

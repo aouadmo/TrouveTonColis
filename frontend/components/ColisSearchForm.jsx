@@ -10,6 +10,9 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useNavigation } from "@react-navigation/native";
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 const ColisSearchForm = () => {
   // States pour la recherche
@@ -32,11 +35,11 @@ const ColisSearchForm = () => {
     try {
       if (searchMode === "tracking") {
         const cleanedTracking = trackingNumber.trim();
-        response = await fetch(`http://192.168.1.10:3002/colis/search/${cleanedTracking}`);
+        response = await fetch(`${API_URL}/colis/search/${cleanedTracking}`);
       } else {
         const cleanedNom = nom.trim().toLowerCase();
         const cleanedPrenom = prenom.trim().toLowerCase();
-        response = await fetch("http://192.168.1.10:3002/colis/searchname", {
+        response = await fetch(`${API_URL}/colis/searchname`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ nom: cleanedNom, prenom: cleanedPrenom }),
