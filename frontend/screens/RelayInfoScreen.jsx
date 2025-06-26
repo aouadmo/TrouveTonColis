@@ -12,6 +12,7 @@ import * as Location from "expo-location";
 import { Linking } from "react-native";
 import Header from "../components/Header";
 import Constants from 'expo-constants';
+import { navigate } from "../navigation/navigationRef";
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
@@ -20,10 +21,10 @@ const RelayInfoScreen = () => {
   const navigation = useNavigation();
   
 
-const  handlePriseRDV = () => {
-  
-  navigation.navigate('ClientCreneauxScreen', { relayId: relayId });
-}
+const handlePriseRDV = () => {  
+  navigate('ClientCrenauxScreen');
+};
+
   // Récupération de l'ID du point relais
   const relayId = route.params?.relayId || route.params?.relais?.id;
   
