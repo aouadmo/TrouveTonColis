@@ -12,21 +12,23 @@ import * as Location from "expo-location";
 import { Linking } from "react-native";
 import Header from "../components/Header";
 import Constants from 'expo-constants';
+import { navigate } from "../navigation/navigationRef";
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
 const RelayInfoScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
-  
 
-const  handlePriseRDV = () => {
-  
-  navigation.navigate('ClientCreneauxScreen', { relayId: relayId });
-}
+
   // Récupération de l'ID du point relais
   const relayId = route.params?.relayId || route.params?.relais?.id;
-  
+  const handlePriseRDV = () => {
+    navigate("ClientCrenauxScreen" , {params: { relayId: relayId } });
+
+    // navigate("ClientNavigation" , {screen: 'ClientCrenauxScreen',  params: { relayId: relayId } });
+  }
+
   // States pour la gestion des données
   const [relayData, setRelayData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,16 +41,16 @@ const  handlePriseRDV = () => {
     const fetchRelayData = async () => {
       try {
         setLoading(true);
-        
+
         const response = await fetch(`${API_URL}/pros/info/${relayId}`);
         const result = await response.json();
-        
+
         console.log("Fetch result:", result);
-        
+
         if (result.result && result.data) {
           // Formatage de l'adresse complète
           const adresseComplete = `${result.data.adresse}, ${result.data.ville} ${result.data.codePostal}`;
-          
+
           setRelayData({
             ...result.data,
             adresseComplete: adresseComplete
@@ -59,7 +61,7 @@ const  handlePriseRDV = () => {
       } catch (error) {
         console.error("Erreur fetch pro:", error);
         Alert.alert(
-          "Erreur", 
+          "Erreur",
           "Impossible de charger les informations du point relais.",
           [{ text: "Retour", onPress: () => navigation.goBack() }]
         );
@@ -106,7 +108,7 @@ const  handlePriseRDV = () => {
         const destination = encodeURIComponent(relayData.adresseComplete);
 
         setDistanceInfo({ userCoords, destination });
-        
+
       } catch (error) {
         console.log("Géolocalisation non disponible:", error);
       } finally {
@@ -163,8 +165,8 @@ const  handlePriseRDV = () => {
         <Header />
         <View style={styles.errorContainer}>
           <Text style={styles.errorText}>Point relais introuvable</Text>
-          <TouchableOpacity 
-            style={styles.backButton} 
+          <TouchableOpacity
+            style={styles.backButton}
             onPress={() => navigation.goBack()}
             activeOpacity={0.8}
           >
@@ -207,7 +209,7 @@ const  handlePriseRDV = () => {
 
           {/* Horaires */}
           <View style={styles.infoBox}>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.horaireToggle}
               onPress={() => setShowHoraires(!showHoraires)}
               activeOpacity={0.8}
@@ -215,7 +217,7 @@ const  handlePriseRDV = () => {
               <Text style={styles.label}>Horaires</Text>
               <Text style={styles.toggleIcon}>{showHoraires ? '▲' : '▼'}</Text>
             </TouchableOpacity>
-            
+
             {showHoraires && (
               <View style={styles.horaireContent}>
                 <Text style={styles.horaireText}>
@@ -281,14 +283,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#FFFFFF",
   },
-  
+
   container: {
     backgroundColor: "#FFFFFF",
     padding: 20,
     alignItems: "center",
     paddingBottom: 40,
   },
-  
+
   // Titre principal
   title: {
     fontSize: 24,
@@ -297,7 +299,7 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     color: "#444444",
   },
-  
+
   // Carte principale
   card: {
     backgroundColor: "#FFFFFF",
@@ -313,31 +315,31 @@ const styles = StyleSheet.create({
     borderLeftWidth: 4,
     borderLeftColor: "#B48DD3",
   },
-  
+
   // Boîtes d'information
   infoBox: {
     marginBottom: 18,
   },
-  
+
   label: {
     fontSize: 16,
     fontWeight: "bold",
     color: "#444444",
     marginBottom: 6,
   },
-  
+
   value: {
     fontSize: 16,
     color: "#666666",
     lineHeight: 22,
   },
-  
+
   phoneLink: {
     color: "#B48DD3",
     textDecorationLine: "underline",
     fontWeight: "600",
   },
-  
+
   // Section horaires
   horaireToggle: {
     flexDirection: "row",
@@ -345,13 +347,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 4,
   },
-  
+
   toggleIcon: {
     fontSize: 16,
     color: "#79B4C4",
     fontWeight: "bold",
   },
-  
+
   horaireContent: {
     marginTop: 12,
     padding: 14,
@@ -360,24 +362,24 @@ const styles = StyleSheet.create({
     borderLeftWidth: 3,
     borderLeftColor: "#79B4C4",
   },
-  
+
   horaireText: {
     fontSize: 15,
     color: "#444444",
     lineHeight: 22,
   },
-  
+
   horaireBold: {
     fontWeight: "bold",
     color: "#333333",
   },
-  
+
   horaireNote: {
     fontStyle: "italic",
     color: "#666666",
     fontSize: 14,
   },
-  
+
   // Géolocalisation
   geoLoading: {
     padding: 12,
@@ -386,18 +388,18 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     alignItems: "center",
   },
-  
+
   geoLoadingText: {
     color: "#79B4C4",
     fontSize: 14,
   },
-  
+
   // Boutons d'action
   buttonContainer: {
     marginTop: 24,
     gap: 14,
   },
-  
+
   actionButton: {
     backgroundColor: "#B48DD3",
     paddingVertical: 16,
@@ -409,18 +411,18 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
-  
+
   rdvButton: {
     backgroundColor: "#79B4C4",
   },
-  
+
   buttonText: {
     color: "#fff",
     fontWeight: "bold",
     fontSize: 16,
     textAlign: "center",
   },
-  
+
   // États de chargement et d'erreur
   loadingContainer: {
     flex: 1,
@@ -428,12 +430,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#FFFFFF",
   },
-  
+
   loadingText: {
     fontSize: 16,
     color: "#666666",
   },
-  
+
   errorContainer: {
     flex: 1,
     justifyContent: "center",
@@ -441,14 +443,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
     padding: 24,
   },
-  
+
   errorText: {
     fontSize: 18,
     color: "#D32F2F",
     marginBottom: 20,
     textAlign: "center",
   },
-  
+
   backButton: {
     backgroundColor: "#B48DD3",
     paddingVertical: 12,

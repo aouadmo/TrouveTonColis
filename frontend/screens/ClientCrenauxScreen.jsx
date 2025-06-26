@@ -8,10 +8,11 @@ import {
     Platform,
     Alert,
 } from 'react-native';
+import { navigate } from "../navigation/navigationRef";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { navigate } from '../navigation/navigationRef';
 import { useDispatch } from 'react-redux';
 import { setRdv } from '../reducers/rdv';
+import { useNavigation } from '@react-navigation/native';
 
 const timeSlots = [
     '10h00 - 10h30',
@@ -29,7 +30,7 @@ const timeSlots = [
 
 export default function ClientCrenauxClient() {
     const dispatch = useDispatch();
-
+    const navigation = useNavigation();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
@@ -62,7 +63,7 @@ export default function ClientCrenauxClient() {
             [
                 {
                     text: 'OK',
-                    onPress: () => navigate('SearchScreen'),
+                    onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'SearchScreen'}),
                 },
             ]
         );
