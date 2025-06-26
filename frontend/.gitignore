@@ -31,7 +31,7 @@ yarn-error.*
 *.pem
 
 # dotenv environment variables file
-env
+.env
 
 # typescript
 *.tsbuildinfo
