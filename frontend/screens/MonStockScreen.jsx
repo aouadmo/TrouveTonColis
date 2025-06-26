@@ -65,7 +65,7 @@ export default function MonStockScreen() {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchColis();
+    fetchColis(); // CLOTILDE: Mettre ici la fonction de rafraîchissement des colis, tu apelles la fonction fetchColis mais pas créer. c'est quoi ce boulot ? :p
   };
 
   // Statistiques

@@ -1,89 +1,98 @@
 import React from "react";
 import {
-  View, 
-  KeyboardAvoidingView, 
-  StyleSheet, 
-  Text, 
+  View,
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
   TouchableOpacity,
-  Animated
-} from 'react-native';
-import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome';
-import { faSearch, faUserPlus, faBarcode, faMapMarkerAlt } from '@fortawesome/free-solid-svg-icons';
+} from "react-native";
+import { FontAwesomeIcon } from "@fortawesome/react-native-fontawesome";
+import { Image } from "react-native";
+import {
+  faSearch,
+  faUserPlus,
+  faBox,
+} from "@fortawesome/free-solid-svg-icons";
 
-import Header from '../components/Header';
-import { navigate } from '../navigation/navigationRef';
+import Header from "../components/Header";
+import { navigate } from "../navigation/navigationRef";
 
-export default function HomeScreen({ navigation }) {
-  
-  // Handlers de navigation
-  const handleSignUp = () => navigate('SignUpScreen');
-  const handleSearch = () => navigate('SearchScreen');
-  const gotocamerascreen = () => navigate('CameraScreen');
-  const gotomapScreen = () => navigate('MapScreen');
+export default function HomeScreen() {
+  const handleSignUp = () => navigate("SignUpScreen");
+  const handleSearch = () => navigate("SearchScreen");
 
   return (
     <View style={styles.wrapper}>
       <Header />
-      <KeyboardAvoidingView style={styles.container}>
-        
-        {/* Section de bienvenue */}
-        <View style={styles.textContainer}>
-          <Text style={styles.title}>Bienvenue sur TTC</Text>
-          <Text style={styles.subtitle}>L'application simple et rapide pour vos colis</Text>
-          <Text style={styles.description}>Vous attendez un colis ? Vous êtes au bon endroit.</Text>
-          <Text style={styles.description}>Points relais et clients, tout le monde est le bienvenu !</Text>
+      <KeyboardAvoidingView style={styles.container} behavior="padding">
+        {/* Hero section */}
+<View style={styles.heroSection}>
+  <Image
+    source={require("../assets/logoTTC_sansTexte.png")}
+    style={styles.logo}
+    resizeMode="contain"
+  />
+  <Text style={styles.appTitle}>Trouve ton colis</Text>
+  <Text style={styles.heroSubtitle}>La solution simple et efficace</Text>
+          {/* Avantages */}
+          <View style={styles.benefitsSection}>
+            <Text style={styles.benefitsTitle}>
+              Pourquoi choisir Trouve ton colis ?
+            </Text>
+            <View style={styles.benefitsList}>
+              <View style={styles.benefitItem}>
+                <FontAwesomeIcon icon={faSearch} size={16} color="#79B4C4" />
+                <Text style={styles.benefitText}>
+                  Recherche instantanée et précise
+                </Text>
+              </View>
+              <View style={styles.benefitItem}>
+                <FontAwesomeIcon icon={faBox} size={16} color="#79B4C4" />
+                <Text style={styles.benefitText}>Suivi de tous vos colis</Text>
+              </View>
+            </View>
+          </View>
         </View>
 
-        {/* Hub des actions principales */}
-        <View style={styles.hubContainer}>
-          <Text style={styles.hubTitle}>Actions rapides</Text>
-          <Text style={styles.hubSubtitle}>Choisissez une action pour commencer</Text>
+        {/* Actions */}
+        <View style={styles.actionsContainer}>
+          <Text style={styles.sectionTitle}>Que souhaitez-vous faire ?</Text>
 
-          {/* Bouton Recherche */}
-          <Text style={styles.buttonDescription}>Consultez si votre colis est arrivé</Text>
-          <TouchableOpacity 
-            onPress={handleSearch} 
-            style={styles.button} 
-            activeOpacity={0.8}
-          >
-            <FontAwesomeIcon icon={faSearch} size={18} color="#fff" />
-            <Text style={styles.textButton}>Rechercher un colis</Text>
-          </TouchableOpacity>
+          <View style={styles.primaryActionContainer}>
+            <Text style={styles.actionDescription}>
+              Vérifiez rapidement l'état et la localisation de votre colis
+            </Text>
+            <TouchableOpacity
+              onPress={handleSearch}
+              style={[styles.button, styles.primaryButton]}
+              activeOpacity={0.8}
+            >
+              <FontAwesomeIcon icon={faSearch} size={20} color="#fff" />
+              <Text style={styles.buttonText}>Rechercher mon colis</Text>
+            </TouchableOpacity>
+          </View>
 
-          {/* Bouton Inscription */}
-          <Text style={styles.buttonDescription}>Créez un compte client ou pro</Text>
-          <TouchableOpacity 
-            onPress={handleSignUp} 
-            style={styles.button} 
-            activeOpacity={0.8}
-          >
-            <FontAwesomeIcon icon={faUserPlus} size={18} color="#fff" />
-            <Text style={styles.textButton}>Inscription</Text>
-          </TouchableOpacity>
+          <View style={styles.separator}>
+            <View style={styles.separatorLine} />
+            <Text style={styles.separatorText}>ou</Text>
+            <View style={styles.separatorLine} />
+          </View>
 
-          {/* Bouton Scanner */}
-          <Text style={styles.buttonDescription}>Scannez vos colis pour les enregistrer</Text>
-          <TouchableOpacity 
-            onPress={gotocamerascreen} 
-            style={styles.button} 
-            activeOpacity={0.8}
-          >
-            <FontAwesomeIcon icon={faBarcode} size={18} color="#fff" />
-            <Text style={styles.textButton}>Scanner un colis</Text>
-          </TouchableOpacity>
-
-          {/* Bouton Itinéraire */}
-          <Text style={styles.buttonDescription}>Trouvez votre itinéraire vers le point relais</Text>
-          <TouchableOpacity 
-            onPress={gotomapScreen} 
-            style={styles.button} 
-            activeOpacity={0.8}
-          >
-            <FontAwesomeIcon icon={faMapMarkerAlt} size={18} color="#fff" />
-            <Text style={styles.textButton}>Trouver l'itinéraire</Text>
-          </TouchableOpacity>
+          <View style={styles.secondaryActionContainer}>
+            <Text style={styles.actionDescription}>
+              Nouveau ici ? Créez un compte pour profiter de toutes nos
+              fonctionnalités
+            </Text>
+            <TouchableOpacity
+              onPress={handleSignUp}
+              style={[styles.button, styles.secondaryButton]}
+              activeOpacity={0.8}
+            >
+              <FontAwesomeIcon icon={faUserPlus} size={18} color="#B48DD3" />
+              <Text style={styles.secondaryButtonText}>Créer un compte</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-
       </KeyboardAvoidingView>
     </View>
   );
@@ -92,99 +101,165 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
+    backgroundColor: "#FFFFFF",
   },
   container: {
     flex: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
     paddingHorizontal: 20,
-    paddingTop: 30,
-    alignItems: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
   },
-  
-  // Section de bienvenue
-  textContainer: {
-    marginBottom: 30,
-    alignItems: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#444444', // Palette Neutre - Texte principal
-    textAlign: 'center',
+  logo: {
+  width: 80,
+  height: 80,
+  marginBottom: 8,
+},
+
+
+  // Section Héro + Avantages
+  heroSection: {
+    width: "100%",
+    maxWidth: 320,
+    alignItems: "center",
     marginBottom: 10,
   },
-  subtitle: {
-    fontSize: 16,
-    color: '#444444',
-    textAlign: 'center',
-    fontWeight: '500',
-    marginBottom: 12,
+  appTitle: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#444444",
+    marginTop: 6,
+    marginBottom: 4,
+    textAlign: "center",
   },
-  description: {
-    fontSize: 14,
-    color: '#666666',
-    textAlign: 'center',
-    marginBottom: 5,
-  },
-  
-  // Hub des actions
-  hubContainer: {
-    marginTop: 10,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 20,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 6,
-    borderLeftWidth: 4,
-    borderLeftColor: '#B48DD3', // Palette Neutre - Boutons principaux
-    width: '100%',
-  },
-  hubTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#444444',
+  heroSubtitle: {
+    fontSize: 15,
+    color: "#B48DD3",
+    fontWeight: "600",
     marginBottom: 6,
-    textAlign: 'center',
+    textAlign: "center",
   },
-  hubSubtitle: {
-    fontSize: 14,
-    color: '#79B4C4', // Palette Neutre - Accent secondaire
-    marginBottom: 20,
-    textAlign: 'center',
-    fontStyle: 'italic',
+
+  // Avantages
+  benefitsSection: {
+    width: "100%",
+    backgroundColor: "#F8F9FA",
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: "#E9ECEF",
+    marginBottom: 10,
   },
-  
-  // Boutons d'action
-  buttonDescription: {
-    fontSize: 13,
-    color: '#666666',
-    marginTop: 14,
+  benefitsTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#444444",
+    textAlign: "center",
     marginBottom: 8,
-    textAlign: 'center',
   },
+  benefitsList: {
+    gap: 4,
+  },
+  benefitItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  benefitText: {
+    fontSize: 13,
+    color: "#666666",
+    marginLeft: 8,
+    fontWeight: "500",
+  },
+
+  // Carte blanche actions
+  actionsContainer: {
+    width: "100%",
+    maxWidth: 320,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 14,
+    padding: 14,
+    borderLeftWidth: 3,
+    borderLeftColor: "#B48DD3",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#444444",
+    textAlign: "center",
+    marginBottom: 10,
+  },
+  actionDescription: {
+    fontSize: 12,
+    color: "#666666",
+    textAlign: "center",
+    marginBottom: 6,
+    lineHeight: 15,
+  },
+
+  // Boutons
   button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#B48DD3', // Palette Neutre - Boutons principaux
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
-    marginBottom: 12,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-    // Animation légère au touch
-    transform: [{ scale: 1 }],
   },
-  textButton: {
-    color: '#ffffff',
-    fontWeight: '600',
-    fontSize: 16,
-    marginLeft: 12,
+  primaryButton: {
+    backgroundColor: "#B48DD3",
+  },
+  secondaryButton: {
+    backgroundColor: "#FFFFFF",
+    borderWidth: 2,
+    borderColor: "#B48DD3",
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontWeight: "700",
+    fontSize: 15,
+    marginLeft: 10,
+  },
+  secondaryButtonText: {
+    color: "#B48DD3",
+    fontWeight: "700",
+    fontSize: 15,
+    marginLeft: 8,
+  },
+
+  // Séparateur
+  separator: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 8,
+  },
+  separatorLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: "#E5E5E5",
+  },
+  separatorText: {
+    marginHorizontal: 10,
+    fontSize: 12,
+    color: "#999999",
+    fontStyle: "italic",
+  },
+
+  primaryActionContainer: {
+    marginBottom: 10,
+  },
+  secondaryActionContainer: {
+    marginTop: 10,
   },
 });

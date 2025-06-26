@@ -27,7 +27,7 @@ function Header({ role }) {
 
   // Couleurs selon l'UI Kit
   const getBackgroundColor = () => {
-    if (role === 'pro') return '#FFFAF5';      // Pro - Rose très pâle
+    // if (role === 'pro') return '#FFFAF5';      // Pro - Rose très pâle
     if (role === 'client') return '#FFFCE9';   // Client - Beige très clair
     return '#FFFFFF';                          // Neutre - Fond blanc
   };
@@ -110,7 +110,7 @@ function Header({ role }) {
             >
               <FontAwesome 
                 name="sign-out" 
-                size={26} 
+                size={22} 
                 color="#EC6E5B" 
               />
               <Text style={styles.authText}>Déconnexion</Text>
@@ -123,7 +123,7 @@ function Header({ role }) {
             >
               <FontAwesome 
                 name="user-circle-o" 
-                size={26} 
+                size={22} 
                 color="#555" 
               />
               <Text style={styles.authText}>Connexion</Text>
@@ -170,10 +170,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 10,
+    marginHorizontal: 5,
   },
   rightSection: {
-    width: 80,
+    width: 110,
     alignItems: 'center',
   },
 
@@ -181,33 +181,35 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 8,
     borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   authButton: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 6,
   },
 
   // Logo et titre
   logo: {
-    width: 60,
-    height: 60,
+    width: 50,
+    height: 50,
   },
   title: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 8,
+    marginLeft: 6,
     textAlign: 'center',
   },
 
   // Texte de connexion
   authText: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#888',
     textAlign: 'center',
     fontWeight: '500',
-    marginTop: 2,
+    marginTop: 3,
   },
 });
 
