@@ -9,7 +9,9 @@ const colisSchema = mongoose.Schema({
     poids: Number,
     date: Date,
     extractedFromOCR: Object,
-});
+    status: { type: String, default: 'en attente' }, // Pour suivi
+    rdvConfirmed: { type: Boolean, default: false }, // Pour réservation
+  });
 
 const Colis = mongoose.model('colis', colisSchema);
 

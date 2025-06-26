@@ -224,7 +224,7 @@ router.get('/info/:id', (req, res) => {
   }
 
   Pro.findById(proId)
-    .select('nomRelais phone2 adresse ville codePostal') // Sélectionner UNIQUEMENT les champs demandés
+    .select('nomRelais phone2 adresse ville codePostal horaires') // Sélectionner UNIQUEMENT les champs demandés
     .then(data => {
       if (!data) {
         return res.status(404).json({ result: false, error: 'Point relais non trouvé' });
@@ -240,6 +240,7 @@ router.get('/info/:id', (req, res) => {
           adresse: data.adresse,
           ville: data.ville,
           codePostal: data.codePostal,
+          horaires: data.horaires,
           adresseComplete: `${data.adresse}, ${data.codePostal} ${data.ville}`
         }
       });
