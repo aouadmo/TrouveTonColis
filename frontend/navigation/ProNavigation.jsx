@@ -14,8 +14,7 @@ import ProfilProScreen from '../screens/ProfilProScreen';
 import SmsReplyScreen from '../screens/SmsReplyScreen';
 import CameraScreen from '../screens/CameraScreen';
 
-// Les Écrans secondaires de Mon Profil Pro
-import EditMessageAccueil from '../screens/EditMessageAccueil';
+// Écran secondaire de Mon Profil Pro
 import Stat from '../screens/StatScreen';
 
 const Stack = createNativeStackNavigator();
@@ -27,7 +26,6 @@ function ProfilProStackScreen() {
     <ProfilProStack.Navigator screenOptions={{ headerShown: false }}>
       <ProfilProStack.Screen name="ProfilProHome" component={ProfilProScreen} />
       <ProfilProStack.Screen name="SmsReplyScreen" component={SmsReplyScreen} />
-      <ProfilProStack.Screen name="EditMessageAccueilScreen" component={EditMessageAccueil} />
       <ProfilProStack.Screen name="StatScreen" component={Stat} />
     </ProfilProStack.Navigator>
   );

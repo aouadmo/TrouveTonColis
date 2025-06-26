@@ -7,6 +7,7 @@ import user from './reducers/user';
 import userProfile from './reducers/userProfile';
 import colis from './reducers/colis';
 import rdv from './reducers/rdv';
+import horaires from './reducers/horaires';
 
 const persistConfig = {
   key: 'root',
@@ -14,7 +15,7 @@ const persistConfig = {
   blacklist: [],
 };
 
-const rootReducer = combineReducers({ user, userProfile, colis, rdv });
+const rootReducer = combineReducers({ user, userProfile, colis, rdv, horaires });
 const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({

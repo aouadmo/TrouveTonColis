@@ -47,7 +47,7 @@ const TabNavigatorClient = () => {
     >
       {/* Définition des onglets - ordre d'affichage */}
       <Tab.Screen 
-        name="ProfilClient" 
+        name="ClientProfileScreen" 
         component={ClientProfileScreen} 
         options={{ title: 'Mon Profil' }} 
       />

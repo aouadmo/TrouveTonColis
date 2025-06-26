@@ -184,4 +184,45 @@ router.get('/', async (req, res) => {
   }
 });
 
+// GET pour les stats colis
+router.get('/stats', async (req, res) => {
+  try {
+    const colis = await Colis.find();
+
+    // Regrouper par période (semaine/mois/année à adapter si besoin)
+    const stats = [0, 0, 0, 0];
+    colis.forEach(c => {
+      const date = new Date(c.date);
+      const month = date.getMonth(); // 0 à 11
+      if (month < 3) stats[0]++;
+      else if (month < 6) stats[1]++;
+      else if (month < 9) stats[2]++;
+      else stats[3]++;
+    });
+
+    const best = Math.max(...stats);
+
+    res.json({ result: true, data: stats, best });
+  } catch (error) {
+    console.error('Erreur /colis/stats :', error);
+    res.status(500).json({ result: false, error: 'Erreur serveur' });
+  }
+});
+
+
+// Route pour confirmer qu'un colis est réservé via un RDV
+router.put('/confirm-rdv/:trackingNumber', async (req, res) => {
+  try {
+    const updated = await Colis.findOneAndUpdate(
+      { trackingNumber: req.params.trackingNumber },
+      { rdvConfirmed: true, status: 'réservé' },
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ result: false, error: 'Colis non trouvé' });
+    res.json({ result: true, colis: updated });
+  } catch (err) {
+    res.status(500).json({ result: false, error: 'Erreur serveur' });
+  }
+});
+
 module.exports = router;

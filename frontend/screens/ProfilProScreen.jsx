@@ -20,7 +20,6 @@ export default function ProfilProScreen() {
     { label: 'Ajouter le numéro du colis', checked: false },
     { label: 'Besoin du code à 4 chiffres', checked: true },
     { label: 'Lien de la page Google', checked: false },
-    { label: 'Paragraphe en anglais', checked: false, hasTranslate: true },
   ]);
 
   const [coordonnesModal, setCoordonneesModal] = useState(false);
@@ -63,7 +62,7 @@ export default function ProfilProScreen() {
 
       <View style={styles.section}>
         <TouchableOpacity style={styles.smsButton} onPress={() => navigation.navigate('EditSmsScreen')} >
-          <Text style={styles.smsTitle}>Modifie le SMS de réception d’un colis</Text>
+          <Text style={styles.smsTitle} onPress={() => navigation.navigate('SmsReplyScreen')}>Modifie le SMS de réception d’un colis</Text>
         </TouchableOpacity>
         {options.map((item, index) => (
           <TouchableOpacity key={index} style={styles.listeRow} onPress={() => checkOptions(index)}>
@@ -83,10 +82,6 @@ export default function ProfilProScreen() {
         <Text style={styles.link}>Modifier coordonnées du relais</Text>
       </TouchableOpacity>
 
-
-      <TouchableOpacity onPress={() => navigation.navigate('AccueilMessageScreen')}>
-        <Text style={styles.link}>Ajouter un message en page d’accueil</Text>
-      </TouchableOpacity>
 
       <View style={styles.footerButtons}>
         <TouchableOpacity style={styles.urgenceButton} onPress={handleUrgence}>
