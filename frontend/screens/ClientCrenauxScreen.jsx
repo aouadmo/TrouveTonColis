@@ -8,10 +8,12 @@ import {
     Platform,
     Alert,
 } from 'react-native';
+import { navigate } from "../navigation/navigationRef";
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { navigate } from '../navigation/navigationRef';
 import { useDispatch } from 'react-redux';
+import { setHoraires } from '../reducers/horaires';
 import { setRdv } from '../reducers/rdv';
+import { useNavigation } from '@react-navigation/native';
 
 const timeSlots = [
     '10h00 - 10h30',
@@ -29,11 +31,21 @@ const timeSlots = [
 
 export default function ClientCrenauxClient() {
     const dispatch = useDispatch();
-
+    const navigation = useNavigation();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
+
+    useEffect(() => {
+        fetch('http://192.168.1.157:3000/pros/info/${relayId}')
+          .then(res => res.json())
+          .then(data => {
+            if (data.result && data.data?.horaires) {
+              dispatch(setHoraires(data.data.horaires));
+            }
+          });
+      }, []);
 
     const handleDateChange = (event, date) => {
         setShowDatePicker(false);
@@ -44,17 +56,17 @@ export default function ClientCrenauxClient() {
 
     const handleValidate = () => {
         if (!selectedTimeSlot) {
-            Alert.alert('Erreur', 'Veuillez choisir un créneau horaire.');
-            return;
+          Alert.alert('Erreur', 'Veuillez choisir un créneau horaire.');
+          return;
         }
-
-        //A modifier
+      
         const rendezVous = {
-            date: selectedDate.toLocaleDateString(),
-            time: selectedTimeSlot,
+          date: selectedDate.toLocaleDateString(),
+          time: selectedTimeSlot,
         };
-
+      
         dispatch(setRdv(rendezVous));
+
 
         Alert.alert(
             'Confirmation',
@@ -62,11 +74,12 @@ export default function ClientCrenauxClient() {
             [
                 {
                     text: 'OK',
-                    onPress: () => navigate('SearchScreen'),
+                    onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'SearchScreen'}),
                 },
             ]
         );
     };
+
 
     return (
         <View style={styles.container}>
@@ -113,7 +126,7 @@ export default function ClientCrenauxClient() {
             </TouchableOpacity>
         </View>
     );
-}
+};
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#fff' },
