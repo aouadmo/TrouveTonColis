@@ -41,7 +41,7 @@ export default function SignInModal({ visible, onClose }) {
     setError('');
   
     try {
-      let response = await fetch(`${API_URL}/pros/signin`, {
+      let response = await fetch(`http://192.168.1.157:3002/pros/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),
@@ -58,7 +58,7 @@ export default function SignInModal({ visible, onClose }) {
         return;
       }
 
-      response = await fetch(`${API_URL}/users/signin`, {
+      response = await fetch(`http://192.168.1.157:3002/users/signin`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email: email.trim(), password }),

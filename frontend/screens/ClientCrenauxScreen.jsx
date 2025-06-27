@@ -38,7 +38,7 @@ export default function ClientCrenauxClient() {
 
 
     useEffect(() => {
-        fetch('http://192.168.1.157:3000/pros/info/${relayId}')
+        fetch('http://192.168.1.157:3002/pros/info/${relayId}')
           .then(res => res.json())
           .then(data => {
             if (data.result && data.data?.horaires) {

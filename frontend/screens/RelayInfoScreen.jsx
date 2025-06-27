@@ -42,15 +42,16 @@ const RelayInfoScreen = () => {
       try {
         setLoading(true);
 
-        const response = await fetch(`${API_URL}/pros/info/${relayId}`);
+        const response = await fetch(`http://192.168.1.157:3002/pros/info/${relayId}`);
         const result = await response.json();
-
+        console.log('✅ Données reçues du backend :', result);
+        console.log('📅 Horaires reçus :', result?.data?.horaires);
         console.log("Fetch result:", result);
 
         if (result.result && result.data) {
           // Formatage de l'adresse complète
           const adresseComplete = `${result.data.adresse}, ${result.data.ville} ${result.data.codePostal}`;
-
+          console.log("Horaires récupérés :", result.data.horaires);
           setRelayData({
             ...result.data,
             adresseComplete: adresseComplete
@@ -221,6 +222,7 @@ const RelayInfoScreen = () => {
             {showHoraires && relayData.horaires && (
              <View style={styles.horaireContent}>
                {Object.entries(relayData.horaires).map(([jour, data]) => (
+                console.log("Jour:", jour, "Data:", data),
                <Text key={jour} style={styles.horaireText}>
                <Text style={styles.horaireBold}>{jour.charAt(0).toUpperCase() + jour.slice(1)} :</Text>{' '}
                {data.ferme ? 'Fermé' : `${data.matin.ouverture} - ${data.matin.fermeture} / ${data.apresMidi.ouverture} - ${data.apresMidi.fermeture}`}

@@ -31,7 +31,7 @@ export default function MonStockScreen() {
   moment.locale('fr');
 
   const fetchColis = () => {
-    fetch('http://192.168.1.157:3000/colis') 
+    fetch('http://192.168.1.157:3002/colis') 
       .then(res => res.json())
       .then(data => {
         if (data.result) {
