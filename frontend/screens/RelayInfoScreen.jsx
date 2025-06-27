@@ -24,7 +24,7 @@ const RelayInfoScreen = () => {
   // Récupération de l'ID du point relais
   const relayId = route.params?.relayId || route.params?.relais?.id;
   const handlePriseRDV = () => {
-    navigate("ClientCrenauxScreen" , {params: { relayId: relayId } });
+    navigation.navigate("ClientCrenauxScreen", { relayId });
 
     // navigate("ClientNavigation" , {screen: 'ClientCrenauxScreen',  params: { relayId: relayId } });
   }

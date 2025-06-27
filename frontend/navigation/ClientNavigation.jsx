@@ -2,8 +2,8 @@ import React, { useEffect } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux';
+// import { useNavigation } from '@react-navigation/native';
+// import { useSelector } from 'react-redux';
 
 // Import des écrans
 import DrawerNavigator from './DrawerNavigator';
@@ -46,20 +46,20 @@ const TabNavigatorClient = () => {
       })}
     >
       {/* Définition des onglets - ordre d'affichage */}
-      <Tab.Screen 
-        name="ClientProfileScreen" 
-        component={ClientProfileScreen} 
-        options={{ title: 'Mon Profil' }} 
+      <Tab.Screen
+        name="ClientProfileScreen"
+        component={ClientProfileScreen}
+        options={{ title: 'Mon Profil' }}
       />
-      <Tab.Screen 
-        name="SearchScreen" 
-        component={SearchScreen} 
-        options={{ title: 'Rechercher' }} 
+      <Tab.Screen
+        name="SearchScreen"
+        component={SearchScreen}
+        options={{ title: 'Rechercher' }}
       />
-      <Tab.Screen 
-        name="MyParcelsScreen" 
-        component={MyParcelsScreen} 
-        options={{ title: 'Mes colis' }} 
+      <Tab.Screen
+        name="MyParcelsScreen"
+        component={MyParcelsScreen}
+        options={{ title: 'Mes colis' }}
       />
     </Tab.Navigator>
   );
@@ -68,18 +68,18 @@ const TabNavigatorClient = () => {
 // Navigateur principal pour la section client
 export default function ClientNavigation() {
   // Récupération du token depuis Redux
-  const { token } = useSelector((state) => state.user.value);
-  const navigation = useNavigation();
+  // const { token } = useSelector((state) => state.user.value);
+  // const navigation = useNavigation();
 
-  // Redirection automatique après connexion
-  useEffect(() => {
-    if (token) {
-      // Si l'utilisateur est connecté, on le redirige vers les onglets
-      navigation.navigate('TabNavigatorClient', {
-        screen: 'ProfilClient', // Onglet d'arrivée après connexion
-      });
-    }
-  }, [token]); // Se déclenche quand le token change
+  // // Redirection automatique après connexion
+  // useEffect(() => {
+  //   if (token) {
+  //     // Si l'utilisateur est connecté, on le redirige vers les onglets
+  //     navigation.navigate('TabNavigatorClient', {
+  //       params: { screen: 'ClientProfileScreen' }, // Onglet d'arrivée après connexion
+  //     });
+  //   }
+  // }, [token]); // Se déclenche quand le token change
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

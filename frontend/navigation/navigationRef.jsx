@@ -5,5 +5,7 @@ export const navigationRef = createNavigationContainerRef(); //Permet de navigue
 export function navigate(name, params) {
     if (navigationRef.isReady()) {
         navigationRef.navigate(name, params);
+    } else {
+        setTimeout(() => navigate(name, params), 100);
     }
 }

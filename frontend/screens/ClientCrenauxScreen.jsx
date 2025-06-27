@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -9,11 +9,15 @@ import {
     Alert,
 } from 'react-native';
 import { navigate } from "../navigation/navigationRef";
+import { CommonActions } from '@react-navigation/native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch } from 'react-redux';
 import { setHoraires } from '../reducers/horaires';
 import { setRdv } from '../reducers/rdv';
-import { useNavigation } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 const timeSlots = [
     '10h00 - 10h30',
@@ -29,23 +33,26 @@ const timeSlots = [
     '15h30 - 16h00',
 ];
 
-export default function ClientCrenauxClient() {
+export default function ClientCrenauxScreen() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    console.log('💡 navigation est →', navigation);
+    const route = useRoute();
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
+    const relayId = route.params?.relayId || route.params?.relais?.id;;
 
     useEffect(() => {
-        fetch('http://192.168.1.157:3000/pros/info/${relayId}')
-          .then(res => res.json())
-          .then(data => {
-            if (data.result && data.data?.horaires) {
-              dispatch(setHoraires(data.data.horaires));
-            }
-          });
-      }, []);
+        fetch(`${API_URL}/pros/info/${relayId}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.result && data.data?.horaires) {
+                    dispatch(setHoraires(data.data.horaires));
+                }
+            });
+    }, []);
 
     const handleDateChange = (event, date) => {
         setShowDatePicker(false);
@@ -56,28 +63,27 @@ export default function ClientCrenauxClient() {
 
     const handleValidate = () => {
         if (!selectedTimeSlot) {
-          Alert.alert('Erreur', 'Veuillez choisir un créneau horaire.');
-          return;
+            Alert.alert('Erreur', 'Veuillez choisir un créneau horaire.');
+            return;
         }
-      
+
         const rendezVous = {
-          date: selectedDate.toLocaleDateString(),
-          time: selectedTimeSlot,
+            date: selectedDate.toLocaleDateString(),
+            time: selectedTimeSlot,
         };
-      
+
         dispatch(setRdv(rendezVous));
 
-
-        Alert.alert(
-            'Confirmation',
-            'Votre rendez-vous a bien été pris. Merci !',
-            [
-                {
-                    text: 'OK',
-                    onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'SearchScreen'}),
+        Alert.alert('Confirmation', 'Votre rendez-vous a bien été pris. Merci !', [
+            {
+                text: 'OK',
+                onPress: () => {
+                    navigate('TabNavigatorClient', {
+                        screen: 'SearchScreen',  // cible un écran dans le tab
+                    });
                 },
-            ]
-        );
+            },
+        ]);
     };
 
 
