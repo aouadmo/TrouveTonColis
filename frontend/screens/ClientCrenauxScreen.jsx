@@ -13,7 +13,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch } from 'react-redux';
 import { setHoraires } from '../reducers/horaires';
 import { setRdv } from '../reducers/rdv';
-import { useNavigation } from '@react-navigation/native';
+import { reserverRdv } from '../reducers/colis'; // ✅ AJOUTE ÇA
+import { useNavigation, useRoute } from '@react-navigation/native'; // ✅ AJOUTE useRoute
 
 const timeSlots = [
     '10h00 - 10h30',
@@ -32,20 +33,29 @@ const timeSlots = [
 export default function ClientCrenauxClient() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
+    const route = useRoute(); // ✅ AJOUTE ÇA
+    
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
+    // ✅ RÉCUPÈRE LES PARAMÈTRES DE NAVIGATION
+    const { relayId, trackingNumber } = route.params || {};
 
     useEffect(() => {
-        fetch('http://192.168.1.157:3000/pros/info/${relayId}')
-          .then(res => res.json())
-          .then(data => {
-            if (data.result && data.data?.horaires) {
-              dispatch(setHoraires(data.data.horaires));
-            }
-          });
-      }, []);
+        console.log("📋 Paramètres reçus:", { relayId, trackingNumber }); // Debug
+        
+        if (relayId) {
+            fetch(`http://192.168.1.10:3002/pros/info/${relayId}`) // ✅ CORRIGE L'URL
+              .then(res => res.json())
+              .then(data => {
+                if (data.result && data.data?.horaires) {
+                  dispatch(setHoraires(data.data.horaires));
+                }
+              })
+              .catch(err => console.error("Erreur récupération horaires:", err));
+        }
+    }, [relayId]);
 
     const handleDateChange = (event, date) => {
         setShowDatePicker(false);
@@ -54,35 +64,81 @@ export default function ClientCrenauxClient() {
         }
     };
 
-    const handleValidate = () => {
-        if (!selectedTimeSlot) {
-          Alert.alert('Erreur', 'Veuillez choisir un créneau horaire.');
-          return;
-        }
-      
-        const rendezVous = {
-          date: selectedDate.toLocaleDateString(),
-          time: selectedTimeSlot,
-        };
-      
-        dispatch(setRdv(rendezVous));
-
-
-        Alert.alert(
-            'Confirmation',
-            'Votre rendez-vous a bien été pris. Merci !',
-            [
-                {
-                    text: 'OK',
-                    onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'SearchScreen'}),
-                },
-            ]
-        );
+    // ✅ FONCTION POUR CONVERTIR L'HEURE
+    const convertTimeSlotToDateTime = (date, timeSlot) => {
+        const [startTime] = timeSlot.split(' - ');
+        const [hour, minute] = startTime.replace('h', ':').split(':');
+        
+        const rdvDate = new Date(date);
+        rdvDate.setHours(parseInt(hour), parseInt(minute), 0, 0);
+        
+        return rdvDate.toISOString();
     };
 
+    const handleValidate = async () => {
+        if (!selectedTimeSlot) {
+            Alert.alert('Erreur', 'Veuillez choisir un créneau horaire.');
+            return;
+        }
+
+        if (!trackingNumber) {
+            Alert.alert('Erreur', 'Numéro de tracking manquant.');
+            return;
+        }
+
+        try {
+            // ✅ UTILISE reserverRdv AU LIEU DE setRdv
+            const rdvDateTime = convertTimeSlotToDateTime(selectedDate, selectedTimeSlot);
+            
+            console.log("📅 Envoi réservation RDV:", {
+                trackingNumber,
+                rdvDate: rdvDateTime,
+                relayId: relayId || "6841e0438bc7de726f971515"
+            });
+
+            const result = await dispatch(reserverRdv({
+                trackingNumber: trackingNumber,
+                rdvDate: rdvDateTime,
+                relayId: relayId || "6841e0438bc7de726f971515"
+            }));
+
+            if (result.type.includes('fulfilled')) {
+                // ✅ GARDE AUSSI setRdv pour le suivi local
+                const rendezVous = {
+                    date: selectedDate.toLocaleDateString(),
+                    time: selectedTimeSlot,
+                    trackingNumber: trackingNumber
+                };
+                dispatch(setRdv(rendezVous));
+
+                Alert.alert(
+                    'Confirmation',
+                    'Votre rendez-vous a bien été pris. Merci !',
+                    [
+                        {
+                            text: 'OK',
+                            onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'MyParcelsScreen'}), // ✅ REDIRIGE VERS MES COLIS
+                        },
+                    ]
+                );
+            } else {
+                Alert.alert('Erreur', 'Impossible de réserver le RDV. Veuillez réessayer.');
+            }
+        } catch (error) {
+            console.error("❌ Erreur réservation:", error);
+            Alert.alert('Erreur', 'Impossible de réserver le RDV. Veuillez réessayer.');
+        }
+    };
 
     return (
         <View style={styles.container}>
+            {/* ✅ AFFICHE LES INFOS DE DEBUG */}
+            {trackingNumber && (
+                <View style={styles.debugInfo}>
+                    <Text style={styles.debugText}>Colis: {trackingNumber}</Text>
+                </View>
+            )}
+            
             <Text style={styles.title}>Choisissez une date</Text>
 
             <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateButton}>
@@ -121,6 +177,7 @@ export default function ClientCrenauxClient() {
                     </Text>
                 </View>
             )}
+            
             <TouchableOpacity style={styles.validateButton} onPress={handleValidate}>
                 <Text style={styles.validateButtonText}>Valider</Text>
             </TouchableOpacity>
@@ -131,6 +188,20 @@ export default function ClientCrenauxClient() {
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#fff' },
     title: { fontSize: 18, fontWeight: 'bold', marginVertical: 10 },
+    
+    // ✅ STYLE POUR DEBUG
+    debugInfo: {
+        backgroundColor: '#f0f8ff',
+        padding: 10,
+        borderRadius: 8,
+        marginBottom: 15,
+    },
+    debugText: {
+        fontSize: 14,
+        color: '#0E56B4',
+        fontWeight: 'bold',
+    },
+    
     dateButton: {
         padding: 15,
         backgroundColor: '#e0e0e0',
