@@ -31,6 +31,7 @@ yarn-error.*
 *.pem
 
 # dotenv environment variables file
+.env*.local
 .env
 
 # typescript

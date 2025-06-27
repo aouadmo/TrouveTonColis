@@ -1,34 +1,74 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet, Switch, Platform, ScrollView } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useSelector } from 'react-redux';
 import Constants from 'expo-constants';
 
-
 const API_URL = Constants.expoConfig.extra.API_URL;
-
 const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
 
-export default function HorairesModal({ visible, onClose, onSave }) {
-  const token = useSelector(state => state.user.value.token); 
+export default function HorairesModal({ visible, onClose, onSave, horairesInitiaux }) {
+  const token = useSelector(state => state.user.value.token);
+  const [currentPicker, setCurrentPicker] = useState(null);
 
-  const [horaires, setHoraires] = useState(
-    jours.reduce((acc, jour) => {
+  const [horaires, setHoraires] = useState(() => {
+    return jours.reduce((acc, jour) => {
       acc[jour] = {
-        matin: { ouverture: new Date(), fermeture: new Date() },
-        apresMidi: { ouverture: new Date(), fermeture: new Date() },
+        matin: { ouverture: new Date(), fermeture: new Date(), ferme: false },
+        apresMidi: { ouverture: new Date(), fermeture: new Date(), ferme: false },
         ferme: false,
       };
       return acc;
-    }, {})
-  );
+    }, {});
+  });
 
-  const [currentPicker, setCurrentPicker] = useState({ jour: null, moment: null, type: null });
+  // ✅ Appliquer les horaires initiaux dès qu’ils sont chargés
+  useEffect(() => {
+    if (!horairesInitiaux) return;
 
-  const handleFermeture = (jour) => {
-    setHoraires(prev => ({
+    const parseTime = (timeStr) => {
+      if (!timeStr) return new Date(2000, 0, 1, 9, 0); // fallback
+      const [h, m] = timeStr.split(':');
+      return new Date(2000, 0, 1, parseInt(h), parseInt(m));
+    };
+
+    const loaded = jours.reduce((acc, jour) => {
+      const h = horairesInitiaux[jour] || {};
+      acc[jour] = {
+        ferme: h.ferme || false,
+        matin: {
+          ouverture: parseTime(h?.matin?.ouverture),
+          fermeture: parseTime(h?.matin?.fermeture),
+          ferme: h?.matin?.ferme || false,
+        },
+        apresMidi: {
+          ouverture: parseTime(h?.apresMidi?.ouverture),
+          fermeture: parseTime(h?.apresMidi?.fermeture),
+          ferme: h?.apresMidi?.ferme || false,
+        },
+      };
+      return acc;
+    }, {});
+    setHoraires(loaded);
+  }, [horairesInitiaux]);
+
+  const handleJourFermeture = (jour) => {
+    setHoraires((prev) => ({
       ...prev,
-      [jour]: { ...prev[jour], ferme: !prev[jour].ferme }
+      [jour]: { ...prev[jour], ferme: !prev[jour].ferme },
+    }));
+  };
+
+  const toggleFermetureMoment = (jour, moment) => {
+    setHoraires((prev) => ({
+      ...prev,
+      [jour]: {
+        ...prev[jour],
+        [moment]: {
+          ...prev[jour][moment],
+          ferme: !prev[jour][moment].ferme,
+        },
+      },
     }));
   };
 
@@ -37,38 +77,40 @@ export default function HorairesModal({ visible, onClose, onSave }) {
   };
 
   const onTimeChange = (event, selectedDate) => {
-    if (!selectedDate || !currentPicker.jour) return;
-
+    if (!selectedDate || !currentPicker?.jour) return;
     const { jour, moment, type } = currentPicker;
-    setHoraires(prev => ({
+
+    setHoraires((prev) => ({
       ...prev,
       [jour]: {
         ...prev[jour],
         [moment]: {
           ...prev[jour][moment],
           [type]: selectedDate,
-        }
-      }
+        },
+      },
     }));
-
-    setCurrentPicker({ jour: null, moment: null, type: null });
+    setCurrentPicker(null);
   };
 
   const handleSave = async () => {
-    const format = (date) => `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
+    const format = (date) =>
+      `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
     const formattedHoraires = {};
 
-    for (let jour of jours) {
+    for (const jour of jours) {
       formattedHoraires[jour] = {
         ferme: horaires[jour].ferme,
         matin: {
           ouverture: format(horaires[jour].matin.ouverture),
           fermeture: format(horaires[jour].matin.fermeture),
+          ferme: horaires[jour].matin.ferme,
         },
         apresMidi: {
           ouverture: format(horaires[jour].apresMidi.ouverture),
           fermeture: format(horaires[jour].apresMidi.fermeture),
-        }
+          ferme: horaires[jour].apresMidi.ferme,
+        },
       };
     }
 
@@ -98,71 +140,83 @@ export default function HorairesModal({ visible, onClose, onSave }) {
 
   return (
     <Modal visible={visible} animationType="slide">
-    <ScrollView contentContainerStyle={modalStyles.scrollContent}>
-    <View style={modalStyles.modal}>
-      <Text style={modalStyles.title}>Horaires d’ouverture</Text>
-        {jours.map(jour => (
-          <View key={jour} style={modalStyles.jourBloc}>
-            <View style={modalStyles.headerJour}>
-              <Text style={modalStyles.jourLabel}>{jour.charAt(0).toUpperCase() + jour.slice(1)}</Text>
-              <View style={modalStyles.switch}>
-                <Text style={{ marginRight: 8 }}>Fermé</Text>
-                <Switch
-                  value={horaires[jour].ferme}
-                  onValueChange={() => handleFermeture(jour)}
-                />
+      <ScrollView contentContainerStyle={{ paddingVertical: 30 }}>
+        <View style={styles.modal}>
+          <Text style={styles.title}>Horaires d’ouverture</Text>
+
+          {jours.map(jour => (
+            <View key={jour} style={styles.jourBloc}>
+              <View style={styles.headerJour}>
+                <Text style={styles.jourLabel}>{jour.charAt(0).toUpperCase() + jour.slice(1)}</Text>
+                <View style={styles.switch}>
+                  <Text style={{ marginRight: 8 }}>Fermé</Text>
+                  <Switch
+                    value={!!horaires[jour]?.ferme}
+                    onValueChange={() => handleJourFermeture(jour)}
+                  />
+                </View>
               </View>
+
+              {!horaires[jour]?.ferme && (
+                <>
+                  {['matin', 'apresMidi'].map(moment => (
+                    <View key={moment} style={styles.timeRow}>
+                      <Text style={styles.timeLabel}>{moment === 'matin' ? 'Matin :' : 'Après-midi :'}</Text>
+
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Text style={{ marginRight: 8 }}>Fermé</Text>
+                        <Switch
+                          value={!!horaires[jour]?.[moment]?.ferme}
+                          onValueChange={() => toggleFermetureMoment(jour, moment)}
+                        />
+                      </View>
+
+                      {!horaires[jour][moment].ferme && (
+                        <>
+                          <TouchableOpacity onPress={() => showPicker(jour, moment, 'ouverture')}>
+                            <Text style={styles.timeBtn}>
+                              Ouverture: {horaires[jour][moment].ouverture.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </Text>
+                          </TouchableOpacity>
+
+                          <TouchableOpacity onPress={() => showPicker(jour, moment, 'fermeture')}>
+                            <Text style={styles.timeBtn}>
+                              Fermeture: {horaires[jour][moment].fermeture.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </Text>
+                          </TouchableOpacity>
+                        </>
+                      )}
+                    </View>
+                  ))}
+                </>
+              )}
             </View>
-            {!horaires[jour].ferme && (
-              <>
-                <View style={modalStyles.timeRow}>
-                  <Text style={modalStyles.timeLabel}>Matin :</Text>
-                  <TouchableOpacity onPress={() => showPicker(jour, 'matin', 'ouverture')}>
-                    <Text style={modalStyles.timeBtn}>
-                      Ouverture: {horaires[jour].matin.ouverture.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => showPicker(jour, 'matin', 'fermeture')}>
-                    <Text style={modalStyles.timeBtn}>
-                      Fermeture: {horaires[jour].matin.fermeture.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                <View style={modalStyles.timeRow}>
-                  <Text style={modalStyles.timeLabel}>Après-midi :</Text>
-                  <TouchableOpacity onPress={() => showPicker(jour, 'apresMidi', 'ouverture')}>
-                    <Text style={modalStyles.timeBtn}>
-                      Ouverture: {horaires[jour].apresMidi.ouverture.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => showPicker(jour, 'apresMidi', 'fermeture')}>
-                    <Text style={modalStyles.timeBtn}>
-                      Fermeture: {horaires[jour].apresMidi.fermeture.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-              </>
-            )}
-          </View>
-        ))}
+          ))}
 
-        <TouchableOpacity style={modalStyles.button} onPress={handleSave}>
-          <Text style={modalStyles.buttonText}>Enregistrer</Text>
-        </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={handleSave}>
+            <Text style={styles.buttonText}>Enregistrer</Text>
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={onClose}>
-          <Text style={modalStyles.cancelText}>Annuler</Text>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={onClose}>
+            <Text style={styles.cancelText}>Annuler</Text>
+          </TouchableOpacity>
         </View>
-  </ScrollView>
-  {currentPicker.jour && (
-          <DateTimePicker value={horaires[currentPicker.jour][currentPicker.moment][currentPicker.type]} mode="time" is24Hour={true} display={Platform.OS === 'ios' ? 'spinner' : 'default'} onChange={onTimeChange} />
-        )}
-</Modal>
+      </ScrollView>
+
+      {currentPicker?.jour && (
+        <DateTimePicker
+          value={horaires[currentPicker.jour][currentPicker.moment][currentPicker.type]}
+          mode="time"
+          is24Hour={true}
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+          onChange={onTimeChange}
+        />
+      )}
+    </Modal>
   );
 }
 
-const modalStyles = StyleSheet.create({
+const styles = StyleSheet.create({
   modal: {
     backgroundColor: '#FFF4ED',
     borderRadius: 10,
@@ -199,7 +253,6 @@ const modalStyles = StyleSheet.create({
     alignItems: 'center',
   },
   timeRow: {
-    flexDirection: 'column',
     marginVertical: 6,
   },
   timeLabel: {
@@ -234,6 +287,13 @@ const modalStyles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   scrollContent: {
-    paddingVertical: 30,
-  },
+  paddingVertical: 30,
+  paddingBottom: 130, // plus d’espace pour le dernier jour
+},
+modal: {
+  backgroundColor: '#FFF4ED',
+  borderRadius: 10,
+  padding: 35,
+  elevation: 5,
+},
 });

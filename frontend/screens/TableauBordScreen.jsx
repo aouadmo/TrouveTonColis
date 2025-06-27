@@ -42,7 +42,7 @@ export default function TableauBordScreen() {
     },
     {
       id: 3,
-      title: "Fermeture du relais",
+      title: "relais fermé",
       icon: "boxes",
       action: () => handleUrgence(),
       description: "Etat d'urgence",
@@ -51,7 +51,7 @@ export default function TableauBordScreen() {
       id: 4,
       title: "Mes horaires",
       icon: "clock",
-      action: () => navigation.navigate('ProHorairesScreen'),
+      action: () => navigation.navigate('HorairesModal'),
       description: "Gérer les créneaux",
     },
   ];
@@ -132,19 +132,6 @@ export default function TableauBordScreen() {
           <Text style={styles.title}>📊 Tableau de bord</Text>
           <Text style={styles.subtitle}>Bonjour Cécile ! Voici un aperçu de votre activité</Text>
 
-          {/* Rendez-vous */}
-          <View style={styles.statsSection}>
-            <Text style={styles.sectionTitle}>📅 Rendez-vous du jour</Text>
-            {todayRdvList.length > 0 ? (
-              todayRdvList.map((rdv, index) => (
-                <Text key={index} style={styles.rdv}>
-                  - {rdv.time} : {rdv.client ?? 'Client'}
-                </Text>
-              ))
-            ) : (
-              <Text style={styles.rdv}>- Pas de rendez-vous pour aujourd'hui</Text>
-            )}
-          </View>
 
           {/* Statistiques */}
           <View style={styles.statsSection}>
@@ -185,6 +172,21 @@ export default function TableauBordScreen() {
               </View>
             </View>
           </View>
+
+                    {/* Rendez-vous */}
+          <View style={styles.statsSection}>
+            <Text style={styles.sectionTitle}>📅 Rendez-vous du jour</Text>
+            {todayRdvList.length > 0 ? (
+              todayRdvList.map((rdv, index) => (
+                <Text key={index} style={styles.rdv}>
+                  - {rdv.time} : {rdv.client ?? 'Client'}
+                </Text>
+              ))
+            ) : (
+              <Text style={styles.rdv}>- Pas de rendez-vous pour aujourd'hui</Text>
+            )}
+          </View>
+
 
           {/* Bouton d'urgence */}
           <TouchableOpacity
@@ -309,13 +311,13 @@ const styles = StyleSheet.create({
 
   // Actions rapides
   actionsGrid: {
-    gap: 12,
+    gap: 15,
   },
   actionCard: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    padding: 16,
+    padding: 10,
     borderRadius: 12,
     borderLeftWidth: 4,
     borderLeftColor: '#D0BCFF',
@@ -326,8 +328,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   actionIcon: {
-    width: 44,
-    height: 44,
+    width: 40,
+    height: 40,
     borderRadius: 22,
     justifyContent: 'center',
     alignItems: 'center',
@@ -338,7 +340,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   actionTitle: {
-    fontSize: 16,
+    fontSize: 12,
     fontWeight: 'bold',
     color: '#4F378A',
     marginBottom: 4,
@@ -400,7 +402,9 @@ const styles = StyleSheet.create({
   },
 
   leftColumn: {
-    width: '30%',
+    display: 'flex',
+    flexDirection: 'column',
+    width: '35%',
     padding: 12,
     backgroundColor: '#F5F3FF', // doux violet clair
     borderRightWidth: 1,
@@ -413,27 +417,29 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFAF5',
     paddingBottom: 40,
   },
-  verticalActionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#4F378A',
-    paddingVertical: 50,
-    paddingHorizontal: 8,
-    borderRadius: 30,
-    marginBottom: 30,
-    borderLeftWidth: 4,
-    borderLeftColor: '#D0BCFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-    gap: 10,
-  },
-
-  verticalActionText: {
-    fontSize: 14,
-    color: '#FFF',
-    fontWeight: '600',
-  },
+verticalActionCard: {
+flexDirection: 'column',
+alignItems: 'center',
+justifyContent: 'center', 
+ backgroundColor: '#4F378A',
+  paddingVertical: 36, // Avant : 30
+  paddingHorizontal: 12, // Avant : 10
+  borderRadius: 30,
+  marginBottom: 24, // Avant : 30 → un poil moins pour compenser
+  borderLeftWidth: 4,
+  borderLeftColor: '#D0BCFF',
+  shadowColor: '#000',
+  shadowOffset: { width: 0, height: 1 },
+  shadowOpacity: 0.05,
+  shadowRadius: 2,
+  elevation: 2,
+  gap: 10,
+},
+verticalActionText: {
+  fontSize: 12, // lisible
+  color: '#FFF',
+  fontWeight: '600',
+  textAlign: 'center',
+  paddingHorizontal: 4, // pour éviter que ça touche les bords si retour à la ligne
+},
 });

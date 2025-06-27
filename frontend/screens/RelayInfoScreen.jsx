@@ -12,72 +12,57 @@ import * as Location from "expo-location";
 import { Linking } from "react-native";
 import Header from "../components/Header";
 import Constants from 'expo-constants';
-import { navigate } from "../navigation/navigationRef";
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchRelayInfo, clearRelayData } from '../reducers/horaires'; 
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
 const RelayInfoScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
-
-  // Récupération de l'ID du point relais
-  const relayId = route.params?.relayId || route.params?.relais?.id;
-  const handlePriseRDV = () => {
-    navigate("ClientCrenauxScreen" , {params: { relayId: relayId } });
-
-    // navigate("ClientNavigation" , {screen: 'ClientCrenauxScreen',  params: { relayId: relayId } });
-  }
-
-  // States pour la gestion des données
-  const [relayData, setRelayData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // Redux state
+  const { relayData, loading, error } = useSelector(state => state.horaires);
+  
+  // States locaux
   const [distanceInfo, setDistanceInfo] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [showHoraires, setShowHoraires] = useState(false);
 
-  // Récupération des données du point relais
+  // Récupération de l'ID du point relais
+  const relayId = route.params?.relayId || route.params?.relais?.id;
+
+  const handlePriseRDV = () => {
+    navigation.navigate("ClientCrenauxScreen", { params: { relayId: relayId } });
+  };
+
+  // Récupération des données du point relais avec Redux
   useEffect(() => {
-    const fetchRelayData = async () => {
-      try {
-        setLoading(true);
-
-        const response = await fetch(`${API_URL}/pros/info/${relayId}`);
-        const result = await response.json();
-
-        console.log("Fetch result:", result);
-
-        if (result.result && result.data) {
-          // Formatage de l'adresse complète
-          const adresseComplete = `${result.data.adresse}, ${result.data.ville} ${result.data.codePostal}`;
-
-          setRelayData({
-            ...result.data,
-            adresseComplete: adresseComplete
-          });
-        } else {
-          throw new Error(result.error || 'Erreur lors de la récupération des données');
-        }
-      } catch (error) {
-        console.error("Erreur fetch pro:", error);
-        Alert.alert(
-          "Erreur",
-          "Impossible de charger les informations du point relais.",
-          [{ text: "Retour", onPress: () => navigation.goBack() }]
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-
+    console.log("🔍 === DEBUG ID RELAY ===");
+    console.log("route.params:", route.params);
+    console.log("route.params.relayId:", route.params?.relayId);
+    console.log("route.params.relais:", route.params?.relais);
+    console.log("route.params.relais.id:", route.params?.relais?.id);
+    console.log("ID final utilisé:", relayId);
+    console.log("======================");
+    
     if (relayId) {
-      fetchRelayData();
-    } else {
-      Alert.alert("Erreur", "Point relais non spécifié", [
-        { text: "Retour", onPress: () => navigation.goBack() }
-      ]);
+      dispatch(fetchRelayInfo(relayId));
     }
-  }, [relayId, navigation]);
+  }, [relayId, dispatch]);
+
+  
+  // Gestion des erreurs Redux
+  useEffect(() => {
+    if (error) {
+      Alert.alert(
+        "Erreur",
+        error,
+        [{ text: "Retour", onPress: () => navigation.goBack() }]
+      );
+    }
+  }, [error, navigation]);
 
   // Récupération de la géolocalisation pour l'itinéraire
   useEffect(() => {
@@ -207,7 +192,7 @@ const RelayInfoScreen = () => {
             </View>
           )}
 
-          {/* Horaires */}
+          {/* Horaires - Version finale */}
           <View style={styles.infoBox}>
             <TouchableOpacity
               style={styles.horaireToggle}
@@ -219,16 +204,19 @@ const RelayInfoScreen = () => {
             </TouchableOpacity>
             
             {showHoraires && relayData.horaires && (
-             <View style={styles.horaireContent}>
-               {Object.entries(relayData.horaires).map(([jour, data]) => (
-               <Text key={jour} style={styles.horaireText}>
-               <Text style={styles.horaireBold}>{jour.charAt(0).toUpperCase() + jour.slice(1)} :</Text>{' '}
-               {data.ferme ? 'Fermé' : `${data.matin.ouverture} - ${data.matin.fermeture} / ${data.apresMidi.ouverture} - ${data.apresMidi.fermeture}`}
-      </Text>
-    ))}
-  </View>
-)}
-        
+              <View style={styles.horaireContent}>
+                {Object.entries(relayData.horaires).map(([jour, data]) => (
+                  <Text key={jour} style={styles.horaireText}>
+                    <Text style={styles.horaireBold}>
+                      {jour.charAt(0).toUpperCase() + jour.slice(1)} :
+                    </Text>{' '}
+                    {data.ferme ? 'Fermé' : 
+                      `${data.matin?.ouverture || 'N/A'} - ${data.matin?.fermeture || 'N/A'} / ${data.apresMidi?.ouverture || 'N/A'} - ${data.apresMidi?.fermeture || 'N/A'}`
+                    }
+                  </Text>
+                ))}
+              </View>
+            )}
           </View>
 
           {/* Informations pratiques */}
