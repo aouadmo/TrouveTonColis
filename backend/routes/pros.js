@@ -160,6 +160,60 @@ router.post('/absence', (req, res) => {
 });
 
 
+// Route PUT pour mettre à jour les horaires du relais
+router.put('/horaires', authenticatePro, async (req, res) => {
+  const { horaires } = req.body;
+
+  // Vérification basique
+  if (!horaires || typeof horaires !== 'object') {
+    return res.status(400).json({ result: false, error: 'Horaires manquants ou invalides' });
+  }
+
+  try {
+    const updatedPro = await Pro.findOneAndUpdate(
+      { token: req.pro.token },
+      { horaires },
+      { new: true }
+    );
+
+    if (!updatedPro) {
+      return res.status(404).json({ result: false, error: 'Point relais introuvable' });
+    }
+
+    res.json({ result: true, message: 'Horaires mis à jour avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour des horaires :', error);
+    res.status(500).json({ result: false, error: 'Erreur serveur lors de la mise à jour des horaires' });
+  }
+});
+
+// Route PUT pour mettre à jour les horaires du relais
+router.put('/horaires', authenticatePro, async (req, res) => {
+  const { horaires } = req.body;
+
+  // Vérification basique
+  if (!horaires || typeof horaires !== 'object') {
+    return res.status(400).json({ result: false, error: 'Horaires manquants ou invalides' });
+  }
+
+  try {
+    const updatedPro = await Pro.findOneAndUpdate(
+      { token: req.pro.token },
+      { horaires },
+      { new: true }
+    );
+
+    if (!updatedPro) {
+      return res.status(404).json({ result: false, error: 'Point relais introuvable' });
+    }
+
+    res.json({ result: true, message: 'Horaires mis à jour avec succès' });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour des horaires :', error);
+    res.status(500).json({ result: false, error: 'Erreur serveur lors de la mise à jour des horaires' });
+  }
+});
+
 // Route publique pour récupérer les infos d'un point relais (accessible sans authentification)
 router.get('/info/:id', (req, res) => {
   const proId = req.params.id;

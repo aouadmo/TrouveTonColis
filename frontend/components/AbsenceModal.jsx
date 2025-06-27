@@ -11,7 +11,7 @@ export default function AbsenceModal({ visible, onClose }) {
   };
 
   const handleSubmit = () => {
-    fetch('http://192.168.1.10:3005/pros/absence', {
+    fetch('http://192.168.1.10:3006/pros/absence', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ token: user.token, ...form }),

@@ -15,6 +15,9 @@ import { setColis, updateColisStatus } from '../reducers/colis';
 import { FontAwesome5 } from '@expo/vector-icons';
 import Header from '../components/Header';
 import moment from 'moment';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function MonStockScreen() {
   const dispatch = useDispatch();
@@ -29,43 +32,34 @@ export default function MonStockScreen() {
   moment.locale('fr');
 
   // Récupération des colis
-  const fetchColis = async () => {
-    try {
-      const response = await fetch('http://192.168.1.10:3005/colis');
-      const data = await response.json();
-      
-      if (data.result) {
-        const today = moment();
-        const enrichedColis = data.stock.map(item => {
-          if (item.status === 'réservé') {
-            return { ...item, computedStatus: 'réservé' };
-          }
-
-          const arrival = moment(item.arrivalDate);
-          const days = today.diff(arrival, 'days');
-          
-          let computedStatus = 'en attente';
-          if (days >= 7) {
-            computedStatus = 'relance possible';
-          } else if (days >= 5) {
-            computedStatus = 'j+5';
-          }
-
-          return { ...item, computedStatus, daysInStock: days };
-        });
-        
-        dispatch(setColis(enrichedColis));
-      }
-    } catch (error) {
-      console.error('Erreur lors du fetch des colis:', error);
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
-
   useEffect(() => {
-    fetchColis();
+    fetch(`${API_URL}/colis`) 
+      .then(res => res.json())
+      .then(data => {
+        if (data.result) {
+          const today = moment();
+          // On ajoute chaque colis avec un champ "computedStatus"
+          const enrichedColis = data.stock.map(item => {
+            if (item.status === 'réservé') {
+              return { ...item, computedStatus: 'réservé' }; // Partie colis réservés à dynamiser plus tard en fonction de la prise de RDV client
+            }
+  
+            const arrival = moment(item.arrivalDate); // Date d'arrivée du colis
+            const days = today.diff(arrival, 'days'); // Calcul du nombre de jours écoulés
+            // Attribution du statut dynamique selon l'ancienneté
+            let computedStatus = 'en attente';
+            if (days >= 7) {
+              computedStatus = 'relance possible';
+            } else if (days >= 5) {
+              computedStatus = 'j+5';
+            }
+  
+            return { ...item, computedStatus };
+          });
+        // Envoi des colis avec leur statut dans le store Redux
+          dispatch(setColis(enrichedColis));
+        }
+      })
   }, []);
 
   const onRefresh = () => {
@@ -109,7 +103,7 @@ export default function MonStockScreen() {
           style: 'destructive',
           onPress: () => {
             // TODO: Ajouter la route DELETE dans le backend
-            // fetch(`http://192.168.1.10:3005/colis/${trackingNumber}`, { method: 'DELETE' })
+            // fetch(`${API_URL}/colis/${trackingNumber}`, { method: 'DELETE' })
             console.log(`TODO: Supprimer le colis ${trackingNumber} via API`);
             
             // Pour l'instant, on supprime juste du store local

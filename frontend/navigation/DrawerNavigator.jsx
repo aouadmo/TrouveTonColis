@@ -11,6 +11,11 @@ import CameraScreen from '../screens/CameraScreen';
 import MapScreen from '../screens/MapScreen';
 import SmsReplyScreen from '../screens/SmsReplyScreen';
 
+// Écrans supplémentaires
+import TableauBordScreen from '../screens/TableauBordScreen';
+import ClientProfileScreen from '../screens/ClientProfileScreen';
+import RelayInfoScreen from '../screens/RelayInfoScreen';
+
 // Menu customisé
 import CustomDrawer from '../components/DrawerMenu';
 
@@ -24,20 +29,23 @@ export default function DrawerNavigator() {
         headerShown: false, // on cache l'en-tête React Navigation
       }}
     >
+      {/* Écrans principaux du menu */}
       <Drawer.Screen
         name="HomeScreen"
         component={HomeScreen}
         options={{ title: 'Accueil' }}
       />
+      
       <Drawer.Screen
         name="HistoireRelais"
         component={HistoireRelais}
-        options={{ title: 'C’est quoi un point relais ?' }}
+        options={{ title: 'C\'est quoi un point relais ?' }}
       />
+      
       <Drawer.Screen
         name="FAQ"
         component={FAQScreen}
-        options={{ title: 'FAQScreen' }}
+        options={{ title: 'FAQ' }}
       />
 
       <Drawer.Screen
@@ -46,6 +54,7 @@ export default function DrawerNavigator() {
         options={{ title: 'Inscription' }}
       />
 
+      {/* Écrans utilitaires */}
       <Drawer.Screen
         name="SearchScreen"
         component={SearchScreen}
@@ -55,35 +64,39 @@ export default function DrawerNavigator() {
       <Drawer.Screen
         name="CameraScreen"
         component={CameraScreen}
-        options={{ title: 'Prenez vos plus belles photos !' }}
+        options={{ title: 'Appareil photo' }}
       />
 
       <Drawer.Screen
         name="MapScreen"
         component={MapScreen}
-        options={{ title: 'Trouvez votre point relais sur la carte' }}
+        options={{ title: 'Carte des points relais' }}
       />
+      
       <Drawer.Screen
         name="SmsReplyScreen"
         component={SmsReplyScreen}
-        options={{ title: 'Prenez vos plus belles photos !' }}
+        options={{ title: 'Réponse SMS' }}
       />
+
+      <Drawer.Screen
+        name="RelayInfoScreen"
+        component={RelayInfoScreen}
+        options={{ title: 'Informations point relais' }}
+      />
+
+      {/* Écrans utilisateur */}
       <Drawer.Screen
         name="TableauBordScreen"
         component={TableauBordScreen}
         options={{ title: 'Tableau de bord pros' }}
       />
+      
       <Drawer.Screen
         name="ClientProfileScreen"
         component={ClientProfileScreen}
         options={{ title: 'Profil client' }}
       />
-      <Drawer.Screen
-        name="RelayInfoScreen"
-        component={RelayInfoScreen}
-        options={{ title: 'Informations sur le point relais' }}
-      />
     </Drawer.Navigator>
-
   );
 }

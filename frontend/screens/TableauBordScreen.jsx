@@ -6,6 +6,9 @@ import { faCameraRetro, faComments, faExclamationTriangle, faTimesCircle } from 
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function TableauBordScreen() {
   const token = useSelector((state) => state.user.value.token);
@@ -56,7 +59,7 @@ export default function TableauBordScreen() {
   useEffect(() => {
     const fetchUrgentMessage = async () => {
       try {
-        const response = await fetch('http://192.168.1.191:3002/pros/sms', {
+        const response = await fetch(`${API_URL}/pros/sms`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,

@@ -18,7 +18,9 @@ export default function MapScreen() {
   const [isLoading, setIsLoading] = useState(true);
   const [prAdresse, setPrAdresse] = useState('');
   const [tempCoordinates, setTempCoordinates] = useState(null);
-  const [polylineCoords, setPolylineCoords] = useState([]); // pour stock
+  const [polylineCoords, setPolylineCoords] = useState([]);
+  const navigation = useNavigation();
+
   // Récupération de la position utilisateur
   useEffect(() => {
     const getCurrentLocation = async () => {
@@ -29,7 +31,7 @@ export default function MapScreen() {
           const location = await Location.getCurrentPositionAsync({
             accuracy: Location.Accuracy.Balanced
           });
-          
+
           setCurrentPosition({
             latitude: location.coords.latitude,
             longitude: location.coords.longitude,
@@ -57,13 +59,13 @@ export default function MapScreen() {
   }, []);
   // redirection vers la page infos point relais
   // 1ere partie: convertir ladresse (string) en coordonnees (latitude, longitude)
-  const navigation = useNavigation();
   const handleInforPr = async () => {
     navigation.navigate('RelayInfoScreen');
   };
+  
   const getPrAdresse = async () => {
     try {
-      const response = await fetch('http://192.168.18.102:3000/pros/adressepro');
+      const response = await fetch('http://192.168.18.102:3006/pros/adressepro');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -155,10 +157,10 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <Header />
-      
+
       <View style={styles.mapContainer}>
         <Text style={styles.title}>Localisation des Points Relais</Text>
-        
+
         <MapView
           style={styles.map}
           initialRegion={defaultRegion}
@@ -167,9 +169,9 @@ export default function MapScreen() {
         >
           {/* Marqueur position utilisateur */}
           {currentPosition && (
-            <Marker 
-              coordinate={currentPosition} 
-              title="Ma position" 
+            <Marker
+              coordinate={currentPosition}
+              title="Ma position"
               pinColor="#B48DD3"
             />
           )}
@@ -184,9 +186,9 @@ export default function MapScreen() {
 
         {/* Boutons d'action */}
         <View style={styles.buttonContainer}>
-          <TouchableOpacity 
-            onPress={handleItinerary} 
-            style={styles.button} 
+          <TouchableOpacity
+            onPress={handleItinerary}
+            style={styles.button}
             activeOpacity={0.8}
             disabled={isLoading}
           >
@@ -194,9 +196,9 @@ export default function MapScreen() {
             <Text style={styles.textButton}>Calculer l'itinéraire</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            onPress={handlePointRelaisInfo} 
-            style={[styles.button, styles.secondaryButton]} 
+          <TouchableOpacity
+            onPress={handlePointRelaisInfo}
+            style={[styles.button, styles.secondaryButton]}
             activeOpacity={0.8}
           >
             <FontAwesomeIcon icon={faInfoCircle} size={18} color="#fff" />
@@ -213,13 +215,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
   },
-  
+
   // Container de la carte
   mapContainer: {
     flex: 1,
     padding: 16,
   },
-  
+
   // Titre
   title: {
     fontSize: 20,
@@ -228,7 +230,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 16,
   },
-  
+
   // Carte
   map: {
     flex: 1,
@@ -240,12 +242,12 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
-  
+
   // Container des boutons
   buttonContainer: {
     gap: 12,
   },
-  
+
   // Boutons principaux
   button: {
     flexDirection: 'row',
@@ -260,12 +262,12 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 4,
   },
-  
+
   // Bouton secondaire
   secondaryButton: {
     backgroundColor: '#79B4C4', // Palette Neutre - Accent secondaire
   },
-  
+
   // Texte des boutons
   textButton: {
     color: '#ffffff',

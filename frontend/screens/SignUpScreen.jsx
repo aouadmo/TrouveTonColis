@@ -16,6 +16,9 @@ import { useDispatch } from "react-redux";
 import { login } from "../reducers/user";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../components/Header.jsx";
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 const SignUpScreen = () => {
   // States pour la gestion du formulaire
@@ -97,8 +100,8 @@ const SignUpScreen = () => {
     try {
       // Configuration de l'URL selon le type d'utilisateur
       const url = userType === 'client' 
-        ? 'http://192.168.1.10:3005/users/signup' 
-        : 'http://192.168.1.10:3005/pros/signup';
+        ? `${API_URL}/users/signup` 
+        : `${API_URL}/pros/signup`;
 
       // Préparation des données selon le type
       const payload = userType === 'client' ? {

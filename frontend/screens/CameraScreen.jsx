@@ -17,8 +17,10 @@ import { addPhoto } from "../reducers/user";
 import { FontAwesome5 } from '@expo/vector-icons';
 import { useIsFocused } from "@react-navigation/native";
 import Header from "../components/Header";
+import Constants from 'expo-constants';
 
-const BACKEND_ADDRESS = "http://192.168.1.10:3005/colis";
+const API_URL = Constants.expoConfig.extra.API_URL;
+const BACKEND_ADDRESS = `${API_URL}/colis`;
 
 export default function CameraScreen() {
   const dispatch = useDispatch();

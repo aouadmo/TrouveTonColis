@@ -11,6 +11,9 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
 import { Linking } from "react-native";
 import Header from "../components/Header";
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 const RelayInfoScreen = () => {
   const route = useRoute();
@@ -32,7 +35,7 @@ const RelayInfoScreen = () => {
       try {
         setLoading(true);
         
-        const response = await fetch(`http://192.168.1.10:3005/pros/info/${relayId}`);
+        const response = await fetch(`${API_URL}/pros/info/${relayId}`);
         const result = await response.json();
         
         console.log("Fetch result:", result);
