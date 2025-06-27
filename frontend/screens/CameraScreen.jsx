@@ -101,6 +101,8 @@ export default function CameraScreen() {
         type: "image/jpeg",
       });
 
+      console.log("📤 Envoi de l'image pour OCR...");
+      
       const response = await fetch(`${BACKEND_ADDRESS}/ocr`, {
         method: "POST",
         body: formData,
@@ -110,21 +112,34 @@ export default function CameraScreen() {
       });
       
       const data = await response.json();
+      console.log("📥 Réponse OCR complète:", data);
+      console.log("🔍 Données extraites:", data.extractedData);
 
       if (data.success) {
         Alert.alert("✅ Scan réussi", "Données extraites ! Vérifiez et complétez les informations.");
         
+        // 🔥 CORRECTION DU MAPPING DES DONNÉES
+        const extracted = data.extractedData || {};
+        
         setEditColisData({
           _id: data.colisId,
-          nom: data.extractedData.nom || '',
-          prenom: data.extractedData.prenom || '',
-          phone: data.extractedData.telephone || '',
-          trackingNumber: data.extractedData.trackingNumber || '',
-          transporteur: data.extractedData.transporteur || '',
-          poids: data.extractedData.poids || '',
-          date: data.extractedData.date ? 
-            new Date(data.extractedData.date).toISOString().split('T')[0] : 
+          // 🔥 MAPPING CORRIGÉ selon le backend
+          nom: extracted.nom || '',
+          prenom: extracted.prenom || '',
+          phone: extracted.telephone || '', // ← 'telephone' dans le backend
+          trackingNumber: extracted.trackingNumber || '',
+          transporteur: extracted.transporteur || '',
+          poids: extracted.poids || '',
+          date: extracted.date ? 
+            new Date(extracted.date).toISOString().split('T')[0] : 
             new Date().toISOString().split('T')[0],
+        });
+        
+        console.log("📝 Données préparées pour la modal:", {
+          nom: extracted.nom,
+          prenom: extracted.prenom,
+          telephone: extracted.telephone,
+          trackingNumber: extracted.trackingNumber
         });
         
         setShowEditModal(true);
@@ -135,10 +150,38 @@ export default function CameraScreen() {
         }
       } else {
         Alert.alert("❌ Extraction échouée", data.message || "Erreur inconnue lors de l'extraction des données.");
+        
+        // 🔥 DEBUG : Afficher quand même la modal pour tester
+        console.log("🐛 DEBUG - Ouverture modal vide pour test");
+        setEditColisData({
+          _id: data.colisId || null,
+          nom: '',
+          prenom: '',
+          phone: '',
+          trackingNumber: '',
+          transporteur: '',
+          poids: '',
+          date: new Date().toISOString().split('T')[0],
+        });
+        setShowEditModal(true);
       }
     } catch (error) {
-      console.error("Erreur lors de la capture ou du traitement :", error);
+      console.error("💥 Erreur lors de la capture ou du traitement :", error);
       Alert.alert("❌ Erreur", "Impossible de traiter l'image. Veuillez réessayer.");
+      
+      // 🔥 DEBUG : Ouvrir la modal même en cas d'erreur pour tester
+      console.log("🐛 DEBUG - Ouverture modal vide après erreur");
+      setEditColisData({
+        _id: null,
+        nom: '',
+        prenom: '',
+        phone: '',
+        trackingNumber: '',
+        transporteur: '',
+        poids: '',
+        date: new Date().toISOString().split('T')[0],
+      });
+      setShowEditModal(true);
     } finally {
       setIsProcessing(false);
     }
