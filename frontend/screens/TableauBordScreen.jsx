@@ -7,16 +7,20 @@ import { FontAwesome5 } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import { useSelector } from 'react-redux';
 import Constants from 'expo-constants';
+import HorairesModal from '../components/HorairesModal';
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function TableauBordScreen() {
   const token = useSelector((state) => state.user.value.token);
   const rdvList = useSelector((state) => state.rdv.value) ?? [];
+  const colisData = useSelector((state) => state.colis.value) ?? []; // ✅ AJOUTE ÇA
   const navigation = useNavigation();
 
   const [urgentMessage, setUrgentMessage] = useState('');
   const [isUrgenceActive, setIsUrgenceActive] = useState(false);
+  const [horairesModalVisible, setHorairesModalVisible] = useState(false); // ✅ AJOUTE ÇA
+  const [currentHoraires, setCurrentHoraires] = useState(null); // ✅ AJOUTE ÇA
 
   const [stats, setStats] = useState({
     colisArrivesAujourdhui: 8,
@@ -51,10 +55,38 @@ export default function TableauBordScreen() {
       id: 4,
       title: "Mes horaires",
       icon: "clock",
-      action: () => navigation.navigate('HorairesModal'),
+      action: () => ouvrirModalHoraires(), // ✅ CORRIGÉ
       description: "Gérer les créneaux",
     },
   ];
+
+  // ✅ FONCTION POUR OUVRIR LA MODAL HORAIRES
+  const ouvrirModalHoraires = async () => {
+    if (token) {
+      try {
+        const response = await fetch(`${API_URL}/pros/horaires`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        const data = await response.json();
+        
+        if (data.result && data.horaires) {
+          setCurrentHoraires(data.horaires);
+        }
+      } catch (error) {
+        console.log("Erreur récupération horaires:", error);
+      }
+    }
+    
+    setHorairesModalVisible(true);
+  };
+
+  // ✅ CALLBACK QUAND LES HORAIRES SONT SAUVÉES
+  const onHorairesSaved = (nouvellesHoraires) => {
+    setCurrentHoraires(nouvellesHoraires);
+    console.log("✅ Horaires mises à jour:", nouvellesHoraires);
+  };
 
   useEffect(() => {
     const fetchUrgentMessage = async () => {
@@ -92,19 +124,37 @@ export default function TableauBordScreen() {
     }
   };
 
-  const getTodayRdvList = (rdvs) => {
+  // ✅ AMÉLIORE LA FONCTION POUR LES RDV DU JOUR
+  const getTodayRdvList = () => {
     const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    return rdvs.filter((rdv) => {
-      const [day, month, year] = rdv.date.split('/');
-      const rdvDate = new Date(`${year}-${month}-${day}`);
-      rdvDate.setHours(0, 0, 0, 0);
-      return rdvDate.getTime() === today.getTime();
+    const todayStr = today.toLocaleDateString('fr-FR'); // Format: "DD/MM/YYYY"
+    
+    // Chercher dans les RDV du reducer rdv
+    const rdvToday = rdvList.filter((rdv) => {
+      return rdv.date === todayStr;
     });
+
+    // Chercher aussi dans les colis avec RDV confirmés
+    const colisRdvToday = colisData
+      .filter(colis => colis.rdvConfirmed && colis.rdvDate)
+      .filter(colis => {
+        const rdvDate = new Date(colis.rdvDate);
+        const rdvDateStr = rdvDate.toLocaleDateString('fr-FR');
+        return rdvDateStr === todayStr;
+      })
+      .map(colis => ({
+        time: new Date(colis.rdvDate).toLocaleTimeString('fr-FR', { 
+          hour: '2-digit', 
+          minute: '2-digit' 
+        }),
+        client: `${colis.prenom} ${colis.nom}`,
+        trackingNumber: colis.trackingNumber
+      }));
+
+    return [...rdvToday, ...colisRdvToday];
   };
 
-  const todayRdvList = getTodayRdvList(rdvList);
+  const todayRdvList = getTodayRdvList();
 
   return (
     <SafeAreaView style={styles.container}>
@@ -114,24 +164,30 @@ export default function TableauBordScreen() {
         {/* Colonne gauche - Menu vertical */}
         <View style={styles.leftColumn}>
           <Text style={styles.sectionTitle}>🚀 Accès rapide</Text>
-          {quickActions.map((action) => (
-            <TouchableOpacity
-              key={action.id}
-              style={styles.verticalActionCard}
-              onPress={action.action}
-              activeOpacity={0.8}
-            >
-              <FontAwesome5 name={action.icon} size={20} color="#D0BCFF" />
-              <Text style={styles.verticalActionText}>{action.title}</Text>
-            </TouchableOpacity>
-          ))}
+          
+          {/* ✅ SCROLLVIEW POUR ÉVITER QUE LES BULLES SOIENT COUPÉES */}
+          <ScrollView 
+            contentContainerStyle={styles.actionsScrollContainer}
+            showsVerticalScrollIndicator={false}
+          >
+            {quickActions.map((action) => (
+              <TouchableOpacity
+                key={action.id}
+                style={styles.verticalActionCard}
+                onPress={action.action}
+                activeOpacity={0.8}
+              >
+                <FontAwesome5 name={action.icon} size={20} color="#D0BCFF" />
+                <Text style={styles.verticalActionText}>{action.title}</Text>
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
         </View>
 
         {/* Colonne droite - Contenu principal */}
         <ScrollView contentContainerStyle={styles.rightColumn} showsVerticalScrollIndicator={false}>
           <Text style={styles.title}>📊 Tableau de bord</Text>
           <Text style={styles.subtitle}>Bonjour Cécile ! Voici un aperçu de votre activité</Text>
-
 
           {/* Statistiques */}
           <View style={styles.statsSection}>
@@ -173,20 +229,33 @@ export default function TableauBordScreen() {
             </View>
           </View>
 
-                    {/* Rendez-vous */}
+          {/* ✅ RENDEZ-VOUS AMÉLIORÉS */}
           <View style={styles.statsSection}>
-            <Text style={styles.sectionTitle}>📅 Rendez-vous du jour</Text>
+            <Text style={styles.sectionTitle}>📅 Rendez-vous du jour ({todayRdvList.length})</Text>
             {todayRdvList.length > 0 ? (
-              todayRdvList.map((rdv, index) => (
-                <Text key={index} style={styles.rdv}>
-                  - {rdv.time} : {rdv.client ?? 'Client'}
-                </Text>
-              ))
+              <View style={styles.rdvContainer}>
+                {todayRdvList.map((rdv, index) => (
+                  <View key={index} style={styles.rdvCard}>
+                    <FontAwesome5 name="clock" size={14} color="#4F378A" />
+                    <View style={styles.rdvInfo}>
+                      <Text style={styles.rdvTime}>{rdv.time}</Text>
+                      <Text style={styles.rdvClient}>
+                        {rdv.client || 'Client non spécifié'}
+                        {rdv.trackingNumber && (
+                          <Text style={styles.rdvTracking}> - {rdv.trackingNumber}</Text>
+                        )}
+                      </Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
             ) : (
-              <Text style={styles.rdv}>- Pas de rendez-vous pour aujourd'hui</Text>
+              <View style={styles.emptyRdvCard}>
+                <FontAwesome5 name="calendar-times" size={20} color="#95C9D8" />
+                <Text style={styles.emptyRdvText}>Pas de rendez-vous pour aujourd'hui</Text>
+              </View>
             )}
           </View>
-
 
           {/* Bouton d'urgence */}
           <TouchableOpacity
@@ -218,6 +287,14 @@ export default function TableauBordScreen() {
           </View>
         </ScrollView>
       </View>
+      
+      <HorairesModal 
+        visible={horairesModalVisible} 
+        onClose={() => setHorairesModalVisible(false)}
+        horairesInitiaux={currentHoraires}
+        onSave={onHorairesSaved}
+      />
+      
     </SafeAreaView>
   );
 }
@@ -226,10 +303,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#FFFAF5', // Fond rose pâle
-  },
-  contentContainer: {
-    padding: 20,
-    paddingBottom: 40,
   },
   title: {
     fontSize: 26,
@@ -250,9 +323,6 @@ const styles = StyleSheet.create({
   statsSection: {
     marginBottom: 24,
   },
-  actionsSection: {
-    marginBottom: 24,
-  },
   infoSection: {
     marginBottom: 24,
   },
@@ -263,11 +333,54 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
 
-  // RDV
-  rdv: {
+  // ✅ RDV AMÉLIORÉS
+  rdvContainer: {
+    gap: 8,
+  },
+  rdvCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0F8FF',
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 3,
+    borderLeftColor: '#4F378A',
+  },
+  rdvInfo: {
+    marginLeft: 10,
+    flex: 1,
+  },
+  rdvTime: {
     fontSize: 14,
+    fontWeight: 'bold',
     color: '#4F378A',
-    marginBottom: 6,
+  },
+  rdvClient: {
+    fontSize: 13,
+    color: '#666',
+    marginTop: 2,
+  },
+  rdvTracking: {
+    fontSize: 11,
+    color: '#999',
+    fontFamily: 'monospace',
+  },
+  emptyRdvCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#F8F9FA',
+    padding: 20,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+    borderStyle: 'dashed',
+  },
+  emptyRdvText: {
+    fontSize: 14,
+    color: '#95C9D8',
+    marginLeft: 8,
+    fontStyle: 'italic',
   },
 
   // Statistiques
@@ -307,47 +420,6 @@ const styles = StyleSheet.create({
   },
   alertNumber: {
     color: '#DC2626',
-  },
-
-  // Actions rapides
-  actionsGrid: {
-    gap: 15,
-  },
-  actionCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 10,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#D0BCFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  actionIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 16,
-    backgroundColor: '#D0BCFF',
-  },
-  actionContent: {
-    flex: 1,
-  },
-  actionTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#4F378A',
-    marginBottom: 4,
-  },
-  actionDescription: {
-    fontSize: 14,
-    color: '#D0BCFF',
   },
 
   // Urgence
@@ -396,50 +468,57 @@ const styles = StyleSheet.create({
     color: '#D0BCFF',
     lineHeight: 20,
   },
+
+  // ✅ LAYOUT CORRIGÉ
   twoColumnsContainer: {
     flex: 1,
     flexDirection: 'row',
   },
-
   leftColumn: {
-    display: 'flex',
-    flexDirection: 'column',
     width: '35%',
-    padding: 12,
-    backgroundColor: '#F5F3FF', // doux violet clair
+    backgroundColor: '#F5F3FF',
     borderRightWidth: 1,
     borderRightColor: '#E0D7F8',
+    paddingHorizontal: 12,
+    paddingTop: 12,
   },
-
   rightColumn: {
     flexGrow: 1,
     padding: 20,
     backgroundColor: '#FFFAF5',
     paddingBottom: 40,
   },
-verticalActionCard: {
-flexDirection: 'column',
-alignItems: 'center',
-justifyContent: 'center', 
- backgroundColor: '#4F378A',
-  paddingVertical: 36, // Avant : 30
-  paddingHorizontal: 12, // Avant : 10
-  borderRadius: 30,
-  marginBottom: 24, // Avant : 30 → un poil moins pour compenser
-  borderLeftWidth: 4,
-  borderLeftColor: '#D0BCFF',
-  shadowColor: '#000',
-  shadowOffset: { width: 0, height: 1 },
-  shadowOpacity: 0.05,
-  shadowRadius: 2,
-  elevation: 2,
-  gap: 10,
-},
-verticalActionText: {
-  fontSize: 12, // lisible
-  color: '#FFF',
-  fontWeight: '600',
-  textAlign: 'center',
-  paddingHorizontal: 4, // pour éviter que ça touche les bords si retour à la ligne
-},
+
+  // ✅ SCROLL CONTAINER POUR LES ACTIONS
+  actionsScrollContainer: {
+    paddingBottom: 20, // Espace en bas pour éviter la coupure
+  },
+
+  // ✅ ACTIONS VERTICALES AJUSTÉES
+  verticalActionCard: {
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center', 
+    backgroundColor: '#4F378A',
+    paddingVertical: 24, // ✅ RÉDUIT (était 36)
+    paddingHorizontal: 12,
+    borderRadius: 30,
+    marginBottom: 16, // ✅ RÉDUIT (était 24)
+    borderLeftWidth: 4,
+    borderLeftColor: '#D0BCFF',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 2,
+    gap: 8, // ✅ RÉDUIT (était 10)
+  },
+  verticalActionText: {
+    fontSize: 11, // ✅ RÉDUIT (était 12)
+    color: '#FFF',
+    fontWeight: '600',
+    textAlign: 'center',
+    paddingHorizontal: 4,
+    lineHeight: 14, // ✅ AJOUTE pour contrôler l'espacement
+  },
 });
