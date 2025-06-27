@@ -209,6 +209,27 @@ router.get('/stats', async (req, res) => {
   }
 });
 
+// === GET Colis d'un client connecté ===
+router.get('/mes-colis/:nom/:prenom', async (req, res) => {
+  try {
+    const { nom, prenom } = req.params;
+    
+    console.log("🔍 Recherche colis pour:", nom, prenom);
+    
+    const colis = await Colis.find({
+      nom: { $regex: new RegExp(`^${escapeRegex(nom)}$`, 'i') },
+      prenom: { $regex: new RegExp(`^${escapeRegex(prenom)}$`, 'i') }
+    }).sort({ date: -1 }); // Plus récents en premier
+
+    console.log("📦 Colis trouvés:", colis.length);
+    
+    res.json({ result: true, colis });
+  } catch (error) {
+    console.error('Erreur récupération colis client:', error);
+    res.status(500).json({ result: false, error: 'Erreur serveur' });
+  }
+});
+
 
 // Route pour confirmer qu'un colis est réservé via un RDV
 router.put('/confirm-rdv/:trackingNumber', async (req, res) => {
