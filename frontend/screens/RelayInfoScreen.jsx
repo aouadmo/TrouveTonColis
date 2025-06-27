@@ -14,6 +14,7 @@ import Header from "../components/Header";
 import Constants from 'expo-constants';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchRelayInfo, clearRelayData } from '../reducers/horaires'; 
+import { navigate } from "../navigation/navigationRef";
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
@@ -24,6 +25,7 @@ const RelayInfoScreen = () => {
 
   // Redux state
   const { relayData, loading, error } = useSelector(state => state.horaires);
+  const userInfo = useSelector(state => state.user.value); // ✅ AJOUTE ÇA
   
   // States locaux
   const [distanceInfo, setDistanceInfo] = useState(null);
@@ -33,26 +35,100 @@ const RelayInfoScreen = () => {
   // Récupération de l'ID du point relais
   const relayId = route.params?.relayId || route.params?.relais?.id;
 
-  const handlePriseRDV = () => {
-    navigation.navigate("ClientCrenauxScreen", { params: { relayId: relayId } });
+  // ✅ FONCTION POUR FORMATER L'AFFICHAGE DES HORAIRES
+  const formatHoraires = (data) => {
+    // Si le jour entier est fermé
+    if (data.ferme) {
+      return 'Fermé';
+    }
+
+    const matin = data.matin;
+    const apresMidi = data.apresMidi;
+
+    // Formater les créneaux
+    const formatCreneau = (creneau) => {
+      if (creneau.ferme || !creneau.ouverture || !creneau.fermeture) {
+        return null;
+      }
+      return `${creneau.ouverture} - ${creneau.fermeture}`;
+    };
+
+    const creneauMatin = formatCreneau(matin);
+    const creneauApresMidi = formatCreneau(apresMidi);
+
+    // Gestion des différents cas
+    if (creneauMatin && creneauApresMidi) {
+      // Matin ET après-midi ouverts
+      return `${creneauMatin} / ${creneauApresMidi}`;
+    } else if (creneauMatin && !creneauApresMidi) {
+      // Seulement le matin ouvert
+      return `${creneauMatin} / Fermé l'après-midi`;
+    } else if (!creneauMatin && creneauApresMidi) {
+      // Seulement l'après-midi ouvert
+      return `Fermé le matin / ${creneauApresMidi}`;
+    } else {
+      // Rien d'ouvert
+      return 'Fermé';
+    }
   };
+
+  const handlePriseRDV = () => {
+    console.log("🔍 Debug - userInfo:", userInfo); // Pour debug
+    
+    if (!userInfo.token) {
+      // Cas 1: Utilisateur non connecté
+      Alert.alert(
+        "Connexion requise",
+        "Pour prendre rendez-vous, vous devez être connecté en tant que client.",
+        [
+          { text: "Annuler", style: "cancel" },
+          { 
+            text: "Se connecter", 
+            onPress: () => {
+              console.log("Redirection vers connexion client");
+              // Temporaire : juste un message
+              Alert.alert("Info", "Redirection vers la connexion client à implémenter");
+            }
+          },
+          { 
+            text: "S'inscrire", 
+            onPress: () => {
+              console.log("Redirection vers inscription");
+              Alert.alert("Info", "Redirection vers l'inscription à implémenter");
+            }
+          }
+        ]
+      );
+    } else if (userInfo.isPro === true) { 
+      // Cas 2: Professionnel connecté
+      Alert.alert(
+        "Accès restreint",
+        "Cette fonctionnalité est réservée aux clients. Vous êtes actuellement connecté en tant que professionnel.",
+        [{ text: "OK" }]
+      );
+    } else {
+      // Cas 3: Client connecté - Navigation globale vers ClientCrenauxScreen
+      console.log("🚀 CLIENT - Navigation vers ClientCrenauxScreen avec relayId:", relayId);
+      navigate('ClientCrenauxScreen', { relayId: relayId });
+    }
+     };
 
   // Récupération des données du point relais avec Redux
   useEffect(() => {
-    console.log("🔍 === DEBUG ID RELAY ===");
-    console.log("route.params:", route.params);
-    console.log("route.params.relayId:", route.params?.relayId);
-    console.log("route.params.relais:", route.params?.relais);
-    console.log("route.params.relais.id:", route.params?.relais?.id);
-    console.log("ID final utilisé:", relayId);
-    console.log("======================");
-    
     if (relayId) {
       dispatch(fetchRelayInfo(relayId));
+    } else {
+      Alert.alert("Erreur", "Point relais non spécifié", [
+        { text: "Retour", onPress: () => navigation.goBack() }
+      ]);
     }
+
+    // Nettoyage quand on quitte la page
+    return () => {
+      dispatch(clearRelayData());
+    };
   }, [relayId, dispatch]);
 
-  
   // Gestion des erreurs Redux
   useEffect(() => {
     if (error) {
@@ -192,7 +268,7 @@ const RelayInfoScreen = () => {
             </View>
           )}
 
-          {/* Horaires - Version finale */}
+          {/* Horaires - Version finale avec gestion matin/après-midi */}
           <View style={styles.infoBox}>
             <TouchableOpacity
               style={styles.horaireToggle}
@@ -210,9 +286,7 @@ const RelayInfoScreen = () => {
                     <Text style={styles.horaireBold}>
                       {jour.charAt(0).toUpperCase() + jour.slice(1)} :
                     </Text>{' '}
-                    {data.ferme ? 'Fermé' : 
-                      `${data.matin?.ouverture || 'N/A'} - ${data.matin?.fermeture || 'N/A'} / ${data.apresMidi?.ouverture || 'N/A'} - ${data.apresMidi?.fermeture || 'N/A'}`
-                    }
+                    {formatHoraires(data)}
                   </Text>
                 ))}
               </View>
