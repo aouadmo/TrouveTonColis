@@ -29,7 +29,7 @@ export default {
     },
     plugins: [],
     extra: {
-      API_URL: process.env.API_URL || "http://192.168.1.10:3002"
+      API_URL: process.env.API_URL || "http://192.168.217.102:3002"
     }
   }
 };

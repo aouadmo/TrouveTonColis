@@ -46,7 +46,7 @@ export default function CameraScreen() {
   });
   const [isLoading, setIsLoading] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-
+  console.log(BACKEND_ADDRESS);
   // Demande de permission caméra au montage
   useEffect(() => {
     (async () => {
