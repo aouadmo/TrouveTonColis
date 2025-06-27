@@ -57,6 +57,7 @@ router.post('/searchname', async (req, res) => {
     res.status(500).json({ found: false, message: 'Erreur serveur' });
   }
 });
+
 // === OCR + Hugging Face AI ===
 const ocr_space_api = process.env.OCR_SPACE_API;
 
@@ -146,7 +147,7 @@ router.post('/ocr', async (req, res) => {
   }
 });
 
-// === PUT (mise à jour d’un colis) ===
+// === PUT (mise à jour d'un colis) ===
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const updates = { ...req.body };
@@ -230,6 +231,35 @@ router.get('/mes-colis/:nom/:prenom', async (req, res) => {
   }
 });
 
+// === PUT Réserver un RDV avec date/heure ===
+router.put('/reserver-rdv/:trackingNumber', async (req, res) => {
+  try {
+    const { rdvDate, relayId } = req.body;
+    
+    console.log("📅 Réservation RDV:", req.params.trackingNumber, rdvDate);
+    
+    const updated = await Colis.findOneAndUpdate(
+      { trackingNumber: req.params.trackingNumber },
+      { 
+        rdvConfirmed: true, 
+        status: 'RDV réservé',
+        rdvDate: new Date(rdvDate),
+        rdvRelayId: relayId
+      },
+      { new: true }
+    );
+    
+    if (!updated) {
+      return res.status(404).json({ result: false, error: 'Colis non trouvé' });
+    }
+    
+    console.log("✅ RDV confirmé pour:", updated.trackingNumber);
+    res.json({ result: true, colis: updated });
+  } catch (err) {
+    console.error("❌ Erreur réservation RDV:", err);
+    res.status(500).json({ result: false, error: 'Erreur serveur' });
+  }
+});
 
 // Route pour confirmer qu'un colis est réservé via un RDV
 router.put('/confirm-rdv/:trackingNumber', async (req, res) => {

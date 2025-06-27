@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
     View,
     StyleSheet,
@@ -6,71 +6,80 @@ import {
     ScrollView,
     SafeAreaView,
     TouchableOpacity,
+    Alert,
 } from 'react-native';
 import { FontAwesome5 } from '@expo/vector-icons';
+import { useSelector, useDispatch } from 'react-redux';
+import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
+import { fetchMesColis } from '../reducers/colis';
+import { navigate } from "../navigation/navigationRef";
 
 export default function MyParcelsScreen() {
+    const dispatch = useDispatch();
+    const navigation = useNavigation();
     
-    // Données factices pour l'habillage
-    const mockParcels = [
-        {
-            id: 1,
-            reference: "UPS123456789FR",
-            transporteur: "UPS",
-            status: "Arrivé chez Cécile",
-            dateArrivee: "2024-06-20",
-            dateExpiration: "2024-06-28", // 8 jours
-            creneauReserve: null,
-            couleur: "#8B4513", // Marron UPS
-        },
-        {
-            id: 2,
-            reference: "DHL987654321FR",
-            transporteur: "DHL",
-            status: "Arrivé chez Cécile",
-            dateArrivee: "2024-06-18",
-            dateExpiration: "2024-07-02", // 14 jours
-            creneauReserve: "2024-06-23 15:30",
-            couleur: "#FFD700", // Jaune DHL
-        },
-        {
-            id: 3,
-            reference: "COL456789123FR",
-            transporteur: "Colissimo",
-            status: "Récupéré",
-            dateArrivee: "2024-06-15",
-            dateRecuperation: "2024-06-17",
-            dateExpiration: null,
-            creneauReserve: null,
-            couleur: "#1E3A8A", // Bleu Colissimo
-        },
-        {
-            id: 4,
-            reference: "CP789123456FR",
-            transporteur: "Colis Privé",
-            status: "Arrivé chez Cécile",
-            dateArrivee: "2024-06-19",
-            dateExpiration: "2024-06-29", // 10 jours
-            creneauReserve: "2024-06-22 14:00",
-            couleur: "#4C1A85", // Violet/Noir officiel Colis Privé
-        }
-    ];
+    // Redux state
+    const { value: colis, loading, error } = useSelector(state => state.colis);
+    const userInfo = useSelector(state => state.user.value);
 
+    // Récupérer les colis du client connecté
+    useEffect(() => {
+        if (userInfo && userInfo.nom && userInfo.prenom) {
+            console.log("🔍 Récupération des colis pour:", userInfo.nom, userInfo.prenom);
+            dispatch(fetchMesColis({ 
+                nom: userInfo.nom, 
+                prenom: userInfo.prenom 
+            }));
+        }
+    }, [dispatch, userInfo]);
+
+    // ✅ AJOUTE ÇA - Recharger quand on revient sur la page
+    useEffect(() => {
+        const unsubscribe = navigation.addListener('focus', () => {
+            if (userInfo && userInfo.nom && userInfo.prenom) {
+                console.log("🔄 Rechargement des colis (retour sur page)");
+                dispatch(fetchMesColis({ 
+                    nom: userInfo.nom, 
+                    prenom: userInfo.prenom 
+                }));
+            }
+        });
+
+        return unsubscribe;
+    }, [navigation, userInfo, dispatch]);
+
+    // Fonctions utilitaires
     const getStatusIcon = (status) => {
         switch (status) {
-            case "Arrivé chez Cécile": return "check-circle";
+            case "RDV réservé": return "calendar-check";
+            case "Arrivé chez Cécile": 
+            case "en attente": return "check-circle";
             case "Récupéré": return "handshake";
-            default: return "package";
+            default: return "box"; // ✅ CORRIGÉ
         }
     };
 
     const getStatusColor = (status) => {
         switch (status) {
-            case "Arrivé chez Cécile": return "#059669";
+            case "RDV réservé": return "#8B5CF6";
+            case "Arrivé chez Cécile":
+            case "en attente": return "#059669";
             case "Récupéré": return "#6B7280";
             default: return "#0E56B4";
         }
+    };
+
+    const getTransporteurColor = (transporteur) => {
+        const transporteurClean = transporteur?.toLowerCase().trim() || '';
+        console.log("🎨 Transporteur pour couleur:", transporteurClean); // Debug
+        
+        if (transporteurClean.includes('ups')) return "#8B4513";
+        if (transporteurClean.includes('dhl')) return "#FFD700";
+        if (transporteurClean.includes('colissimo')) return "#1E3A8A";
+        if (transporteurClean.includes('colis privé') || transporteurClean.includes('colis prive')) return "#4C1A85";
+        
+        return "#6B7280"; // Couleur par défaut
     };
 
     const formatDate = (dateString) => {
@@ -86,14 +95,61 @@ export default function MyParcelsScreen() {
                date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
     };
 
-    const isExpiringSoon = (dateExpiration) => {
-        if (!dateExpiration) return false;
+    const isExpiringSoon = (dateArrivee) => {
+        if (!dateArrivee) return false;
         const today = new Date();
-        const expiry = new Date(dateExpiration);
-        const diffTime = expiry - today;
+        const arrivee = new Date(dateArrivee);
+        const diffTime = today - arrivee;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays <= 2;
+        return diffDays >= 6; // Expire dans 2 jours (délai général 8 jours)
     };
+
+    // Gestion des actions
+    const handleReserverRdv = (colis) => {
+        console.log("📅 Réservation RDV pour:", colis.trackingNumber);
+        navigate('ClientCrenauxScreen', { 
+            relayId: colis.rdvRelayId || "6841e0438bc7de726f971515", // ID par défaut
+            trackingNumber: colis.trackingNumber
+        });
+    };
+
+    const handleModifierRdv = (colis) => {
+        Alert.alert(
+            "Modifier RDV",
+            `Voulez-vous modifier votre RDV du ${formatDateTime(colis.rdvDate)} ?`,
+            [
+                { text: "Annuler", style: "cancel" },
+                { 
+                    text: "Modifier", 
+                    onPress: () => {
+                        navigate('ClientCrenauxScreen', { 
+                            relayId: colis.rdvRelayId || "6841e0438bc7de726f971515",
+                            trackingNumber: colis.trackingNumber,
+                            modificationRdv: true
+                        });
+                    }
+                }
+            ]
+        );
+    };
+
+    // Calculer les stats
+    const colisARecuperer = colis.filter(c => c.status !== "Récupéré").length;
+    const colisRecuperes = colis.filter(c => c.status === "Récupéré").length;
+    const totalColis = colis.length;
+
+    // Gestion du loading et erreurs
+    if (loading) {
+        return (
+            <SafeAreaView style={styles.wrapper}>
+                <Header />
+                <View style={styles.loadingContainer}>
+                    <FontAwesome5 name="spinner" size={24} color="#0E56B4" />
+                    <Text style={styles.loadingText}>Chargement de vos colis...</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.wrapper}>
@@ -108,30 +164,49 @@ export default function MyParcelsScreen() {
                     Suivez l'état de vos livraisons chez Cécile
                 </Text>
 
+                {/* Stats */}
                 <View style={styles.statsContainer}>
                     <View style={styles.statBox}>
-                        <Text style={styles.statNumber}>3</Text>
+                        <Text style={styles.statNumber}>{colisARecuperer}</Text>
                         <Text style={styles.statLabel}>À récupérer</Text>
                     </View>
                     <View style={styles.statBox}>
-                        <Text style={styles.statNumber}>1</Text>
+                        <Text style={styles.statNumber}>{colisRecuperes}</Text>
                         <Text style={styles.statLabel}>Récupérés</Text>
                     </View>
                     <View style={styles.statBox}>
-                        <Text style={styles.statNumber}>4</Text>
+                        <Text style={styles.statNumber}>{totalColis}</Text>
                         <Text style={styles.statLabel}>Total chez Cécile</Text>
                     </View>
                 </View>
 
-                {mockParcels.map((parcel) => (
-                    <View key={parcel.id} style={styles.parcelCard}>
+                {/* Message si pas de colis */}
+                {colis.length === 0 && (
+                    <View style={styles.emptyContainer}>
+                        <FontAwesome5 name="box-open" size={48} color="#95C9D8" />
+                        <Text style={styles.emptyTitle}>Aucun colis trouvé</Text>
+                        <Text style={styles.emptySubtitle}>
+                            Vos colis apparaîtront ici une fois qu'ils seront arrivés chez Cécile
+                        </Text>
+                    </View>
+                )}
+
+                {/* Liste des colis */}
+                {colis.map((parcel) => (
+                    <View key={parcel._id || parcel.trackingNumber} style={styles.parcelCard}>
                         {/* En-tête avec transporteur */}
-                        <View style={[styles.parcelHeader, { backgroundColor: parcel.couleur }]}>
+                        <View style={[styles.parcelHeader, { 
+                            backgroundColor: getTransporteurColor(parcel.transporteur) 
+                        }]}>
                             <View style={styles.transporterInfo}>
                                 <FontAwesome5 name="shipping-fast" size={16} color="#FFFFFF" />
-                                <Text style={styles.transporterName}>{parcel.transporteur}</Text>
+                                <Text style={styles.transporterName}>
+                                    {parcel.transporteur || 'Transporteur'}
+                                </Text>
                             </View>
-                            <View style={[styles.statusBadge, { backgroundColor: getStatusColor(parcel.status) }]}>
+                            <View style={[styles.statusBadge, { 
+                                backgroundColor: getStatusColor(parcel.status) 
+                            }]}>
                                 <FontAwesome5 
                                     name={getStatusIcon(parcel.status)} 
                                     size={12} 
@@ -143,58 +218,64 @@ export default function MyParcelsScreen() {
 
                         {/* Corps de la carte */}
                         <View style={styles.parcelBody}>
-                            <Text style={styles.reference}>Réf: {parcel.reference}</Text>
+                            <Text style={styles.reference}>
+                                Réf: {parcel.trackingNumber}
+                            </Text>
                             
                             <View style={styles.infoRow}>
                                 <View style={styles.infoItem}>
                                     <FontAwesome5 name="calendar-check" size={14} color="#0E56B4" />
                                     <Text style={styles.infoLabel}>Arrivée</Text>
                                     <Text style={styles.infoValue}>
-                                        {formatDate(parcel.dateArrivee)}
+                                        {formatDate(parcel.date)}
                                     </Text>
                                 </View>
                                 
-                            {parcel.status === "Récupéré" ? (
                                 <View style={styles.infoItem}>
-                                    <FontAwesome5 name="handshake" size={14} color="#059669" />
-                                    <Text style={styles.infoLabel}>Récupéré le</Text>
+                                    <FontAwesome5 name="weight-hanging" size={14} color="#0E56B4" />
+                                    <Text style={styles.infoLabel}>Poids</Text>
                                     <Text style={styles.infoValue}>
-                                        {formatDate(parcel.dateRecuperation)}
+                                        {parcel.poids ? `${parcel.poids}kg` : "N/A"}
                                     </Text>
                                 </View>
-                            ) : (
-                                <View style={styles.infoItem}>
-                                    <FontAwesome5 name="calendar-times" size={14} color="#DC2626" />
-                                    <Text style={styles.infoLabel}>Expiration</Text>
-                                    <Text style={[
-                                        styles.infoValue,
-                                        isExpiringSoon(parcel.dateExpiration) && styles.expiringText
-                                    ]}>
-                                        {formatDate(parcel.dateExpiration)}
-                                    </Text>
-                                </View>
-                            )}
                             </View>
 
-                            {parcel.creneauReserve && (
+                            {/* RDV confirmé */}
+                            {parcel.rdvConfirmed && parcel.rdvDate && (
                                 <View style={styles.appointmentBox}>
                                     <FontAwesome5 name="clock" size={14} color="#059669" />
                                     <Text style={styles.appointmentText}>
-                                        RDV réservé : {formatDateTime(parcel.creneauReserve)}
+                                        RDV réservé : {formatDateTime(parcel.rdvDate)}
                                     </Text>
                                 </View>
                             )}
 
-                            {parcel.status === "Arrivé chez Cécile" && !parcel.creneauReserve && (
-                                <TouchableOpacity style={styles.actionButton}>
-                                    <FontAwesome5 name="calendar-plus" size={14} color="#FFFFFF" />
-                                    <Text style={styles.actionButtonText}>Réserver un créneau</Text>
-                                </TouchableOpacity>
+                            {/* Boutons d'action */}
+                            {parcel.status !== "Récupéré" && (
+                                <View style={styles.actionContainer}>
+                                    {!parcel.rdvConfirmed ? (
+                                        <TouchableOpacity 
+                                            style={styles.actionButton}
+                                            onPress={() => handleReserverRdv(parcel)}
+                                        >
+                                            <FontAwesome5 name="calendar-plus" size={14} color="#FFFFFF" />
+                                            <Text style={styles.actionButtonText}>Réserver un créneau</Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity 
+                                            style={[styles.actionButton, styles.modifyButton]}
+                                            onPress={() => handleModifierRdv(parcel)}
+                                        >
+                                            <FontAwesome5 name="edit" size={14} color="#FFFFFF" />
+                                            <Text style={styles.actionButtonText}>Modifier RDV</Text>
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
                             )}
                         </View>
 
                         {/* Alerte expiration */}
-                        {isExpiringSoon(parcel.dateExpiration) && (
+                        {isExpiringSoon(parcel.date) && parcel.status !== "Récupéré" && (
                             <View style={styles.warningBanner}>
                                 <FontAwesome5 name="exclamation-triangle" size={14} color="#DC2626" />
                                 <Text style={styles.warningText}>
@@ -220,7 +301,7 @@ export default function MyParcelsScreen() {
 const styles = StyleSheet.create({
     wrapper: {
         flex: 1,
-        backgroundColor: '#FFFCE9', // Palette Client - Fond crème
+        backgroundColor: '#FFFCE9',
     },
     container: {
         flex: 1,
@@ -233,19 +314,48 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 26,
         fontWeight: 'bold',
-        color: '#0E56B4', // Palette Client - Bleu principal
+        color: '#0E56B4',
         textAlign: 'center',
         marginBottom: 8,
     },
     subtitle: {
         fontSize: 16,
-        color: '#95C9D8', // Palette Client - Bleu clair
+        color: '#95C9D8',
         textAlign: 'center',
         marginBottom: 24,
         fontStyle: 'italic',
     },
     
-    // Stats en haut
+    // Loading
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 12,
+    },
+    loadingText: {
+        fontSize: 16,
+        color: '#0E56B4',
+    },
+    
+    // Empty state
+    emptyContainer: {
+        alignItems: 'center',
+        padding: 40,
+        gap: 12,
+    },
+    emptyTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#0E56B4',
+    },
+    emptySubtitle: {
+        fontSize: 14,
+        color: '#95C9D8',
+        textAlign: 'center',
+    },
+    
+    // Stats
     statsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -351,12 +461,8 @@ const styles = StyleSheet.create({
         color: '#0E56B4',
         fontWeight: '600',
     },
-    expiringText: {
-        color: '#DC2626',
-        fontWeight: 'bold',
-    },
     
-    // RDV réservé
+    // RDV confirmé
     appointmentBox: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -374,7 +480,10 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
     
-    // Bouton d'action
+    // Actions
+    actionContainer: {
+        marginTop: 8,
+    },
     actionButton: {
         flexDirection: 'row',
         alignItems: 'center',
@@ -383,6 +492,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#0E56B4',
         padding: 12,
         borderRadius: 8,
+    },
+    modifyButton: {
+        backgroundColor: '#8B5CF6',
     },
     actionButtonText: {
         color: '#FFFFFF',
@@ -407,7 +519,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     
-    // Aide en bas
+    // Aide
     helpBox: {
         flexDirection: 'row',
         alignItems: 'flex-start',
