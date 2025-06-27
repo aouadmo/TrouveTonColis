@@ -7,6 +7,7 @@ const { checkBody } = require('../modules/checkBody');
 const uid2 = require('uid2');
 const bcrypt = require('bcrypt');
 
+
 // Inscription Pro
 router.post('/signup', (req, res) => {
   if (!checkBody(req.body, ['nom', 'prenom', 'email', 'password', 'phone', 'nomRelais', 'adresse', 'ville', 'codePostal'])) {
@@ -159,7 +160,6 @@ router.post('/absence', (req, res) => {
   });
 });
 
-
 // Route PUT pour mettre à jour les horaires du relais
 router.put('/horaires', authenticatePro, async (req, res) => {
   const { horaires } = req.body;
@@ -187,48 +187,27 @@ router.put('/horaires', authenticatePro, async (req, res) => {
   }
 });
 
-// Route PUT pour mettre à jour les horaires du relais
-router.put('/horaires', authenticatePro, async (req, res) => {
-  const { horaires } = req.body;
-
-  // Vérification basique
-  if (!horaires || typeof horaires !== 'object') {
-    return res.status(400).json({ result: false, error: 'Horaires manquants ou invalides' });
-  }
-
-  try {
-    const updatedPro = await Pro.findOneAndUpdate(
-      { token: req.pro.token },
-      { horaires },
-      { new: true }
-    );
-
-    if (!updatedPro) {
-      return res.status(404).json({ result: false, error: 'Point relais introuvable' });
-    }
-
-    res.json({ result: true, message: 'Horaires mis à jour avec succès' });
-  } catch (error) {
-    console.error('Erreur lors de la mise à jour des horaires :', error);
-    res.status(500).json({ result: false, error: 'Erreur serveur lors de la mise à jour des horaires' });
-  }
-});
-
-// Route publique pour récupérer les infos d'un point relais (accessible sans authentification)
+// Route publique pour récupérer les infos d'un point relais
 router.get('/info/:id', (req, res) => {
   const proId = req.params.id;
   
-  // Vérifier que l'ID est valide
   if (!proId) {
     return res.status(400).json({ result: false, error: 'ID du point relais manquant' });
   }
 
   Pro.findById(proId)
-    .select('nomRelais phone2 adresse ville codePostal') // Sélectionner UNIQUEMENT les champs demandés
+    // .select('nomRelais phone2 adresse ville codePostal horaires')
     .then(data => {
       if (!data) {
         return res.status(404).json({ result: false, error: 'Point relais non trouvé' });
       }
+      
+      console.log("Données pro renvoyées :", data);
+      console.log("Horaires du pro :", data.horaires);
+      
+      // 🧪 HORAIRES DE TEST - Si vide, ajouter des horaires temporaires
+      let horaires = data.horaires;
+      
       
       // Retourner les données formatées
       res.json({ 
@@ -240,6 +219,7 @@ router.get('/info/:id', (req, res) => {
           adresse: data.adresse,
           ville: data.ville,
           codePostal: data.codePostal,
+          horaires: data.horaires, // ✅ Utilise directement les horaires de la BDD
           adresseComplete: `${data.adresse}, ${data.codePostal} ${data.ville}`
         }
       });
@@ -248,5 +228,24 @@ router.get('/info/:id', (req, res) => {
       console.error('Erreur lors de la récupération du pro:', error);
       res.status(500).json({ result: false, error: 'Erreur serveur' });
     });
-});module.exports = router;
+});
+
+
+
+    // Route GET pour récupérer les horaires du relais connecté
+router.get('/horaires', authenticatePro, async (req, res) => {
+  try {
+    const pro = await Pro.findOne({ token: req.pro.token }).select('horaires');
+    if (!pro) {
+      return res.status(404).json({ result: false, error: 'Point relais introuvable' });
+    }
+
+    res.json({ result: true, horaires: pro.horaires });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des horaires :', error);
+    res.status(500).json({ result: false, error: 'Erreur serveur' });
+  }
+});
+
+module.exports = router;
 

@@ -32,7 +32,7 @@ const TabNavigatorClient = () => {
             iconName = 'archive';
           } else if (route.name === 'SearchScreen') {
             iconName = 'search';
-          } else if (route.name === 'ProfilClient') {
+          } else if (route.name === 'ClientProfileScreen') {
             iconName = 'user';
           }
 
@@ -47,7 +47,7 @@ const TabNavigatorClient = () => {
     >
       {/* Définition des onglets - ordre d'affichage */}
       <Tab.Screen 
-        name="ProfilClient" 
+        name="ClientProfileScreen" 
         component={ClientProfileScreen} 
         options={{ title: 'Mon Profil' }} 
       />
