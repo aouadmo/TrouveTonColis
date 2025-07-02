@@ -87,7 +87,7 @@ router.post('/ocr', async (req, res) => {
     async function extractText(prompt) {
       try {
         const response = await hf.chatCompletion({
-          model: 'mistralai/Mistral-7B-Instruct-v0.3',
+          model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
           messages: [{ role: 'user', content: prompt }],
         });
         return response.choices[0].message.content;
@@ -105,17 +105,18 @@ router.post('/ocr', async (req, res) => {
     Retourne la réponse uniquement en JSON strict, sans texte supplémentaire ni formatage Markdown (pas de \`\`\`json).
   
     Exemple:
-    Texte: "Nom: Dupont, Prénom: Jean, Adresse: 123 Rue de la Paix, Tel: 0123456789", trackingNumber: "1Z23456789"
-    {"prenom": "Jean", "nom": "Dupont", "trackingNumber": "1Z23456789", "telephone": "0123456789" }
-  
-    Texte: "Entreprise ABC, Service Client, trackingNumber: 1Z753159, Contact: 0687654321"
-    {"prenom": "", "nom": "", "trackingNumber": "1Z753159", "telephone": "0687654321"}
-  
-    Texte :
-    ${parsedText}
+    Input: "Nom: Dupont, Prénom: Jean, Adresse: 123 Rue de la Paix, Tel: 0123456789", trackingNumber: "1Z23456789"
+    Output: {"prenom": "Jean", "nom": "Dupont", "trackingNumber": "1Z23456789", "telephone": "0123456789" }
+
+    Input: "Entreprise ABC, Service Client, trackingNumber: 1Z753159, Contact: 0687654321"
+    Output: {"prenom": "", "nom": "", "trackingNumber": "1Z753159", "telephone": "0687654321"}
+
+    Input : ${parsedText}
+    Output: ?
     `;
 
     const raw = await extractText(prompt);
+    console.log('Raw Response:', raw);
     let extractedData;
 
     try {
@@ -123,7 +124,8 @@ router.post('/ocr', async (req, res) => {
     } catch (err) {
       extractedData = { error: 'JSON mal formé', rawResponse: raw };
     }
-      console.log('Extracted Data:', extractedData);
+      console.log('Extracted Data:', extractedData.rawResponse);
+      DataToSave = extractedData.rawResponse;
     const newColis = new Colis({
       nom: extractedData.nom || '',
       prenom: extractedData.prenom || '',
@@ -134,7 +136,7 @@ router.post('/ocr', async (req, res) => {
       date: extractedData.date || new Date(),
       extractedFromOCR: extractedData,
     });
-
+    console.log('Nouveau colis créé:', newColis);
     await newColis.save();
     res.json({
       success: true,
