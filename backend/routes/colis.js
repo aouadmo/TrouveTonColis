@@ -57,6 +57,7 @@ router.post('/searchname', async (req, res) => {
     res.status(500).json({ found: false, message: 'Erreur serveur' });
   }
 });
+
 // === OCR + Hugging Face AI ===
 const ocr_space_api = process.env.OCR_SPACE_API;
 
@@ -146,7 +147,7 @@ router.post('/ocr', async (req, res) => {
   }
 });
 
-// === PUT (mise à jour d’un colis) ===
+// === PUT (mise à jour d'un colis) ===
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const updates = { ...req.body };
@@ -209,8 +210,103 @@ router.get('/stats', async (req, res) => {
   }
 });
 
+// === GET Colis d'un client connecté ===
+router.get('/mes-colis/:nom/:prenom', async (req, res) => {
+  try {
+    const { nom, prenom } = req.params;
+    
+    console.log("🔍 Recherche colis pour:", nom, prenom);
+    
+    const colis = await Colis.find({
+      nom: { $regex: new RegExp(`^${escapeRegex(nom)}$`, 'i') },
+      prenom: { $regex: new RegExp(`^${escapeRegex(prenom)}$`, 'i') }
+    }).sort({ date: -1 }); // Plus récents en premier
 
-// Route pour confirmer qu'un colis est réservé via un RDV
+    console.log("📦 Colis trouvés:", colis.length);
+    
+    res.json({ result: true, colis });
+  } catch (error) {
+    console.error('Erreur récupération colis client:', error);
+    res.status(500).json({ result: false, error: 'Erreur serveur' });
+  }
+});
+
+// ✅ ROUTE DE TEST POUR DEBUG
+router.get('/test-colis/:trackingNumber', async (req, res) => {
+  try {
+    const trackingNumber = req.params.trackingNumber;
+    console.log("🧪 TEST - Recherche colis:", trackingNumber);
+    console.log("🧪 TEST - Type tracking:", typeof trackingNumber);
+    
+    const colis = await Colis.findOne({ trackingNumber: trackingNumber });
+    console.log("📦 TEST - Colis trouvé:", colis ? "OUI" : "NON");
+    
+    if (colis) {
+      console.log("📋 TEST - Détails:", {
+        _id: colis._id,
+        trackingNumber: colis.trackingNumber,
+        typeTracking: typeof colis.trackingNumber
+      });
+      res.json({ result: true, message: "Colis trouvé !", colis: colis });
+    } else {
+      res.json({ result: false, message: "Colis NON trouvé" });
+    }
+  } catch (err) {
+    res.json({ result: false, error: err.message });
+  }
+});
+
+// === PUT Réserver un RDV avec date/heure ===
+router.put('/reserver-rdv/:trackingNumber', async (req, res) => {
+  try {
+    const { rdvDate, relayId } = req.body;
+    const trackingNumber = req.params.trackingNumber;
+    
+    console.log("📅 SERVEUR - Réservation RDV:", trackingNumber, rdvDate);
+    console.log("🔍 SERVEUR - Recherche du colis...");
+    console.log("🔍 SERVEUR - Type tracking:", typeof trackingNumber);
+    
+    // Vérifier d'abord si le colis existe
+    const colisExiste = await Colis.findOne({ trackingNumber: trackingNumber });
+    console.log("📦 SERVEUR - Colis trouvé:", colisExiste ? "OUI" : "NON");
+    
+    if (colisExiste) {
+      console.log("📋 SERVEUR - Détails du colis:", {
+        _id: colisExiste._id,
+        nom: colisExiste.nom,
+        prenom: colisExiste.prenom,
+        trackingNumber: colisExiste.trackingNumber,
+        typeTracking: typeof colisExiste.trackingNumber
+      });
+    }
+    
+    if (!colisExiste) {
+      console.log("❌ SERVEUR - Colis non trouvé avec tracking:", trackingNumber);
+      return res.status(404).json({ result: false, error: 'Colis non trouvé' });
+    }
+    
+    // Mettre à jour le colis
+    const updated = await Colis.findOneAndUpdate(
+      { trackingNumber: trackingNumber },
+      { 
+        rdvConfirmed: true, 
+        status: 'RDV réservé',
+        rdvDate: new Date(rdvDate),
+        rdvRelayId: relayId
+      },
+      { new: true }
+    );
+    
+    console.log("✅ SERVEUR - RDV confirmé pour:", updated.trackingNumber);
+    res.json({ result: true, colis: updated });
+    
+  } catch (err) {
+    console.error("❌ SERVEUR - Erreur réservation RDV:", err);
+    res.status(500).json({ result: false, error: 'Erreur serveur' });
+  }
+});
+
+// Route pour confirmer qu'un colis est réservé via un RDV (ancienne)
 router.put('/confirm-rdv/:trackingNumber', async (req, res) => {
   try {
     const updated = await Colis.findOneAndUpdate(

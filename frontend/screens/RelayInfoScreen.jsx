@@ -12,6 +12,8 @@ import * as Location from "expo-location";
 import { Linking } from "react-native";
 import Header from "../components/Header";
 import Constants from 'expo-constants';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchRelayInfo, clearRelayData } from '../reducers/horaires';
 import { navigate } from "../navigation/navigationRef";
 
 const API_URL = Constants.expoConfig.extra.API_URL;
@@ -19,65 +21,128 @@ const API_URL = Constants.expoConfig.extra.API_URL;
 const RelayInfoScreen = () => {
   const route = useRoute();
   const navigation = useNavigation();
+  const dispatch = useDispatch();
 
+  // Redux state
+  const { relayData, loading, error } = useSelector(state => state.horaires);
+  const userInfo = useSelector(state => state.user.value); // ✅ AJOUTE ÇA
 
-  // Récupération de l'ID du point relais
-  const relayId = route.params?.relayId || route.params?.relais?.id;
-  const handlePriseRDV = () => {
-    navigation.navigate("ClientCrenauxScreen", { relayId });
-
-    // navigate("ClientNavigation" , {screen: 'ClientCrenauxScreen',  params: { relayId: relayId } });
-  }
-
-  // States pour la gestion des données
-  const [relayData, setRelayData] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // States locaux
   const [distanceInfo, setDistanceInfo] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [showHoraires, setShowHoraires] = useState(false);
 
-  // Récupération des données du point relais
-  useEffect(() => {
-    const fetchRelayData = async () => {
-      try {
-        setLoading(true);
+  // Récupération de l'ID et le trackingNumber point relais
+  const relayId = route.params?.relayId || route.params?.relais?.id;
+  const trackingNumber = route.params?.trackingNumber;
 
-        const response = await fetch(`${API_URL}/pros/info/${relayId}`);
-        const result = await response.json();
+  // ✅ FONCTION POUR FORMATER L'AFFICHAGE DES HORAIRES
+  const formatHoraires = (data) => {
+    // Si le jour entier est fermé
+    if (data.ferme) {
+      return 'Fermé';
+    }
 
-        console.log("Fetch result:", result);
+    const matin = data.matin;
+    const apresMidi = data.apresMidi;
 
-        if (result.result && result.data) {
-          // Formatage de l'adresse complète
-          const adresseComplete = `${result.data.adresse}, ${result.data.ville} ${result.data.codePostal}`;
-
-          setRelayData({
-            ...result.data,
-            adresseComplete: adresseComplete
-          });
-        } else {
-          throw new Error(result.error || 'Erreur lors de la récupération des données');
-        }
-      } catch (error) {
-        console.error("Erreur fetch pro:", error);
-        Alert.alert(
-          "Erreur",
-          "Impossible de charger les informations du point relais.",
-          [{ text: "Retour", onPress: () => navigation.goBack() }]
-        );
-      } finally {
-        setLoading(false);
+    // Formater les créneaux
+    const formatCreneau = (creneau) => {
+      if (creneau.ferme || !creneau.ouverture || !creneau.fermeture) {
+        return null;
       }
+      return `${creneau.ouverture} - ${creneau.fermeture}`;
     };
 
+    const creneauMatin = formatCreneau(matin);
+    const creneauApresMidi = formatCreneau(apresMidi);
+
+    // Gestion des différents cas
+    if (creneauMatin && creneauApresMidi) {
+      // Matin ET après-midi ouverts
+      return `${creneauMatin} / ${creneauApresMidi}`;
+    } else if (creneauMatin && !creneauApresMidi) {
+      // Seulement le matin ouvert
+      return `${creneauMatin} / Fermé l'après-midi`;
+    } else if (!creneauMatin && creneauApresMidi) {
+      // Seulement l'après-midi ouvert
+      return `Fermé le matin / ${creneauApresMidi}`;
+    } else {
+      // Rien d'ouvert
+      return 'Fermé';
+    }
+  };
+
+  const handlePriseRDV = () => {
+    console.log("🔍 Debug - userInfo:", userInfo); // Pour debug
+
+    if (!userInfo.token) {
+      // Cas 1: Utilisateur non connecté
+      Alert.alert(
+        "Connexion requise",
+        "Pour prendre rendez-vous, vous devez être connecté en tant que client.",
+        [
+          { text: "Annuler", style: "cancel" },
+          {
+            text: "Se connecter",
+            onPress: () => {
+              console.log("Redirection vers connexion client");
+              // Temporaire : juste un message
+              Alert.alert("Info", "Redirection vers la connexion client à implémenter");
+            }
+          },
+          {
+            text: "S'inscrire",
+            onPress: () => {
+              console.log("Redirection vers inscription");
+              Alert.alert("Info", "Redirection vers l'inscription à implémenter");
+            }
+          }
+        ]
+      );
+    } else if (userInfo.isPro === true) {
+      // Cas 2: Professionnel connecté
+      Alert.alert(
+        "Accès restreint",
+        "Cette fonctionnalité est réservée aux clients. Vous êtes actuellement connecté en tant que professionnel.",
+        [{ text: "OK" }]
+      );
+    } else {
+      // Cas 3: Client connecté - Navigation globale vers ClientCrenauxScreen
+      console.log("🚀 CLIENT - Navigation vers ClientCrenauxScreen avec relayId:", relayId);
+      navigate('ClientCrenauxScreen', {
+        relayId: relayId,
+        trackingNumber: trackingNumber,
+      });
+    }
+  };
+
+  // Récupération des données du point relais avec Redux
+  useEffect(() => {
     if (relayId) {
-      fetchRelayData();
+      dispatch(fetchRelayInfo(relayId));
     } else {
       Alert.alert("Erreur", "Point relais non spécifié", [
         { text: "Retour", onPress: () => navigation.goBack() }
       ]);
     }
-  }, [relayId, navigation]);
+
+    // Nettoyage quand on quitte la page
+    return () => {
+      dispatch(clearRelayData());
+    };
+  }, [relayId, dispatch]);
+
+  // Gestion des erreurs Redux
+  useEffect(() => {
+    if (error) {
+      Alert.alert(
+        "Erreur",
+        error,
+        [{ text: "Retour", onPress: () => navigation.goBack() }]
+      );
+    }
+  }, [error, navigation]);
 
   // Récupération de la géolocalisation pour l'itinéraire
   useEffect(() => {
@@ -207,7 +272,7 @@ const RelayInfoScreen = () => {
             </View>
           )}
 
-          {/* Horaires */}
+          {/* Horaires - Version finale avec gestion matin/après-midi */}
           <View style={styles.infoBox}>
             <TouchableOpacity
               style={styles.horaireToggle}
@@ -217,18 +282,19 @@ const RelayInfoScreen = () => {
               <Text style={styles.label}>Horaires</Text>
               <Text style={styles.toggleIcon}>{showHoraires ? '▲' : '▼'}</Text>
             </TouchableOpacity>
-            
+
             {showHoraires && relayData.horaires && (
-             <View style={styles.horaireContent}>
-               {Object.entries(relayData.horaires).map(([jour, data]) => (
-               <Text key={jour} style={styles.horaireText}>
-               <Text style={styles.horaireBold}>{jour.charAt(0).toUpperCase() + jour.slice(1)} :</Text>{' '}
-               {data.ferme ? 'Fermé' : `${data.matin.ouverture} - ${data.matin.fermeture} / ${data.apresMidi.ouverture} - ${data.apresMidi.fermeture}`}
-      </Text>
-    ))}
-  </View>
-)}
-        
+              <View style={styles.horaireContent}>
+                {Object.entries(relayData.horaires).map(([jour, data]) => (
+                  <Text key={jour} style={styles.horaireText}>
+                    <Text style={styles.horaireBold}>
+                      {jour.charAt(0).toUpperCase() + jour.slice(1)} :
+                    </Text>{' '}
+                    {formatHoraires(data)}
+                  </Text>
+                ))}
+              </View>
+            )}
           </View>
 
           {/* Informations pratiques */}

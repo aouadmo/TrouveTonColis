@@ -153,7 +153,8 @@ const ColisSearchForm = () => {
           <TouchableOpacity
             style={styles.relayButton}
             onPress={() => navigation.navigate("RelayInfoScreen", { 
-              relayId: colis.relais || '6841e0438bc7de726f971515' 
+              relayId: colis.relais || '6841e0438bc7de726f971515',
+              trackingNumber: colis.trackingNumber
             })}
             activeOpacity={0.8}
           >

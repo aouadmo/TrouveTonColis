@@ -9,6 +9,9 @@ export const rdvSlice = createSlice({
   initialState,
   reducers: {
     setRdv: (state, action) => {
+      if (!Array.isArray(state.value)) {
+        state.value = [];
+      }
       state.value.push(action.payload);
     },
     clearRdv: (state) => {
