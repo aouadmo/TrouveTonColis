@@ -34,8 +34,7 @@ const prosSchema = mongoose.Schema({
         fermeture: String,
       },
       ferme: Boolean,
-    }, { _id: false }
-    )
+    }, { _id: false }),
   },
 });
 
