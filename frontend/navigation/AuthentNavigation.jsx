@@ -10,7 +10,6 @@ import RelayInfoScreen from '../screens/RelayInfoScreen';
 const Stack = createNativeStackNavigator();
 
 export default function AuthentNavigator() {
-    // Écrans disponibles avant la connexion (publics)
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="DrawerNavigator" component={DrawerNavigator} />

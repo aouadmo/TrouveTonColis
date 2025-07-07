@@ -42,7 +42,7 @@ export default function ClientCrenauxScreen() {
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
-    // RÉCUPÈRE LES PARAMÈTRES DE NAVIGATION
+    // Param navigation
     const { relayId, trackingNumber } = route.params || {};
 
     useEffect(() => {
@@ -67,7 +67,7 @@ export default function ClientCrenauxScreen() {
         }
     };
 
-    //  FONCTION POUR CONVERTIR L'HEURE
+    //  Fonction conversion heures
     const convertTimeSlotToDateTime = (date, timeSlot) => {
         const [startTime] = timeSlot.split(' - ');
         const [hour, minute] = startTime.replace('h', ':').split(':');
@@ -106,7 +106,6 @@ export default function ClientCrenauxScreen() {
             }));
 
             if (result.type.includes('fulfilled')) {
-                // GARDE AUSSI setRdv pour le suivi local
                 const rendezVous = {
                     date: selectedDate.toLocaleDateString(),
                     time: selectedTimeSlot,
@@ -120,7 +119,7 @@ export default function ClientCrenauxScreen() {
                     [
                         {
                             text: 'OK',
-                            onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'MyParcelsScreen'}), //  REDIRIGE VERS MES COLIS
+                            onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'MyParcelsScreen'}),
                         },
                     ]
                 );
@@ -128,14 +127,14 @@ export default function ClientCrenauxScreen() {
                 Alert.alert('Erreur', 'Impossible de réserver le RDV. Veuillez réessayer.');
             }
         } catch (error) {
-            console.error("❌ Erreur réservation:", error);
+            console.error(" Erreur réservation:", error);
             Alert.alert('Erreur', 'Impossible de réserver le RDV. Veuillez réessayer.');
         }
     };
 
     return (
         <View style={styles.container}>
-            {/* ✅ AFFICHE LES INFOS DE DEBUG */}
+
             {trackingNumber && (
                 <View style={styles.debugInfo}>
                     <Text style={styles.debugText}>Colis: {trackingNumber}</Text>

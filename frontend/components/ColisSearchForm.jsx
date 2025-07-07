@@ -170,7 +170,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 16,
     alignItems: "center",
-    backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
+    backgroundColor: '#FFFFFF',
     flex: 1,
   },
   
@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 12,
-    backgroundColor: "#D0BCFF", // Palette Neutre - Accent alternatif
+    backgroundColor: "#D0BCFF",
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   active: {
-    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    backgroundColor: "#B48DD3",
     shadowOpacity: 0.15,
     elevation: 4,
   },
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   
   // Bouton de recherche
   button: {
-    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    backgroundColor: "#B48DD3",
     padding: 16,
     borderRadius: 12,
     alignItems: "center",
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
     marginBottom: 16,
-    color: "#444444", // Palette Neutre - Texte principal
+    color: "#444444",
     fontWeight: "600",
   },
   
@@ -270,7 +270,7 @@ const styles = StyleSheet.create({
     shadowRadius: 6,
     elevation: 4,
     borderLeftWidth: 4,
-    borderLeftColor: "#79B4C4", // Palette Neutre - Accent secondaire
+    borderLeftColor: "#79B4C4",
   },
   colisText: {
     fontSize: 16,
@@ -281,13 +281,13 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     marginBottom: 12,
-    color: "#79B4C4", // Palette Neutre - Accent secondaire
+    color: "#79B4C4",
     fontStyle: "italic",
   },
   
   // Bouton point relais
   relayButton: {
-    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    backgroundColor: "#B48DD3",
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 10,

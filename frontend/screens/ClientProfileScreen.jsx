@@ -307,7 +307,7 @@ export default function ClientProfileScreen() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFCE9', // Palette Client - Fond crème
+    backgroundColor: '#FFFCE9',
   },
   container: {
     flex: 1,

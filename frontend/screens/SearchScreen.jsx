@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     paddingBottom: 40,
-    backgroundColor: "#FFFFFF", // Palette Neutre - Fond blanc
+    backgroundColor: "#FFFFFF",
     flexGrow: 1,
     justifyContent: "flex-start",
   },
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
     marginBottom: 30,
-    color: "#444444", // Palette Neutre - Texte principal
+    color: "#444444",
   },
 });
 

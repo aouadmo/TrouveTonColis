@@ -7,9 +7,10 @@ import * as Location from 'expo-location';
 import Header from '../components/Header.jsx';
 import { Polyline } from 'react-native-maps';
 import { useNavigation } from '@react-navigation/native';
-//dotenv.config();
-const OPENROUTESERVICE_API_KEY = process.env.OPENROUTESERVICE_API_KEY; //'5b3ce3597851110001cf6248d0b7b3ff939b4f9c8f75934127de1d06';//
+import Constants from 'expo-constants';
 
+const OPENROUTESERVICE_API_KEY = process.env.OPENROUTESERVICE_API_KEY; //'5b3ce3597851110001cf6248d0b7b3ff939b4f9c8f75934127de1d06';//
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function MapScreen() {
   // States pour la gestion de la carte
@@ -65,7 +66,7 @@ export default function MapScreen() {
   
   const getPrAdresse = async () => {
     try {
-      const response = await fetch('http://192.168.18.102:3006/pros/adressepro');
+      const response = await fetch(`${API_URL}/pros/adressepro`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

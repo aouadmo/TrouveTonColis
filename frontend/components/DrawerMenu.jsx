@@ -26,10 +26,8 @@ export default function CustomDrawerContent({ navigation }) {
   // Navigation vers l'espace utilisateur selon le statut
   const handleBackToProfile = () => {
     if (isPro) {
-      // Pro → Tableau de bord
       navigation.navigate('TabNavigatorPro', { screen: 'TableauBord' });
     } else {
-      // Client → Profil client
       navigation.navigate('TabNavigatorClient', { screen: 'ProfilClient' });
     }
   };
@@ -124,8 +122,6 @@ export default function CustomDrawerContent({ navigation }) {
         <TouchableOpacity
           style={[styles.item, styles.logoutItem]}
           onPress={() => {
-            // Ici vous devez implémenter votre logique de déconnexion
-            // Par exemple : dispatch(logout()) puis navigation.navigate('HomeScreen')
             console.log('Déconnexion');
           }}
           activeOpacity={0.8}

@@ -23,11 +23,9 @@ const RelayInfoScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  // Redux state
   const { relayData, loading, error } = useSelector(state => state.horaires);
-  const userInfo = useSelector(state => state.user.value); // ✅ AJOUTE ÇA
+  const userInfo = useSelector(state => state.user.value);
 
-  // States locaux
   const [distanceInfo, setDistanceInfo] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [showHoraires, setShowHoraires] = useState(false);
@@ -36,9 +34,7 @@ const RelayInfoScreen = () => {
   const relayId = route.params?.relayId || route.params?.relais?.id;
   const trackingNumber = route.params?.trackingNumber;
 
-  // ✅ FONCTION POUR FORMATER L'AFFICHAGE DES HORAIRES
   const formatHoraires = (data) => {
-    // Si le jour entier est fermé
     if (data.ferme) {
       return 'Fermé';
     }
@@ -57,15 +53,15 @@ const RelayInfoScreen = () => {
     const creneauMatin = formatCreneau(matin);
     const creneauApresMidi = formatCreneau(apresMidi);
 
-    // Gestion des différents cas
+    // Gestion des cas
     if (creneauMatin && creneauApresMidi) {
       // Matin ET après-midi ouverts
       return `${creneauMatin} / ${creneauApresMidi}`;
     } else if (creneauMatin && !creneauApresMidi) {
-      // Seulement le matin ouvert
+      // Que le matin
       return `${creneauMatin} / Fermé l'après-midi`;
     } else if (!creneauMatin && creneauApresMidi) {
-      // Seulement l'après-midi ouvert
+      // Que le soir
       return `Fermé le matin / ${creneauApresMidi}`;
     } else {
       // Rien d'ouvert
@@ -74,10 +70,9 @@ const RelayInfoScreen = () => {
   };
 
   const handlePriseRDV = () => {
-    console.log("🔍 Debug - userInfo:", userInfo); // Pour debug
 
     if (!userInfo.token) {
-      // Cas 1: Utilisateur non connecté
+      // Si non connecté
       Alert.alert(
         "Connexion requise",
         "Pour prendre rendez-vous, vous devez être connecté en tant que client.",
@@ -101,15 +96,14 @@ const RelayInfoScreen = () => {
         ]
       );
     } else if (userInfo.isPro === true) {
-      // Cas 2: Professionnel connecté
+      // Si Pro connecté
       Alert.alert(
         "Accès restreint",
         "Cette fonctionnalité est réservée aux clients. Vous êtes actuellement connecté en tant que professionnel.",
         [{ text: "OK" }]
       );
     } else {
-      // Cas 3: Client connecté - Navigation globale vers ClientCrenauxScreen
-      console.log("🚀 CLIENT - Navigation vers ClientCrenauxScreen avec relayId:", relayId);
+      // Si client connecté
       navigate('ClientCrenauxScreen', {
         relayId: relayId,
         trackingNumber: trackingNumber,
@@ -117,7 +111,7 @@ const RelayInfoScreen = () => {
     }
   };
 
-  // Récupération des données du point relais avec Redux
+  // Récupération des données du point relais
   useEffect(() => {
     if (relayId) {
       dispatch(fetchRelayInfo(relayId));
@@ -127,13 +121,12 @@ const RelayInfoScreen = () => {
       ]);
     }
 
-    // Nettoyage quand on quitte la page
     return () => {
       dispatch(clearRelayData());
     };
   }, [relayId, dispatch]);
 
-  // Gestion des erreurs Redux
+  // Gérer les erreurs
   useEffect(() => {
     if (error) {
       Alert.alert(

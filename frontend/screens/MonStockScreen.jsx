@@ -31,7 +31,7 @@ export default function MonStockScreen() {
   moment.locale('fr');
 
   const fetchColis = () => {
-    fetch('http://192.168.1.157:3000/colis') 
+    fetch(`${API_URL}/colis`) 
       .then(res => res.json())
       .then(data => {
         if (data.result) {
@@ -63,7 +63,7 @@ export default function MonStockScreen() {
 
   const onRefresh = () => {
     setRefreshing(true);
-    fetchColis(); // CLOTILDE: Mettre ici la fonction de rafraîchissement des colis, tu apelles la fonction fetchColis mais pas créer. c'est quoi ce boulot ? :p
+    fetchColis();
   };
 
 
@@ -102,11 +102,9 @@ export default function MonStockScreen() {
           text: 'Supprimer',
           style: 'destructive',
           onPress: () => {
-            // TODO: Ajouter la route DELETE dans le backend
-            // fetch(`${API_URL}/colis/${trackingNumber}`, { method: 'DELETE' })
             console.log(`TODO: Supprimer le colis ${trackingNumber} via API`);
             
-            // Pour l'instant, on supprime juste du store local
+            // Supprime store local
             const colisUpdated = colis.filter(c => c.trackingNumber !== trackingNumber);
             dispatch(setColis(colisUpdated));
             
@@ -330,7 +328,7 @@ export default function MonStockScreen() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFAF5', // Palette Pro - Fond rose très pâle
+    backgroundColor: '#FFFAF5',
   },
   container: {
     flex: 1,
@@ -350,14 +348,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#4F378A', // Palette Pro - Texte violet foncé
+    color: '#4F378A',
     textAlign: 'center',
     marginTop: 20,
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#D0BCFF', // Palette Pro - Mauve clair
+    color: '#D0BCFF',
     textAlign: 'center',
     marginBottom: 24,
     fontStyle: 'italic',

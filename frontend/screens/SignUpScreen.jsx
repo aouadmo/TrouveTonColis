@@ -109,15 +109,15 @@ const SignUpScreen = () => {
         prenom: form.prenom.trim(),
         email: form.email.trim().toLowerCase(),
         password: form.password,
-        phone: form.phone.trim().toString(), // Forcé en string
+        phone: form.phone.trim().toString(),
       } : {
         nomRelais: form.nomRelais.trim(),
         prenom: form.prenom.trim(),
         nom: form.nom.trim(),
         email: form.email.trim().toLowerCase(),
         password: form.password,
-        phone: form.phone.trim().toString(), // Forcé en string
-        phone2: form.phone2.trim().toString(), // Forcé en string
+        phone: form.phone.trim().toString(),
+        phone2: form.phone2.trim().toString(),
         adresse: form.adresse.trim(),
         ville: form.ville.trim(),
         codePostal: form.codePostal.trim(),
@@ -327,7 +327,7 @@ const SignUpScreen = () => {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: "#FFFFFF", // Palette Neutre - Fond blanc
+    backgroundColor: "#FFFFFF",
     flexGrow: 1,
     justifyContent: "center",
   },
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#444444", // Palette Neutre - Texte principal
+    color: "#444444",
     textAlign: "center",
     marginBottom: 24,
   },
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 12,
-    backgroundColor: "#D0BCFF", // Palette Neutre - Accent alternatif
+    backgroundColor: "#D0BCFF",
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -399,7 +399,7 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   active: {
-    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    backgroundColor: "#B48DD3",
     shadowOpacity: 0.15,
     elevation: 4,
   },
@@ -411,7 +411,7 @@ const styles = StyleSheet.create({
   
   // Bouton principal
   button: {
-    backgroundColor: "#B48DD3", // Palette Neutre - Boutons principaux
+    backgroundColor: "#B48DD3",
     paddingVertical: 16,
     borderRadius: 12,
     flexDirection: "row",

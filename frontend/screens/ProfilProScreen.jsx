@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { useSelector } from 'react-redux'; // ✅ AJOUTE ÇA
+import { useSelector } from 'react-redux'; 
 import Header from '../components/Header';
 import CoordonneesModal from '../components/CoordonneesModal';
 import AbsenceModal from '../components/AbsenceModal';
@@ -13,7 +13,7 @@ const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function ProfilProScreen() {
   const navigation = useNavigation();
-  const token = useSelector(state => state.user.value.token); // ✅ RÉCUPÈRE LE TOKEN
+  const token = useSelector(state => state.user.value.token);
   
   const [isUnavailable, setIsUnavailable] = useState(false);
   const [horairesModalVisible, setHorairesModalVisible] = useState(false);
@@ -29,37 +29,36 @@ export default function ProfilProScreen() {
   const [absenceModal, setAbsenceModal] = useState(false);
   const [currentHoraires, setCurrentHoraires] = useState(null);
 
-  // ✅ CORRIGE LA RÉCUPÉRATION DES HORAIRES
+  // Récup des horaires
   useEffect(() => {
     const fetchHoraires = async () => {
       if (!token) return; // Attendre que le token soit disponible
       
       try {
-        console.log("🔍 Récupération des horaires existantes...");
+        console.log("Récupération des horaires existantes...");
         const response = await fetch(`${API_URL}/pros/horaires`, {
           headers: {
-            'Authorization': `Bearer ${token}` // ✅ AJOUTE LE TOKEN
+            'Authorization': `Bearer ${token}`
           }
         });
         
         const data = await response.json();
-        console.log("📋 Horaires récupérées:", data);
+        console.log(" Horaires récupérées:", data);
         
         if (data.result && data.horaires) {
           setCurrentHoraires(data.horaires);
-          console.log("✅ Horaires stockées:", data.horaires);
+          console.log(" Horaires stockées:", data.horaires);
         } else {
-          console.log("⚠️ Pas d'horaires trouvées");
+          console.log(" Pas d'horaires trouvées");
         }
       } catch (error) {
-        console.log("❌ Erreur récupération horaires:", error);
+        console.log(" Erreur récupération horaires:", error);
       }
     };
 
     fetchHoraires();
-  }, [token]); // ✅ DÉPEND DU TOKEN
+  }, [token]); 
 
-  // ✅ FONCTION POUR OUVRIR LA MODAL AVEC LES HORAIRES
   const ouvrirModalHoraires = async () => {
     // Récupérer les horaires les plus récentes avant d'ouvrir
     if (token) {
@@ -82,10 +81,10 @@ export default function ProfilProScreen() {
     setHorairesModalVisible(true);
   };
 
-  // ✅ CALLBACK QUAND LES HORAIRES SONT SAUVÉES
+  // Callback une fois les horaires sauvés
   const onHorairesSaved = (nouvellesHoraires) => {
     setCurrentHoraires(nouvellesHoraires);
-    console.log("✅ Horaires mises à jour:", nouvellesHoraires);
+    console.log(" Horaires mises à jour:", nouvellesHoraires);
   };
   
   const checkOptions = (index) => {
@@ -117,7 +116,6 @@ export default function ProfilProScreen() {
     <ScrollView style={styles.container}>
       <Text style={styles.title}>Gestion de ton point relais</Text>
 
-      {/* ✅ MODIFIE LE BOUTON POUR UTILISER LA NOUVELLE FONCTION */}
       <TouchableOpacity style={styles.mainButton} onPress={ouvrirModalHoraires}>
         <Text style={styles.mainButtonText}>Modifie les horaires de la semaine</Text>
       </TouchableOpacity>
@@ -160,12 +158,11 @@ export default function ProfilProScreen() {
       <CoordonneesModal visible={coordonnesModal} onClose={() => setCoordonneesModal(false)} />
       <AbsenceModal visible={absenceModal} onClose={() => setAbsenceModal(false)} />
       
-      {/* ✅ PASSE LES HORAIRES À LA MODAL */}
       <HorairesModal 
         visible={horairesModalVisible} 
         onClose={() => setHorairesModalVisible(false)}
-        horairesInitiaux={currentHoraires} // ✅ PASSE LES HORAIRES !
-        onSave={onHorairesSaved} // ✅ CALLBACK POUR METTRE À JOUR
+        horairesInitiaux={currentHoraires} 
+        onSave={onHorairesSaved} 
       />
     </ScrollView>
     </SafeAreaView>
@@ -175,7 +172,7 @@ export default function ProfilProScreen() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFAF5', // Palette Pro - Fond rose très pâle
+    backgroundColor: '#FFFAF5',
   },
   container: {
     flex: 1,

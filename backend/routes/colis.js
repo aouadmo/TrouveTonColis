@@ -10,12 +10,12 @@ const { InferenceClient } = require('@huggingface/inference');
 dotenv.config();
 const hf = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
 
-// 🔐 Helper pour sécuriser les RegExp
+// Sécuriser les RegExp
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// === GET by Tracking Number ===
+
 router.get('/search/:trackingNumber', async (req, res) => {
   try {
     const colis = await Colis.findOne({ trackingNumber: req.params.trackingNumber });
@@ -28,6 +28,7 @@ router.get('/search/:trackingNumber', async (req, res) => {
     res.status(500).json({ found: false, message: 'Erreur serveur' });
   }
 });
+
 
 //  Route 2 : recherche par nom et prénom 
 router.post('/searchname', async (req, res) => {
@@ -46,14 +47,14 @@ router.post('/searchname', async (req, res) => {
     console.log('🔢 Type de colis.length:', typeof colis.length);
 
     if (colis.length > 0) {
-      console.log('✅ Envoi found: true');
+      console.log(' Envoi found: true');
       res.json({ found: true, colis });
     } else {
-      console.log('❌ Envoi found: false');
+      console.log(' Envoi found: false');
       res.status(404).json({ found: false, message: 'Aucun colis à ce nom' });
     }
   } catch (error) {
-    console.error('💥 Erreur:', error);
+    console.error(' Erreur:', error);
     res.status(500).json({ found: false, message: 'Erreur serveur' });
   }
 });

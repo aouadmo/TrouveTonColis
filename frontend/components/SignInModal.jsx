@@ -31,7 +31,6 @@ export default function SignInModal({ visible, onClose }) {
   const navigation = useNavigation();
 
   const handleLogin = async () => {
-    // Validation basique
     if (!email.trim() || !password.trim()) {
       setError('Veuillez remplir tous les champs');
       return;
@@ -54,7 +53,6 @@ export default function SignInModal({ visible, onClose }) {
         dispatch(login({ ...data, isPro: true }));
         resetForm();
         onClose();
-        // La navigation se fera automatiquement via Navigation.js
         return;
       }
 
@@ -71,7 +69,6 @@ export default function SignInModal({ visible, onClose }) {
         dispatch(login({ ...data, isPro: false }));
         resetForm();
         onClose();
-        // La navigation se fera automatiquement via Navigation.js
         return;
       }
   
@@ -219,7 +216,7 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContainer: {
-    backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
+    backgroundColor: '#FFFFFF',
     borderRadius: 16,
     maxHeight: '90%',
     shadowColor: '#000',
@@ -240,13 +237,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#444444', // Palette Neutre - Texte principal
+    color: '#444444',
     marginBottom: 8,
     textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
-    color: '#79B4C4', // Palette Neutre - Accent secondaire
+    color: '#79B4C4',
     textAlign: 'center',
     fontStyle: 'italic',
   },
@@ -311,7 +308,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   loginButton: {
-    backgroundColor: '#B48DD3', // Palette Neutre - Boutons principaux
+    backgroundColor: '#B48DD3',
     paddingVertical: 16,
     borderRadius: 12,
     flexDirection: 'row',

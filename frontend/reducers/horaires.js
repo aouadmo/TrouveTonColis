@@ -9,15 +9,7 @@ export const fetchRelayInfo = createAsyncThunk(
   async (relayId, { rejectWithValue }) => {
     try {
 
-      console.log("🌐 URL APPELÉE:", `${API_URL}/pros/info/${relayId}`);
       const response = await fetch(`${API_URL}/pros/info/${relayId}`); const result = await response.json();
-
-      console.log("=== API RESPONSE DEBUG ===");
-      console.log("API Response complète:", result);
-      console.log("result.data:", result.data);
-      console.log("result.data.horaires:", result.data?.horaires);
-      console.log("Type horaires API:", typeof result.data?.horaires);
-      console.log("========================");
 
       if (result.result && result.data) {
         // Formatage de l'adresse complète
@@ -27,11 +19,6 @@ export const fetchRelayInfo = createAsyncThunk(
           ...result.data,
           adresseComplete: adresseComplete
         };
-
-        console.log("=== DONNÉES FINALES REDUX ===");
-        console.log("Données envoyées à Redux:", finalData);
-        console.log("Horaires finales:", finalData.horaires);
-        console.log("=============================");
 
         return finalData;
       } else {
@@ -56,7 +43,6 @@ export const horairesSlice = createSlice({
   name: 'horaires',
   initialState,
   reducers: {
-    // reducers 
     setHoraires: (state, action) => {
       state.value = action.payload;
     },
@@ -69,7 +55,7 @@ export const horairesSlice = createSlice({
       state.error = null;
     },
   },
-  // extraReducers
+
   extraReducers: (builder) => {
     builder
       .addCase(fetchRelayInfo.pending, (state) => {
@@ -81,22 +67,15 @@ export const horairesSlice = createSlice({
         state.loading = false;
         state.relayData = action.payload;
         state.error = null;
-
-        // Debug pour voir les horaires
-        console.log("✅ SUCCESS - Données stockées dans Redux");
-        console.log("State.relayData:", state.relayData);
-        console.log("Horaires dans Redux:", action.payload.horaires);
-        console.log("Type horaires Redux:", typeof action.payload.horaires);
       })
       .addCase(fetchRelayInfo.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.relayData = null;
-        console.log("❌ ERROR - Échec récupération:", action.payload);
+        console.log("Échec récupération:", action.payload);
       });
   },
 });
 
-// exports 
 export const { setHoraires, clearHoraires, clearRelayData } = horairesSlice.actions;
 export default horairesSlice.reducer;

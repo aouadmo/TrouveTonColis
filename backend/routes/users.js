@@ -81,7 +81,7 @@ router.get('/client/:token', (req, res) => {
       client: {
         nom: data.nom,
         prenom: data.prenom,
-        phone: formatPhone(data.phone), // ⚠️ Formatage appliqué ici
+        phone: formatPhone(data.phone), // Formatage appliqué ici
         email: data.email,
         loginEmail: data.loginEmail || '',
       }
@@ -90,7 +90,7 @@ router.get('/client/:token', (req, res) => {
 });
 
 
-// 🔄 PUT /users/update — mise à jour des infos du client
+// Mise à jour des infos du client
 router.put('/update', (req, res) => {
   const token = req.headers.authorization?.replace('Bearer ', '');
 
@@ -110,20 +110,20 @@ router.put('/update', (req, res) => {
       return phone.toString();
     };
 
-    // 🔁 Mise à jour des champs autorisés
+    // Mise à jour des champs autorisés
     client.nom = req.body.lastName || client.nom;
     client.prenom = req.body.firstName || client.prenom;
-    client.phone = formatPhoneForSave(req.body.phone) || client.phone; // ⚠️ Formatage appliqué
+    client.phone = formatPhoneForSave(req.body.phone) || client.phone; // Formatage appliqué
     client.email = req.body.email || client.email;
 
     client.save().then(() => {
       res.json({ result: true, message: 'Modifications enregistrées' });
     }).catch(error => {
-      // ⚠️ Ajout de gestion d'erreur pour la sauvegarde
+      // Ajout de gestion d'erreur pour la sauvegarde
       res.status(500).json({ result: false, error: 'Erreur lors de la sauvegarde' });
     });
   }).catch(error => {
-    // ⚠️ Ajout de gestion d'erreur pour la recherche
+    // Ajout de gestion d'erreur pour la recherche
     res.status(500).json({ result: false, error: 'Erreur serveur' });
   });
 });
