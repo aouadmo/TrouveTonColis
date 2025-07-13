@@ -46,7 +46,6 @@ export default function ClientCrenauxScreen() {
     const { relayId, trackingNumber } = route.params || {};
 
     useEffect(() => {
-        console.log("📋 Paramètres reçus:", { relayId, trackingNumber }); // Debug
         
         if (relayId) {
             fetch(`${API_URL}/pros/info/${relayId}`) 
@@ -92,12 +91,6 @@ export default function ClientCrenauxScreen() {
         try {
             // utiliser reserverRdv au lieu de setRdv
             const rdvDateTime = convertTimeSlotToDateTime(selectedDate, selectedTimeSlot);
-            
-            console.log("📅 Envoi réservation RDV:", {
-                trackingNumber,
-                rdvDate: rdvDateTime,
-                relayId: relayId || "6841e0438bc7de726f971515"
-            });
 
             const result = await dispatch(reserverRdv({
                 trackingNumber: trackingNumber,
