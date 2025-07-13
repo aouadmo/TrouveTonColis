@@ -30,21 +30,15 @@ router.get('/search/:trackingNumber', async (req, res) => {
 });
 
 
-//  Route 2 : recherche par nom et prénom 
+//  Recherche par nom et prénom 
 router.post('/searchname', async (req, res) => {
   const { nom, prenom } = req.body;
-  
-  console.log('🔍 Recherche reçue:', { nom, prenom });
   
   try {
     const colis = await Colis.find({
       nom: { $regex: new RegExp(`^${escapeRegex(nom)}$`, 'i') },
       prenom: { $regex: new RegExp(`^${escapeRegex(prenom)}$`, 'i') },
     });
-
-    console.log('📦 Résultats trouvés:', colis);
-    console.log('📊 Nombre de résultats:', colis.length);
-    console.log('🔢 Type de colis.length:', typeof colis.length);
 
     if (colis.length > 0) {
       console.log(' Envoi found: true');
@@ -150,7 +144,7 @@ router.post('/ocr', async (req, res) => {
   }
 });
 
-// === PUT (mise à jour d'un colis) ===
+// Mise à jour d'un colis
 router.put('/:id', async (req, res) => {
   const { id } = req.params;
   const updates = { ...req.body };
@@ -178,7 +172,7 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-// === GET All Colis (pour MonStock côté Pro) ===
+//  Acces tout colis (pour MonStock côté Pro) 
 router.get('/', async (req, res) => {
   try {
     const stock = await Colis.find();
@@ -188,7 +182,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-// GET pour les stats colis
+// Pour les stats colis
 router.get('/stats', async (req, res) => {
   try {
     const colis = await Colis.find();
@@ -213,19 +207,15 @@ router.get('/stats', async (req, res) => {
   }
 });
 
-// === GET Colis d'un client connecté ===
+//  Colis pour client connecté 
 router.get('/mes-colis/:nom/:prenom', async (req, res) => {
   try {
     const { nom, prenom } = req.params;
-    
-    console.log("🔍 Recherche colis pour:", nom, prenom);
     
     const colis = await Colis.find({
       nom: { $regex: new RegExp(`^${escapeRegex(nom)}$`, 'i') },
       prenom: { $regex: new RegExp(`^${escapeRegex(prenom)}$`, 'i') }
     }).sort({ date: -1 }); // Plus récents en premier
-
-    console.log("📦 Colis trouvés:", colis.length);
     
     res.json({ result: true, colis });
   } catch (error) {
@@ -234,18 +224,18 @@ router.get('/mes-colis/:nom/:prenom', async (req, res) => {
   }
 });
 
-// ✅ ROUTE DE TEST POUR DEBUG
+//  Route test pour debug
 router.get('/test-colis/:trackingNumber', async (req, res) => {
   try {
     const trackingNumber = req.params.trackingNumber;
-    console.log("🧪 TEST - Recherche colis:", trackingNumber);
-    console.log("🧪 TEST - Type tracking:", typeof trackingNumber);
+    console.log(" Recherche colis:", trackingNumber);
+    console.log(" Type tracking:", typeof trackingNumber);
     
     const colis = await Colis.findOne({ trackingNumber: trackingNumber });
-    console.log("📦 TEST - Colis trouvé:", colis ? "OUI" : "NON");
+    console.log(" Colis trouvé:", colis ? "OUI" : "NON");
     
     if (colis) {
-      console.log("📋 TEST - Détails:", {
+      console.log(" Détails:", {
         _id: colis._id,
         trackingNumber: colis.trackingNumber,
         typeTracking: typeof colis.trackingNumber
@@ -265,16 +255,16 @@ router.put('/reserver-rdv/:trackingNumber', async (req, res) => {
     const { rdvDate, relayId } = req.body;
     const trackingNumber = req.params.trackingNumber;
     
-    console.log("📅 SERVEUR - Réservation RDV:", trackingNumber, rdvDate);
-    console.log("🔍 SERVEUR - Recherche du colis...");
-    console.log("🔍 SERVEUR - Type tracking:", typeof trackingNumber);
+    console.log(" Réservation RDV:", trackingNumber, rdvDate);
+    console.log(" Recherche du colis...");
+    console.log(" Type tracking:", typeof trackingNumber);
     
     // Vérifier d'abord si le colis existe
     const colisExiste = await Colis.findOne({ trackingNumber: trackingNumber });
-    console.log("📦 SERVEUR - Colis trouvé:", colisExiste ? "OUI" : "NON");
+    console.log(" Colis trouvé:", colisExiste ? "OUI" : "NON");
     
     if (colisExiste) {
-      console.log("📋 SERVEUR - Détails du colis:", {
+      console.log(" Détails du colis:", {
         _id: colisExiste._id,
         nom: colisExiste.nom,
         prenom: colisExiste.prenom,
@@ -284,7 +274,7 @@ router.put('/reserver-rdv/:trackingNumber', async (req, res) => {
     }
     
     if (!colisExiste) {
-      console.log("❌ SERVEUR - Colis non trouvé avec tracking:", trackingNumber);
+      console.log(" Colis non trouvé avec tracking:", trackingNumber);
       return res.status(404).json({ result: false, error: 'Colis non trouvé' });
     }
     
@@ -300,11 +290,11 @@ router.put('/reserver-rdv/:trackingNumber', async (req, res) => {
       { new: true }
     );
     
-    console.log("✅ SERVEUR - RDV confirmé pour:", updated.trackingNumber);
+    console.log(" RDV confirmé pour:", updated.trackingNumber);
     res.json({ result: true, colis: updated });
     
   } catch (err) {
-    console.error("❌ SERVEUR - Erreur réservation RDV:", err);
+    console.error(" Erreur réservation RDV:", err);
     res.status(500).json({ result: false, error: 'Erreur serveur' });
   }
 });

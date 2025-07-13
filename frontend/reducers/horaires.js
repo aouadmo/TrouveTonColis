@@ -9,7 +9,8 @@ export const fetchRelayInfo = createAsyncThunk(
   async (relayId, { rejectWithValue }) => {
     try {
 
-      const response = await fetch(`${API_URL}/pros/info/${relayId}`); const result = await response.json();
+      const response = await fetch(`${API_URL}/pros/info/${relayId}`); 
+      const result = await response.json();
 
       if (result.result && result.data) {
         // Formatage de l'adresse complète
@@ -61,7 +62,7 @@ export const horairesSlice = createSlice({
       .addCase(fetchRelayInfo.pending, (state) => {
         state.loading = true;
         state.error = null;
-        console.log("🔄 LOADING - Récupération des données...");
+        console.log("Récupération des données...");
       })
       .addCase(fetchRelayInfo.fulfilled, (state, action) => {
         state.loading = false;
