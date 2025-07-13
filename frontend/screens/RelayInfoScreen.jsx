@@ -42,7 +42,7 @@ const RelayInfoScreen = () => {
       try {
         setLoading(true);
 
-        const response = await fetch(`http://192.168.1.157:3002/pros/info/${relayId}`);
+        const response = await fetch(`API_URL/pros/info/${relayId}`);
         const result = await response.json();
         console.log('✅ Données reçues du backend :', result);
         console.log('📅 Horaires reçus :', result?.data?.horaires);
