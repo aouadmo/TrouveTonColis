@@ -1,23 +1,58 @@
-# TrouveTonColis
-Projet Final La Capsule
+Project Overview
+TrouveTonColis is a full‑stack application for managing parcel deliveries. The repository contains a Node.js/Express backend and a React Native (Expo) frontend. Its goal is to help clients track parcels and assist relay professionals with day‑to‑day operations.
 
-26/05
-Début du projet, avec répartition des tâches et ordres de priorité
-Création du projet dans GitHub + clone dans VSCode ! Let's go !!
+Backend
+Stack: Express with MongoDB via Mongoose.
+Package configuration in backend/package.json includes dependencies such as express, mongoose, bcrypt, cors, express-fileupload, and @huggingface/inference for OCR/AI tasks.
 
-27/05
-Création des routes users.js
+Key Models:
 
-28/05
-Création des fichiers screens/ClientProfileScreen, ConnexionScreen, MyParcelsScreen, SearchScreen.
-Création du reducer user.js avec login et logout, ainsi que App.js.
-cecile :  (branche) création 2 routes pour rch avec tracking number et par nom + prénom
-cecile :  (branche) création dossier components et un composant " ColisSearchForm.jsx "
-cecile : (branche) dev du fetch /colis/trackingNumber
-cecile : (branche) j'ai du toucher au app.js pour ajouter la connexion car je ne pouvais pas me co sinon dsl
-cecile : (branche) j'ai créer SearchScreen avec la recherche de colis, mon fetch fonctionne ok tester
-seba : Création des routes users.js
-merge seba et cécile sur le main
+clients: stores client credentials and contact details
 
-apres le 28/05 = moins de motivation alors fini le readme lol
-passage sur notion
+colis: represents a parcel, including status fields and appointment data
+
+pros: information about relay points (name, address, phone, schedules)
+
+Routes:
+
+/users: signup/signin endpoints for clients, profile updates, and statistics generation
+
+/pros: endpoints for professional relay registration, authentication, SMS templates, schedules, and absence periods
+
+/colis: search by tracking number or name, OCR analysis of parcel labels via Hugging Face API, parcel updates, statistics, and appointment booking
+
+Utilities: helper modules such as checkBody for request validation and groupByPeriod for statistics aggregation.
+
+Frontend
+Stack: Expo React Native with Redux Toolkit. Dependencies include @react-navigation libraries, react-native-maps, expo-camera, and more (see frontend/package.json).
+
+State Management: Redux slices handle authentication, user profiles, parcel data, appointments, and relay schedules. For example, the user slice keeps the token and user type (client or pro).
+
+Navigation: Separate stacks and tab navigators for clients and professionals route to screens such as parcel search, profile management, relay stock, or dashboard features.
+
+Key Screens:
+
+SearchScreen with the ColisSearchForm component to locate parcels by tracking number or by name/prénom.
+
+MapScreen displays relay locations and can compute routes using OpenRouteService.
+
+MonStockScreen (pro interface) manages parcels in stock with filtering and statistics.
+
+ClientProfileScreen allows clients to edit personal info and view parcel stats, including quick actions to contact support or notify a relay of imminent arrival.
+
+TableauBordScreen provides professionals a dashboard with appointment summaries and quick actions such as scanning parcels and editing opening hours.
+
+Features
+Parcel Management: Search parcels, update statuses, schedule pickup appointments, and compute statistics over time.
+
+OCR & AI Integration: Upload parcel label images to extract tracking numbers and recipient information with the OCR.Space API and the Hugging Face Mixtral model.
+
+Professional Tools: Relay managers can customize SMS templates, manage their opening hours, declare absences, and handle urgent notifications.
+
+Client Tools: Clients can create accounts, update contact details, view personal parcel statistics, and get directions to relay points.
+
+Maps & Geolocation: Integration with OpenRouteService to show routes from the user's location to the selected relay point.
+
+Authentication: Token-based login for both clients and professionals. Many API routes require a valid token in the Authorization header.
+
+This codebase offers a concrete example of building a delivery‑tracking mobile app with a robust backend and a modern mobile interface.
