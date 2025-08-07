@@ -28,11 +28,11 @@ export default function ClientSmSModal({
         const allChecked = Object.values(checklist).every(item => item === true);
 
         if (!allChecked) {
-            Alert.alert('⚠️ Checklist incomplète', 'Merci de cocher tous les éléments avant d\'envoyer le SMS.');
+            Alert.alert(' Checklist incomplète', 'Merci de cocher tous les éléments avant d\'envoyer le SMS.');
             return;
         }
 
-        const phone = "0666593076"; // Numéro de Cécile
+        const phone = "0666593076";
         const prenom = clientName || "un client";
         const messageNbColis = nbColisEnAttente > 1 ? `${nbColisEnAttente} colis` : "1 colis";
         const message = `Bonjour, je suis ${prenom}, j'arrive dans 10 minutes chercher ${messageNbColis}.`;

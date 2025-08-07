@@ -13,12 +13,12 @@ const API_URL = Constants.expoConfig.extra.API_URL;
 
 export default function TableauBordScreen() {
   const token = useSelector((state) => state.user.value.token);
-  const userInfo = useSelector((state) => state.user.value); // 🔥 RÉCUPÈRE TOUTES LES INFOS USER
+  const userInfo = useSelector((state) => state.user.value);
   const rdvList = useSelector((state) => state.rdv.value) ?? [];
   const colisData = useSelector((state) => state.colis.value) ?? [];
   const navigation = useNavigation();
 
-  // 🔥 FONCTION POUR RÉCUPÉRER LE NOM DU PRO
+  // Récupération nom pro
   const getNomPro = () => {
     if (userInfo?.prenom && userInfo?.nom) {
       return `${userInfo.prenom} ${userInfo.nom}`;
@@ -34,7 +34,7 @@ export default function TableauBordScreen() {
     }
   };
 
-  // 🔥 CALCUL DES STATISTIQUES RÉELLES
+  // Calcul des statistiques réelles
   const calculateStats = () => {
     const today = new Date();
     const todayStr = today.toLocaleDateString('fr-FR');
@@ -80,12 +80,11 @@ export default function TableauBordScreen() {
 
   const [urgentMessage, setUrgentMessage] = useState('');
   const [isUrgenceActive, setIsUrgenceActive] = useState(false);
-  const [savedHoraires, setSavedHoraires] = useState(null); // 🔥 SAUVEGARDER LES HORAIRES AVANT FERMETURE
+  const [savedHoraires, setSavedHoraires] = useState(null);
   const [horairesModalVisible, setHorairesModalVisible] = useState(false);
   const [currentHoraires, setCurrentHoraires] = useState(null);
   const [creneauxCollapsed, setCreneauxCollapsed] = useState({});
 
-  // ✅ SUPPRIME L'ANCIEN STATE STATS EN DUR
 
   const quickActions = [
     {
@@ -245,7 +244,6 @@ export default function TableauBordScreen() {
 
   // Fonction pour récupérer les horaires du jour actuel
   const getHorairesAujourdhui = () => {
-    console.log("🔍 DEBUG currentHoraires:", currentHoraires);
     
     if (!currentHoraires) {
       return "Horaires non configurées";
@@ -255,16 +253,16 @@ export default function TableauBordScreen() {
     const dayNames = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
     const todayName = dayNames[today.getDay()];
     
-    console.log("📅 Jour actuel:", todayName);
+    console.log("Jour actuel:", todayName);
     
     const todaySchedule = currentHoraires[todayName];
-    console.log("⏰ Horaires du jour:", todaySchedule);
+    console.log("Horaires du jour:", todaySchedule);
     
     if (!todaySchedule || todaySchedule.ferme) {
       return "Fermé aujourd'hui";
     }
     
-    // 🔥 NOUVEAU FORMAT : matin/apresMidi
+    // Format matin/après-midi
     const creneauxTexte = [];
     
     if (todaySchedule.matin && !todaySchedule.matin.ferme) {
@@ -284,9 +282,8 @@ export default function TableauBordScreen() {
 
   const onHorairesSaved = (nouvellesHoraires) => {
     setCurrentHoraires(nouvellesHoraires);
-    console.log("✅ Horaires mises à jour:", nouvellesHoraires);
     
-    // 🔥 FORCER UNE NOUVELLE RÉCUPÉRATION DEPUIS L'API
+    // Force une nouvelle récup de l'API
     setTimeout(async () => {
       if (token) {
         try {
@@ -299,7 +296,7 @@ export default function TableauBordScreen() {
           
           if (data.result && data.horaires) {
             setCurrentHoraires(data.horaires);
-            console.log("🔄 Horaires rerechargées:", data.horaires);
+            console.log("Horaires rerechargées:", data.horaires);
           }
         } catch (error) {
           console.log("Erreur rechargeement horaires:", error);
@@ -327,7 +324,7 @@ export default function TableauBordScreen() {
       }
     };
 
-    // 🔥 RÉCUPÉRER AUSSI LES HORAIRES AU CHARGEMENT
+    // Récupère aussi les horaires au chargement
     const fetchHoraires = async () => {
       try {
         const response = await fetch(`${API_URL}/pros/horaires`, {
@@ -336,13 +333,12 @@ export default function TableauBordScreen() {
           }
         });
         const data = await response.json();
-        console.log("📥 Horaires récupérées au chargement:", data);
         
         if (data.result && data.horaires) {
           setCurrentHoraires(data.horaires);
-          console.log("✅ Horaires définies:", data.horaires);
+          console.log("Horaires définies:", data.horaires);
         } else {
-          console.log("❌ Pas d'horaires trouvées");
+          console.log("Pas d'horaires trouvées");
         }
       } catch (error) {
         console.log("Erreur récupération horaires:", error);
@@ -351,14 +347,14 @@ export default function TableauBordScreen() {
 
     if (token) {
       fetchUrgentMessage();
-      fetchHoraires(); // 🔥 AJOUTER ICI
+      fetchHoraires();
     }
   }, [token]);
 
-  // 🔥 FONCTION COMPLÈTE DE GESTION D'URGENCE
+  // Fonction complète de l'urgence
   const handleUrgence = async () => {
     if (!isUrgenceActive) {
-      // ✅ ACTIVATION DE L'URGENCE
+      // Activation de l'urgence
       if (urgentMessage && token) {
         try {
           // 1. Sauvegarder les horaires actuels
@@ -377,7 +373,6 @@ export default function TableauBordScreen() {
           });
           
           // 3. Envoyer les horaires d'urgence à l'API
-          console.log("🔄 Envoi des horaires d'urgence...");
           const responseHoraires = await fetch(`${API_URL}/pros/horaires`, {
             method: 'PUT',
             headers: {
@@ -386,34 +381,17 @@ export default function TableauBordScreen() {
             },
             body: JSON.stringify({ horaires: horairesUrgence })
           });
+                    
           
-          console.log("📅 Réponse horaires:", responseHoraires.status, responseHoraires.statusText);
-          
-          // 4. Activer le statut d'urgence côté serveur (TEMPORAIREMENT DÉSACTIVÉ)
-          // const responseUrgence = await fetch(`${API_URL}/pros/urgence`, {
-          //   method: 'POST',
-          //   headers: {
-          //     'Authorization': `Bearer ${token}`,
-          //     'Content-Type': 'application/json',
-          //   },
-          //   body: JSON.stringify({ 
-          //     active: true, 
-          //     message: urgentMessage,
-          //     savedHoraires: currentHoraires
-          //   })
-          // });
-          
-          // 🔥 TEMPORAIRE : on fait juste les horaires pour tester
           const responseUrgence = { ok: true };
-          console.log("🚨 Mode urgence simulé (API pas encore créée)");
           
           if (responseHoraires.ok && responseUrgence.ok) {
             setCurrentHoraires(horairesUrgence);
             setIsUrgenceActive(true);
             
             Alert.alert(
-              "🚨 Urgence Activée", 
-              `${urgentMessage}\n\n✅ Relais fermé temporairement\n✅ Clients informés automatiquement`,
+              " Urgence Activée", 
+              `${urgentMessage}\n\n Relais fermé temporairement\n Clients informés automatiquement`,
               [{ text: "OK", style: "default" }]
             );
           } else {
@@ -433,9 +411,8 @@ export default function TableauBordScreen() {
       }
       
     } else {
-      // ✅ DÉSACTIVATION DE L'URGENCE
+      // Désactivation de l'urgence
       try {
-        // 1. Restaurer les horaires sauvegardées
         if (savedHoraires) {
           const responseHoraires = await fetch(`${API_URL}/pros/horaires`, {
             method: 'PUT',
@@ -446,19 +423,8 @@ export default function TableauBordScreen() {
             body: JSON.stringify({ horaires: savedHoraires })
           });
           
-          // 2. Désactiver le statut d'urgence côté serveur (TEMPORAIREMENT DÉSACTIVÉ)
-          // const responseUrgence = await fetch(`${API_URL}/pros/urgence`, {
-          //   method: 'POST',
-          //   headers: {
-          //     'Authorization': `Bearer ${token}`,
-          //     'Content-Type': 'application/json',
-          //   },
-          //   body: JSON.stringify({ active: false })
-          // });
           
-          // 🔥 TEMPORAIRE : simulation
           const responseUrgence = { ok: true };
-          console.log("✅ Désactivation urgence simulée");
           
           if (responseHoraires.ok && responseUrgence.ok) {
             setCurrentHoraires(savedHoraires);
@@ -466,7 +432,7 @@ export default function TableauBordScreen() {
             setSavedHoraires(null);
             
             Alert.alert(
-              "✅ Urgence Désactivée", 
+              " Urgence Désactivée", 
               "Vos horaires normales ont été restaurées.\nLes clients peuvent à nouveau prendre rendez-vous.",
               [{ text: "Parfait", style: "default" }]
             );
@@ -818,15 +784,15 @@ const styles = StyleSheet.create({
 
   // Urgence
   urgenceButton: {
-    flexDirection: 'column', // 🔥 COLONNE AU LIEU DE LIGNE
+    flexDirection: 'column', 
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#D10000',
-    padding: 16, // 🔥 AUGMENTÉ POUR COMPENSER LA HAUTEUR
+    padding: 16, 
     borderRadius: 8,
     marginTop: 24,
     marginBottom: 20,
-    gap: 8, // 🔥 ESPACE ENTRE ICÔNE ET TEXTE
+    gap: 8,
   },
   urgenceButtonActive: {
     backgroundColor: '#751414',
@@ -836,8 +802,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginLeft: 10,
     fontSize: 16,
-    textAlign: 'center', // 🔥 CENTRER LE TEXTE
-    flex: 1, // 🔥 PRENDRE TOUT L'ESPACE DISPONIBLE
+    textAlign: 'center', 
+    flex: 1, 
   },
 
   // Infos utiles

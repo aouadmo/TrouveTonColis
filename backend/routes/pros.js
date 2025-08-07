@@ -205,7 +205,7 @@ router.get('/info/:id', (req, res) => {
       console.log("Données pro renvoyées :", data);
       console.log("Horaires du pro :", data.horaires);
       
-      // 🧪 HORAIRES DE TEST - Si vide, ajouter des horaires temporaires
+      // Si vide, ajouter des horaires temporaires
       let horaires = data.horaires;
       
       
@@ -219,7 +219,7 @@ router.get('/info/:id', (req, res) => {
           adresse: data.adresse,
           ville: data.ville,
           codePostal: data.codePostal,
-          horaires: data.horaires, // ✅ Utilise directement les horaires de la BDD
+          horaires: data.horaires, // Utilise directement les horaires de la BDD
           adresseComplete: `${data.adresse}, ${data.codePostal} ${data.ville}`
         }
       });

@@ -19,7 +19,6 @@ export default function MyParcelsScreen() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
     
-    // Redux state
     const { value: colis, loading, error } = useSelector(state => state.colis);
     const userInfo = useSelector(state => state.user.value);
 
@@ -34,7 +33,7 @@ export default function MyParcelsScreen() {
         }
     }, [dispatch, userInfo]);
 
-    // ✅ AJOUTE ÇA - Recharger quand on revient sur la page
+    // Recharge quand on revient sur la page
     useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
             if (userInfo && userInfo.nom && userInfo.prenom) {
@@ -56,7 +55,7 @@ export default function MyParcelsScreen() {
             case "Arrivé chez Cécile": 
             case "en attente": return "check-circle";
             case "Récupéré": return "handshake";
-            default: return "box"; // ✅ CORRIGÉ
+            default: return "box";
         }
     };
 
@@ -72,14 +71,13 @@ export default function MyParcelsScreen() {
 
     const getTransporteurColor = (transporteur) => {
         const transporteurClean = transporteur?.toLowerCase().trim() || '';
-        console.log("🎨 Transporteur pour couleur:", transporteurClean); // Debug
         
         if (transporteurClean.includes('ups')) return "#8B4513";
         if (transporteurClean.includes('dhl')) return "#FFD700";
         if (transporteurClean.includes('colissimo')) return "#1E3A8A";
         if (transporteurClean.includes('colis privé') || transporteurClean.includes('colis prive')) return "#4C1A85";
         
-        return "#6B7280"; // Couleur par défaut
+        return "#6B7280";
     };
 
     const formatDate = (dateString) => {
@@ -101,14 +99,14 @@ export default function MyParcelsScreen() {
         const arrivee = new Date(dateArrivee);
         const diffTime = today - arrivee;
         const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return diffDays >= 6; // Expire dans 2 jours (délai général 8 jours)
+        return diffDays >= 6;
     };
 
     // Gestion des actions
     const handleReserverRdv = (colis) => {
-        console.log("📅 Réservation RDV pour:", colis.trackingNumber);
+        console.log("Réservation RDV pour:", colis.trackingNumber);
         navigate('ClientCrenauxScreen', { 
-            relayId: colis.rdvRelayId || "6841e0438bc7de726f971515", // ID par défaut
+            relayId: colis.rdvRelayId || "6841e0438bc7de726f971515",
             trackingNumber: colis.trackingNumber
         });
     };

@@ -271,7 +271,7 @@ export default function HistoireRelais() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFFFF', // Palette Neutre - Fond blanc
+    backgroundColor: '#FFFFFF',
   },
   
   // Container principal

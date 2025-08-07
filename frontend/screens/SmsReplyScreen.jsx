@@ -37,7 +37,6 @@ export default function SmsReplyScreen() {
   const [activeTab, setActiveTab] = useState("colis");
   const [loading, setLoading] = useState(false);
 
-  console.log("API_URL →", API_URL);
   // Charger les messages depuis l'API
   useEffect(() => {
     if (!token) return;
@@ -126,7 +125,7 @@ export default function SmsReplyScreen() {
   // Réinitialiser un message
   const resetMessage = (messageType) => {
     Alert.alert(
-      "🔄 Réinitialiser",
+      "Réinitialiser",
       "Voulez-vous remettre le message par défaut ?",
       [
         { text: "Annuler", style: "cancel" },

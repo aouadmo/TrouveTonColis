@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -13,8 +13,11 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import { useDispatch } from 'react-redux';
 import { setHoraires } from '../reducers/horaires';
 import { setRdv } from '../reducers/rdv';
-import { reserverRdv } from '../reducers/colis'; // ✅ AJOUTE ÇA
-import { useNavigation, useRoute } from '@react-navigation/native'; // ✅ AJOUTE useRoute
+import { reserverRdv } from '../reducers/colis'; 
+import { useNavigation, useRoute } from '@react-navigation/native'; 
+import Constants from 'expo-constants';
+
+const API_URL = Constants.expoConfig.extra.API_URL;
 
 const timeSlots = [
     '10h00 - 10h30',
@@ -30,23 +33,22 @@ const timeSlots = [
     '15h30 - 16h00',
 ];
 
-export default function ClientCrenauxClient() {
+export default function ClientCrenauxScreen() {
     const dispatch = useDispatch();
     const navigation = useNavigation();
-    const route = useRoute(); // ✅ AJOUTE ÇA
+    const route = useRoute();
     
     const [selectedDate, setSelectedDate] = useState(new Date());
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
 
-    // ✅ RÉCUPÈRE LES PARAMÈTRES DE NAVIGATION
+    // Param navigation
     const { relayId, trackingNumber } = route.params || {};
 
     useEffect(() => {
-        console.log("📋 Paramètres reçus:", { relayId, trackingNumber }); // Debug
         
         if (relayId) {
-            fetch(`http://192.168.1.10:3002/pros/info/${relayId}`) // ✅ CORRIGE L'URL
+            fetch(`${API_URL}/pros/info/${relayId}`) 
               .then(res => res.json())
               .then(data => {
                 if (data.result && data.data?.horaires) {
@@ -64,7 +66,7 @@ export default function ClientCrenauxClient() {
         }
     };
 
-    // ✅ FONCTION POUR CONVERTIR L'HEURE
+    //  Fonction conversion heures
     const convertTimeSlotToDateTime = (date, timeSlot) => {
         const [startTime] = timeSlot.split(' - ');
         const [hour, minute] = startTime.replace('h', ':').split(':');
@@ -87,14 +89,8 @@ export default function ClientCrenauxClient() {
         }
 
         try {
-            // ✅ UTILISE reserverRdv AU LIEU DE setRdv
+            // utiliser reserverRdv au lieu de setRdv
             const rdvDateTime = convertTimeSlotToDateTime(selectedDate, selectedTimeSlot);
-            
-            console.log("📅 Envoi réservation RDV:", {
-                trackingNumber,
-                rdvDate: rdvDateTime,
-                relayId: relayId || "6841e0438bc7de726f971515"
-            });
 
             const result = await dispatch(reserverRdv({
                 trackingNumber: trackingNumber,
@@ -103,7 +99,6 @@ export default function ClientCrenauxClient() {
             }));
 
             if (result.type.includes('fulfilled')) {
-                // ✅ GARDE AUSSI setRdv pour le suivi local
                 const rendezVous = {
                     date: selectedDate.toLocaleDateString(),
                     time: selectedTimeSlot,
@@ -117,7 +112,7 @@ export default function ClientCrenauxClient() {
                     [
                         {
                             text: 'OK',
-                            onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'MyParcelsScreen'}), // ✅ REDIRIGE VERS MES COLIS
+                            onPress: () => navigation.navigate('TabNavigatorClient', {screen: 'MyParcelsScreen'}),
                         },
                     ]
                 );
@@ -125,14 +120,14 @@ export default function ClientCrenauxClient() {
                 Alert.alert('Erreur', 'Impossible de réserver le RDV. Veuillez réessayer.');
             }
         } catch (error) {
-            console.error("❌ Erreur réservation:", error);
+            console.error(" Erreur réservation:", error);
             Alert.alert('Erreur', 'Impossible de réserver le RDV. Veuillez réessayer.');
         }
     };
 
     return (
         <View style={styles.container}>
-            {/* ✅ AFFICHE LES INFOS DE DEBUG */}
+
             {trackingNumber && (
                 <View style={styles.debugInfo}>
                     <Text style={styles.debugText}>Colis: {trackingNumber}</Text>
@@ -189,7 +184,7 @@ const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#fff' },
     title: { fontSize: 18, fontWeight: 'bold', marginVertical: 10 },
     
-    // ✅ STYLE POUR DEBUG
+    // STYLE POUR DEBUG
     debugInfo: {
         backgroundColor: '#f0f8ff',
         padding: 10,

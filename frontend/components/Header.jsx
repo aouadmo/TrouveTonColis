@@ -22,12 +22,12 @@ function Header({ role }) {
   const userToken = useSelector((state) => state.user.value.token);
   const [modalVisible, setModalVisible] = useState(false);
 
-  // Pages d'accueil (affichent le menu burger)
+
   const isHome = ['HomeScreen', 'HistoireRelais', 'FAQScreen'].includes(route.name);
 
   // Couleurs selon l'UI Kit
   const getBackgroundColor = () => {
-    // if (role === 'pro') return '#FFFAF5';      // Pro - Rose très pâle
+    if (role === 'pro') return '#FFFAF5';      // Pro - Rose très pâle
     if (role === 'client') return '#FFFCE9';   // Client - Beige très clair
     return '#FFFFFF';                          // Neutre - Fond blanc
   };
@@ -43,7 +43,7 @@ function Header({ role }) {
     dispatch(logout());
   };
 
-  // Navigation intelligente pour le retour
+  // Navigation de retour
   const handleGoBack = () => {
     if (route.name === 'RelayInfoScreen') {
       if (navigation.canGoBack()) {

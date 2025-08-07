@@ -147,12 +147,11 @@ const ColisSearchForm = () => {
 
           <TouchableOpacity
             style={styles.relayButton}
-            onPress={() =>
-              navigation.navigate("RelayInfoScreen", {
-                relayId: colis.relais || "6841e0438bc7de726f971515",
-                relais: colis,                     // → on envoie tout l'objet colis
-              })
-            }
+            onPress={() => navigation.navigate("RelayInfoScreen", { 
+              relayId: colis.relais || '6841e0438bc7de726f971515',
+              trackingNumber: colis.trackingNumber
+            })}
+            activeOpacity={0.8}
           >
             <Text style={styles.relayButtonText}>
               📍 Voir les infos du point relais
@@ -171,6 +170,8 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: "#FFFFFF",
     alignItems: "center",
+    backgroundColor: '#FFFFFF',
+    flex: 1,
   },
   // Onglets de mode de recherche
   switchContainer: {
@@ -181,11 +182,19 @@ const styles = StyleSheet.create({
   switchButton: {
     backgroundColor: "#D0BCFF",
     paddingVertical: 12,
-    paddingHorizontal: 18,
-    borderRadius: 10,
+    paddingHorizontal: 20,
+    borderRadius: 12,
+    backgroundColor: "#D0BCFF",
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
   },
   active: {
     backgroundColor: "#B48DD3",
+    shadowOpacity: 0.15,
+    elevation: 4,
   },
   switchText: {
     color: "#fff",
@@ -204,6 +213,9 @@ const styles = StyleSheet.create({
   },
   // Bouton de recherche
   button: {
+    backgroundColor: "#B48DD3",
+    padding: 16,
+    borderRadius: 12,
     flexDirection: "row",
     gap: 10,
     backgroundColor: "#B48DD3",
@@ -223,8 +235,10 @@ const styles = StyleSheet.create({
   // Texte du résultat
   result: {
     fontSize: 16,
-    marginBottom: 12,
-    color: "#444",
+    textAlign: "center",
+    marginBottom: 16,
+    color: "#444444",
+    fontWeight: "600",
   },
   // Carte individuelle de colis
   colisCard: {
@@ -243,6 +257,8 @@ const styles = StyleSheet.create({
     color: "#444",
   },
   statusText: {
+    fontSize: 14,
+    marginBottom: 12,
     color: "#79B4C4",
     fontStyle: "italic",
     marginBottom: 10,

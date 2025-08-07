@@ -27,7 +27,6 @@ const TabNavigatorClient = () => {
         tabBarIcon: ({ color, size }) => {
           let iconName = '';
 
-          // Attribution des icônes selon l'écran
           if (route.name === 'MyParcelsScreen') {
             iconName = 'archive';
           } else if (route.name === 'SearchScreen') {
@@ -36,50 +35,45 @@ const TabNavigatorClient = () => {
             iconName = 'user';
           }
 
-          // Retour de l'icône avec les bonnes propriétés
           return <FontAwesome name={iconName} size={size} color={color} />;
         },
         // Couleurs des onglets
-        tabBarActiveTintColor: '#0F58B8',   // Couleur active (bleu)
-        tabBarInactiveTintColor: '#79B4C4', // Couleur inactive (gris-bleu)
-        headerShown: false, // Masquer le header par défaut
+        tabBarActiveTintColor: '#0F58B8',
+        tabBarInactiveTintColor: '#79B4C4',
+        headerShown: false, 
       })}
     >
-      {/* Définition des onglets - ordre d'affichage */}
-      <Tab.Screen 
-        name="ClientProfileScreen" 
-        component={ClientProfileScreen} 
-        options={{ title: 'Mon Profil' }} 
+      <Tab.Screen
+        name="ClientProfileScreen"
+        component={ClientProfileScreen}
+        options={{ title: 'Mon Profil' }}
       />
-      <Tab.Screen 
-        name="SearchScreen" 
-        component={SearchScreen} 
-        options={{ title: 'Rechercher' }} 
+      <Tab.Screen
+        name="SearchScreen"
+        component={SearchScreen}
+        options={{ title: 'Rechercher' }}
       />
-      <Tab.Screen 
-        name="MyParcelsScreen" 
-        component={MyParcelsScreen} 
-        options={{ title: 'Mes colis' }} 
+      <Tab.Screen
+        name="MyParcelsScreen"
+        component={MyParcelsScreen}
+        options={{ title: 'Mes colis' }}
       />
     </Tab.Navigator>
   );
 };
 
-// Navigateur principal pour la section client
 export default function ClientNavigation() {
-  // Récupération du token depuis Redux
   const { token } = useSelector((state) => state.user.value);
   const navigation = useNavigation();
 
   // Redirection automatique après connexion
   useEffect(() => {
     if (token) {
-      // Si l'utilisateur est connecté, on le redirige vers les onglets
       navigation.navigate('TabNavigatorClient', {
-        screen: 'ProfilClient', // Onglet d'arrivée après connexion
+        params: { screen: 'ClientProfileScreen' },
       });
     }
-  }, [token]); // Se déclenche quand le token change
+  }, [token]);
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>

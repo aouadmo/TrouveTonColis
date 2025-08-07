@@ -1,17 +1,5 @@
 const mongoose = require('mongoose');
 
-const horairesSchema = new mongoose.Schema({
-  matin: {
-    ouverture: String,
-    fermeture: String,
-  },
-  apresMidi: {
-    ouverture: String,
-    fermeture: String,
-  },
-  ferme: Boolean,
-}, { _id: false });
-
 const prosSchema = mongoose.Schema({
   nom: String,
   prenom: String,
@@ -34,10 +22,20 @@ const prosSchema = mongoose.Schema({
     },
   ],
 
-horaires: {
-  type: Object,
-  default: {}, 
-},
+  horaires: {
+    type: Map,
+    of: new mongoose.Schema({
+      matin: {
+        ouverture: String,
+        fermeture: String,
+      },
+      apresMidi: {
+        ouverture: String,
+        fermeture: String,
+      },
+      ferme: Boolean,
+    }, { _id: false }),
+  },
 });
 
 const Pro = mongoose.model('pros', prosSchema);

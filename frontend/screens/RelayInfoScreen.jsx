@@ -11,12 +11,10 @@ import { useNavigation, useRoute } from "@react-navigation/native";
 import * as Location from "expo-location";
 import { Linking } from "react-native";
 import Header from "../components/Header";
-import Constants from "expo-constants";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  fetchRelayInfo,
-  clearRelayData,
-} from "../reducers/horaires";
+import Constants from 'expo-constants';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchRelayInfo, clearRelayData } from '../reducers/horaires';
+import { navigate } from "../navigation/navigationRef";
 
 const API_URL = Constants.expoConfig.extra.API_URL;
 
@@ -25,27 +23,27 @@ const RelayInfoScreen = () => {
   const navigation = useNavigation();
   const dispatch = useDispatch();
 
-  // Récupère l'objet colis complet s’il a été passé depuis la recherche
-  const colis = route.params?.relais;
+  const { relayData, loading, error } = useSelector(state => state.horaires);
+  const userInfo = useSelector(state => state.user.value);
 
-  // Redux
-  const { relayData, loading, error } = useSelector(
-    (state) => state.horaires
-  );
-  const userInfo = useSelector((state) => state.user.value);
-
-  // States locaux
   const [distanceInfo, setDistanceInfo] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [showHoraires, setShowHoraires] = useState(false);
 
-  // Id du relais : soit contenu dans colis, soit dans les params
-  const relayId =
-    colis?.relais || route.params?.relayId;
+  // Récupération de l'ID et le trackingNumber point relais
+  const relayId = route.params?.relayId || route.params?.relais?.id;
+  const trackingNumber = route.params?.trackingNumber;
 
   // Fonction pour formater les horaires (matin/après-midi)
   const formatHoraires = (data) => {
-    if (data.ferme) return "Fermé";
+    if (data.ferme) {
+      return 'Fermé';
+    }
+
+    const matin = data.matin;
+    const apresMidi = data.apresMidi;
+
+    // Formater les créneaux
     const formatCreneau = (creneau) => {
       if (
         creneau.ferme ||
@@ -55,16 +53,26 @@ const RelayInfoScreen = () => {
         return null;
       return `${creneau.ouverture} - ${creneau.fermeture}`;
     };
-    const matin = formatCreneau(data.matin);
-    const apresMidi = formatCreneau(data.apresMidi);
-    if (matin && apresMidi) return `${matin} / ${apresMidi}`;
-    if (matin) return `${matin} / Fermé l'après-midi`;
-    if (apresMidi)
-      return `Fermé le matin / ${apresMidi}`;
-    return "Fermé";
+
+    const creneauMatin = formatCreneau(matin);
+    const creneauApresMidi = formatCreneau(apresMidi);
+
+    // Gestion des cas
+    if (creneauMatin && creneauApresMidi) {
+      // Matin ET après-midi ouverts
+      return `${creneauMatin} / ${creneauApresMidi}`;
+    } else if (creneauMatin && !creneauApresMidi) {
+      // Que le matin
+      return `${creneauMatin} / Fermé l'après-midi`;
+    } else if (!creneauMatin && creneauApresMidi) {
+      // Que le soir
+      return `Fermé le matin / ${creneauApresMidi}`;
+    } else {
+      // Rien d'ouvert
+      return 'Fermé';
+    }
   };
 
-  // Gestion du clic sur le bouton "Prendre RDV"
   const handlePriseRDV = () => {
     const tracking =
       colis?.trackingNumber ||
@@ -84,24 +92,17 @@ const RelayInfoScreen = () => {
           },
         ]
       );
-    } else if (userInfo?.isPro) {
+    } else if (userInfo.isPro === true) {
+      // Si Pro connecté
       Alert.alert(
         "Accès réservé",
         "Seuls les clients peuvent prendre rendez-vous."
       );
     } else {
-      console.log(
-        "🚀 Navigation vers ClientCrenauxScreen avec :",
-        {
-          relayId,
-          trackingNumber: tracking,
-          colisId,
-        }
-      );
-      navigation.navigate("ClientCrenauxScreen", {
-        relayId,
-        trackingNumber: tracking,
-        colisId,
+      // Si client connecté
+      navigate('ClientCrenauxScreen', {
+        relayId: relayId,
+        trackingNumber: trackingNumber,
       });
     }
   };
@@ -118,6 +119,7 @@ const RelayInfoScreen = () => {
         },
       ]);
     }
+
     return () => {
       dispatch(clearRelayData());
     };
@@ -302,30 +304,18 @@ const RelayInfoScreen = () => {
               </Text>
             </TouchableOpacity>
 
-            {showHoraires &&
-              relayData.horaires && (
-                <View style={styles.horaireContent}>
-                  {Object.entries(
-                    relayData.horaires
-                  ).map(([jour, data]) => (
-                    <Text
-                      key={jour}
-                      style={styles.horaireText}
-                    >
-                      <Text
-                        style={styles.horaireBold}
-                      >
-                        {jour
-                          .charAt(0)
-                          .toUpperCase() +
-                          jour.slice(1)}
-                        :
-                      </Text>{" "}
-                      {formatHoraires(data)}
-                    </Text>
-                  ))}
-                </View>
-              )}
+            {showHoraires && relayData.horaires && (
+              <View style={styles.horaireContent}>
+                {Object.entries(relayData.horaires).map(([jour, data]) => (
+                  <Text key={jour} style={styles.horaireText}>
+                    <Text style={styles.horaireBold}>
+                      {jour.charAt(0).toUpperCase() + jour.slice(1)} :
+                    </Text>{' '}
+                    {formatHoraires(data)}
+                  </Text>
+                ))}
+              </View>
+            )}
           </View>
 
           {/* Informations pratiques */}

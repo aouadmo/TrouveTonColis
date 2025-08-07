@@ -10,8 +10,6 @@ const jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dim
 export default function HorairesModal({ visible, onClose, onSave, horairesInitiaux }) {
   const token = useSelector(state => state.user.value.token);
   const [currentPicker, setCurrentPicker] = useState(null);
-  
-  // ✅ ÉTATS POUR LA FONCTION COPIER/COLLER - SIMPLIFIÉS
   const [modeCopie, setModeCopie] = useState(false);
   const [jourSource, setJourSource] = useState(null);
   const [joursDestination, setJoursDestination] = useState(new Set());
@@ -27,7 +25,7 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
     }, {});
   });
 
-  // ✅ RÉINITIALISER COMPLÈTEMENT QUAND LA MODAL S'OUVRE/FERME
+  // Réinitialisation quand la modal s'ouvre/ferme
   useEffect(() => {
     if (!visible) {
       // Quand la modal se ferme, reset tout
@@ -38,7 +36,7 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
     }
   }, [visible]);
 
-  // ✅ Appliquer les horaires initiaux
+  // Appliquer les horaires initiaux
   useEffect(() => {
     if (!horairesInitiaux) return;
 
@@ -68,21 +66,20 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
     setHoraires(loaded);
   }, [horairesInitiaux]);
 
-  // ✅ FONCTION POUR DÉMARRER LA COPIE
+
   const demarrerCopie = (jour) => {
     setJourSource(jour);
     setModeCopie(true);
     setJoursDestination(new Set());
   };
 
-  // ✅ FONCTION POUR ANNULER LA COPIE
+
   const annulerCopie = () => {
     setModeCopie(false);
     setJourSource(null);
     setJoursDestination(new Set());
   };
 
-  // ✅ FONCTION POUR TOGGLE UN JOUR DESTINATION
   const toggleJourDestination = (jour) => {
     if (jour === jourSource) return;
     
@@ -95,7 +92,6 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
     setJoursDestination(nouveauxJours);
   };
 
-  // ✅ FONCTION POUR APPLIQUER LES HORAIRES
   const appliquerHoraires = () => {
     if (!jourSource || joursDestination.size === 0) return;
 
@@ -125,7 +121,7 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
 
     // Message de confirmation
     Alert.alert(
-      "✅ Horaires copiées !",
+      " Horaires copiées !",
       `Les horaires de ${jourSource} ont été copiées sur : ${joursArray.join(', ')}`
     );
 
@@ -175,7 +171,7 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
   };
 
   const handleSave = async () => {
-    // Sortir du mode copie avant de sauvegarder
+
     if (modeCopie) {
       annulerCopie();
     }
@@ -212,15 +208,15 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
 
       const data = await response.json();
       if (data.result) {
-        Alert.alert('✅ Succès', 'Horaires mis à jour avec succès');
+        Alert.alert(' Succès', 'Horaires mis à jour avec succès');
         onSave && onSave(formattedHoraires);
         onClose();
       } else {
-        Alert.alert('❌ Erreur', data.error || 'Impossible de sauvegarder');
+        Alert.alert(' Erreur', data.error || 'Impossible de sauvegarder');
       }
     } catch (error) {
       console.error('Erreur fetch horaires :', error);
-      Alert.alert('❌ Erreur', 'Une erreur est survenue');
+      Alert.alert(' Erreur', 'Une erreur est survenue');
     }
   };
 
@@ -238,7 +234,6 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
         <View style={styles.modal}>
           <Text style={styles.title}>Horaires d'ouverture</Text>
 
-          {/* ✅ SECTION MODE COPIE - SIMPLIFIÉE */}
           {modeCopie && (
             <View style={styles.copySection}>
               <Text style={styles.copyTitle}>
@@ -289,7 +284,6 @@ export default function HorairesModal({ visible, onClose, onSave, horairesInitia
                     {jour.charAt(0).toUpperCase() + jour.slice(1)}
                   </Text>
                   
-                  {/* ✅ BOUTONS D'ACTION */}
                   <View style={styles.jourActions}>
                     {/* Bouton copier (si pas en mode copie) */}
                     {!modeCopie && (
@@ -415,7 +409,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   
-  // ✅ STYLES MODE COPIE - SIMPLIFIÉS
   copySection: {
     backgroundColor: '#E3F2FD',
     padding: 15,
@@ -478,8 +471,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
   },
-
-  // ✅ STYLES JOURS
   jourContainer: {
     marginBottom: 15,
     backgroundColor: '#F1E6DE',
@@ -543,8 +534,6 @@ const styles = StyleSheet.create({
     marginRight: 8,
     fontSize: 14,
   },
-  
-  // ✅ STYLES HORAIRES DÉTAILLÉES
   horaireDetails: {
     marginTop: 8,
   },
@@ -578,8 +567,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontSize: 12,
   },
-  
-  // ✅ STYLES BOUTONS PRINCIPAUX
   mainActions: {
     marginTop: 20,
     gap: 10,

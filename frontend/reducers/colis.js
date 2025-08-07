@@ -8,12 +8,12 @@ export const fetchMesColis = createAsyncThunk(
   'colis/fetchMesColis',
   async ({ nom, prenom }, { rejectWithValue }) => {
     try {
-      console.log("🔍 Récupération des colis pour:", nom, prenom);
+      console.log(" Récupération des colis pour:", nom, prenom);
       
       const response = await fetch(`${API_URL}/colis/mes-colis/${nom}/${prenom}`);
       const result = await response.json();
 
-      console.log("📦 Résultat API mes colis:", result);
+      console.log(" Résultat API mes colis:", result);
 
       if (result.result && result.colis) {
         return result.colis;
@@ -21,7 +21,7 @@ export const fetchMesColis = createAsyncThunk(
         return rejectWithValue(result.error || 'Aucun colis trouvé');
       }
     } catch (error) {
-      console.error("❌ Erreur fetch mes colis:", error);
+      console.error(" Erreur fetch mes colis:", error);
       return rejectWithValue('Erreur de connexion');
     }
   }
@@ -32,7 +32,7 @@ export const reserverRdv = createAsyncThunk(
   'colis/reserverRdv',
   async ({ trackingNumber, rdvDate, relayId }, { rejectWithValue }) => {
     try {
-      console.log("📅 Réservation RDV pour:", trackingNumber, rdvDate);
+      console.log(" Réservation RDV pour:", trackingNumber, rdvDate);
       
       const response = await fetch(`${API_URL}/colis/reserver-rdv/${trackingNumber}`, {
         method: 'PUT',
@@ -50,13 +50,13 @@ export const reserverRdv = createAsyncThunk(
         return rejectWithValue(result.error || 'Erreur réservation RDV');
       }
     } catch (error) {
-      console.error("❌ Erreur réservation RDV:", error);
+      console.error(" Erreur réservation RDV:", error);
       return rejectWithValue('Erreur de connexion');
     }
   }
 );
 
-// SLICE ÉTENDU
+
 const initialState = {
   value: [],
   loading: false,  
@@ -84,8 +84,6 @@ export const colisSlice = createSlice({
         state.value[index].status = nouveauStatut;
       }
     },
-    
-    // REDUCERS POUR RDV
     updateColisRdv: (state, action) => {
       const { trackingNumber, rdvDate, rdvRelayId } = action.payload;
       const index = state.value.findIndex(c => c.trackingNumber === trackingNumber);
@@ -102,7 +100,7 @@ export const colisSlice = createSlice({
     },
   },
   
-  // ✅ EXTRAREDUCERS POUR LES ACTIONS ASYNC
+  // ExtraReducers pour les Async
   extraReducers: (builder) => {
     builder
       // Récupération des colis
@@ -112,9 +110,9 @@ export const colisSlice = createSlice({
       })
       .addCase(fetchMesColis.fulfilled, (state, action) => {
         state.loading = false;
-        state.value = action.payload; // Remplace les colis
+        state.value = action.payload;
         state.error = null;
-        console.log("✅ Colis du client chargés:", action.payload.length);
+        console.log(" Colis du client chargés:", action.payload.length);
       })
       .addCase(fetchMesColis.rejected, (state, action) => {
         state.loading = false;
@@ -132,7 +130,7 @@ export const colisSlice = createSlice({
         if (index !== -1) {
           state.value[index] = action.payload;
         }
-        console.log("✅ RDV mis à jour:", action.payload);
+        console.log(" RDV mis à jour:", action.payload);
       })
       .addCase(reserverRdv.rejected, (state, action) => {
         state.loading = false;
@@ -141,7 +139,6 @@ export const colisSlice = createSlice({
   },
 });
 
-// ✅ EXPORTS
 export const { 
   setColis, 
   addColis, 

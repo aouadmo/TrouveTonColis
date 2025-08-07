@@ -90,7 +90,7 @@ export default function CameraScreen() {
       const photo = await cameraRef.current?.takePictureAsync({ quality: 0.3 });
       
       if (!photo?.uri) {
-        Alert.alert("❌ Erreur", "Impossible de capturer la photo");
+        Alert.alert(" Erreur", "Impossible de capturer la photo");
         return;
       }
 
@@ -101,7 +101,7 @@ export default function CameraScreen() {
         type: "image/jpeg",
       });
 
-      console.log("📤 Envoi de l'image pour OCR...");
+      console.log(" Envoi de l'image pour OCR...");
       
       const response = await fetch(`${BACKEND_ADDRESS}/ocr`, {
         method: "POST",
@@ -112,18 +112,18 @@ export default function CameraScreen() {
       });
       
       const data = await response.json();
-      console.log("📥 Réponse OCR complète:", data);
-      console.log("🔍 Données extraites:", data.extractedData);
+      console.log(" Réponse OCR complète:", data);
+      console.log(" Données extraites:", data.extractedData);
 
       if (data.success) {
-        Alert.alert("✅ Scan réussi", "Données extraites ! Vérifiez et complétez les informations.");
+        Alert.alert("Scan réussi", "Données extraites ! Vérifiez et complétez les informations.");
         
-        // 🔥 CORRECTION DU MAPPING DES DONNÉES
+        //  Correction mapping des données
         const extracted = data.extractedData || {};
         
         setEditColisData({
           _id: data.colisId,
-          // 🔥 MAPPING CORRIGÉ selon le backend
+          //  Map selon backend
           nom: extracted.nom || '',
           prenom: extracted.prenom || '',
           phone: extracted.telephone || '', // ← 'telephone' dans le backend
@@ -135,7 +135,7 @@ export default function CameraScreen() {
             new Date().toISOString().split('T')[0],
         });
         
-        console.log("📝 Données préparées pour la modal:", {
+        console.log(" Données préparées pour la modal:", {
           nom: extracted.nom,
           prenom: extracted.prenom,
           telephone: extracted.telephone,
@@ -149,10 +149,9 @@ export default function CameraScreen() {
           dispatch(addPhoto(data.url));
         }
       } else {
-        Alert.alert("❌ Extraction échouée", data.message || "Erreur inconnue lors de l'extraction des données.");
+        Alert.alert(" Extraction échouée", data.message || "Erreur inconnue lors de l'extraction des données.");
         
-        // 🔥 DEBUG : Afficher quand même la modal pour tester
-        console.log("🐛 DEBUG - Ouverture modal vide pour test");
+
         setEditColisData({
           _id: data.colisId || null,
           nom: '',
@@ -166,11 +165,10 @@ export default function CameraScreen() {
         setShowEditModal(true);
       }
     } catch (error) {
-      console.error("💥 Erreur lors de la capture ou du traitement :", error);
-      Alert.alert("❌ Erreur", "Impossible de traiter l'image. Veuillez réessayer.");
+      console.error(" Erreur lors de la capture ou du traitement :", error);
+      Alert.alert(" Erreur", "Impossible de traiter l'image. Veuillez réessayer.");
       
-      // 🔥 DEBUG : Ouvrir la modal même en cas d'erreur pour tester
-      console.log("🐛 DEBUG - Ouverture modal vide après erreur");
+
       setEditColisData({
         _id: null,
         nom: '',
@@ -198,13 +196,13 @@ export default function CameraScreen() {
   // Sauvegarder les données du colis
   const handleUpdateColis = async () => {
     if (!editColisData._id) {
-      Alert.alert("❌ Erreur", "ID du colis introuvable pour la mise à jour.");
+      Alert.alert(" Erreur", "ID du colis introuvable pour la mise à jour.");
       return;
     }
 
     // Validation basique
     if (!editColisData.nom.trim() || !editColisData.prenom.trim()) {
-      Alert.alert("⚠️ Champs requis", "Le nom et prénom sont obligatoires.");
+      Alert.alert(" Champs requis", "Le nom et prénom sont obligatoires.");
       return;
     }
 
@@ -230,14 +228,14 @@ export default function CameraScreen() {
       const data = await response.json();
 
       if (data.success) {
-        Alert.alert("✅ Succès", "Colis mis à jour avec succès !");
+        Alert.alert(" Succès", "Colis mis à jour avec succès !");
         handleCancelEdit();
       } else {
-        Alert.alert("❌ Mise à jour échouée", data.message || "Impossible de mettre à jour le colis.");
+        Alert.alert(" Mise à jour échouée", data.message || "Impossible de mettre à jour le colis.");
       }
     } catch (error) {
       console.error("Erreur lors de la mise à jour :", error);
-      Alert.alert("❌ Erreur", "Échec de la mise à jour. Veuillez réessayer.");
+      Alert.alert(" Erreur", "Échec de la mise à jour. Veuillez réessayer.");
     } finally {
       setIsLoading(false);
     }
@@ -460,7 +458,7 @@ export default function CameraScreen() {
 const styles = StyleSheet.create({
   wrapper: {
     flex: 1,
-    backgroundColor: '#FFFAF5', // Palette Pro - Fond rose très pâle
+    backgroundColor: '#FFFAF5',
   },
   container: {
     flex: 1,
@@ -472,13 +470,13 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 26,
     fontWeight: 'bold',
-    color: '#4F378A', // Palette Pro - Texte violet foncé
+    color: '#4F378A',
     textAlign: 'center',
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#D0BCFF', // Palette Pro - Mauve clair
+    color: '#D0BCFF',
     textAlign: 'center',
     marginBottom: 24,
     fontStyle: 'italic',
@@ -500,7 +498,7 @@ const styles = StyleSheet.create({
   // Caméra
   cameraWrapper: {
     width: "90%",
-    aspectRatio: 4 / 5, // Ratio moins haut pour éviter débordement
+    aspectRatio: 4 / 5,
     borderRadius: 20,
     overflow: "hidden",
     position: "relative",
@@ -556,9 +554,9 @@ const styles = StyleSheet.create({
 
   // Bouton de capture
   captureContainer: {
-    marginTop: 24, // Réduit pour éviter débordement
+    marginTop: 24,
     alignItems: "center",
-    paddingBottom: 20, // Ajoute un padding en bas
+    paddingBottom: 20,
   },
   captureButton: {
     width: 80,
