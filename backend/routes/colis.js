@@ -10,7 +10,7 @@ const { InferenceClient } = require('@huggingface/inference');
 dotenv.config();
 const hf = new InferenceClient(process.env.HUGGINGFACE_API_KEY);
 
-// 🔐 Helper pour sécuriser les RegExp
+//  Helper pour sécuriser les RegExp
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
@@ -33,7 +33,7 @@ router.get('/search/:trackingNumber', async (req, res) => {
 router.post('/searchname', async (req, res) => {
   const { nom, prenom } = req.body;
   
-  console.log('🔍 Recherche reçue:', { nom, prenom });
+  console.log(' Recherche reçue:', { nom, prenom });
   
   try {
     const colis = await Colis.find({
@@ -41,39 +41,142 @@ router.post('/searchname', async (req, res) => {
       prenom: { $regex: new RegExp(`^${escapeRegex(prenom)}$`, 'i') },
     });
 
-    console.log('📦 Résultats trouvés:', colis);
-    console.log('📊 Nombre de résultats:', colis.length);
-    console.log('🔢 Type de colis.length:', typeof colis.length);
+    console.log(' Résultats trouvés:', colis);
+    console.log(' Nombre de résultats:', colis.length);
+    console.log(' Type de colis.length:', typeof colis.length);
 
     if (colis.length > 0) {
-      console.log('✅ Envoi found: true');
+      console.log(' Envoi found: true');
       res.json({ found: true, colis });
     } else {
-      console.log('❌ Envoi found: false');
+      console.log(' Envoi found: false');
       res.status(404).json({ found: false, message: 'Aucun colis à ce nom' });
     }
   } catch (error) {
-    console.error('💥 Erreur:', error);
+    console.error(' Erreur:', error);
     res.status(500).json({ found: false, message: 'Erreur serveur' });
   }
 });
 
-// === OCR + Hugging Face AI ===
+// 🔧 FONCTIONS HELPER
+function extractManually(text) {
+  const result = { prenom: '', nom: '', telephone: '', trackingNumber: '' };
+  
+  // Téléphone français
+  const phoneMatch = text.match(/(0[67]\d{8})/);
+  if (phoneMatch) result.telephone = phoneMatch[0];
+  
+  //  TRACKING UPS ULTRA-AMÉLIORÉ
+  console.log(" Recherche tracking dans le texte complet...");
+  
+  // Pattern 1: TRACKING + espaces + numéro
+  const trackingPatterns = [
+    /TRACKING[:\s#]*([I1]Z[\s\d\w]+)/gi,
+    /TBACKING[:\s#]*([I1]Z[\s\d\w]+)/gi,
+    /([I1]Z[\s\d\w]{10,})/gi,
+  ];
+  
+  for (const pattern of trackingPatterns) {
+    const matches = text.match(pattern);
+    if (matches) {
+      console.log(" Pattern matches:", matches);
+      for (const match of matches) {
+        console.log(" Analyse du match:", match);
+        
+        // Extraire la partie tracking
+        let trackingPart = match;
+        trackingPart = trackingPart.replace(/TRACKING[:\s#]*/gi, '');
+        trackingPart = trackingPart.replace(/TBACKING[:\s#]*/gi, '');
+        
+        console.log(" Partie tracking brute:", trackingPart);
+        
+        // Nettoyer et corriger
+        let tracking = trackingPart.replace(/^IZ/i, '1Z');
+        tracking = tracking.replace(/[^A-Z0-9]/g, '');
+        
+        console.log("🧹 Tracking nettoyé:", tracking);
+        
+        if (tracking.startsWith('1Z') && tracking.length >= 10) {
+          result.trackingNumber = tracking;
+          console.log(" TRACKING TROUVÉ:", result.trackingNumber);
+          break;
+        } else if (tracking.length >= 8) {
+          result.trackingNumber = tracking;  
+          console.log(" Tracking non-standard accepté:", result.trackingNumber);
+          break;
+        }
+      }
+      if (result.trackingNumber) break;
+    }
+  }
+  
+  // Nom simple (ligne avec 2 mots en majuscules)
+  const lines = text.split(/[\r\n]+/);
+  for (const line of lines) {
+    const nameMatch = line.trim().match(/^([A-Z]{2,})\s+([A-Z]{2,})$/);
+    if (nameMatch && !line.includes('RUE') && !line.includes('RELAIS') && !line.includes('SAINT')) {
+      result.prenom = nameMatch[1];
+      result.nom = nameMatch[2];
+      console.log("👤 Nom trouvé:", result.prenom, result.nom);
+      break;
+    }
+  }
+  
+  console.log(" RÉSULTAT FINAL extraction manuelle:", result);
+  return result;
+}
+
+function cleanPhone(phone) {
+  if (!phone) return '';
+  const cleaned = phone.replace(/\D/g, '');
+  if (cleaned.match(/^0[67]\d{8}$/)) return cleaned;
+  return '';
+}
+
+function cleanTracking(tracking) {
+  if (!tracking) return '';
+  console.log("🧹 Nettoyage tracking:", tracking);
+  let cleaned = tracking.replace(/\s/g, '').toUpperCase();
+  cleaned = cleaned.replace(/^IZ/i, '1Z');
+  cleaned = cleaned.replace(/^1I/i, '1Z');
+  console.log("🧹 Tracking nettoyé:", cleaned);
+  if (cleaned.startsWith('1Z') && cleaned.length >= 10) {
+    console.log(" Tracking UPS valide:", cleaned);
+    return cleaned;
+  }
+  if (cleaned.length >= 8) {
+    console.log(" Tracking non-UPS accepté:", cleaned);
+    return cleaned;
+  }
+  console.log(" Tracking rejeté:", cleaned);
+  return '';
+}
+
+function detectTransporteur(text) {
+  const transporteurs = ['UPS', 'DHL', 'COLIS PRIVÉ', 'COLISSIMO', 'COLICOLIS'];
+  for (const t of transporteurs) {
+    if (text.toUpperCase().includes(t)) return t;
+  }
+  return '';
+}
+
+// === OCR + Hugging Face AI CORRIGÉ ===
 const ocr_space_api = process.env.OCR_SPACE_API;
 
 router.post('/ocr', async (req, res) => {
   const imageUrl = req.files.url;
-  const formData = new FormData();
-
-  formData.append('url', imageUrl.data, {
-    filename: imageUrl.name,
-    contentType: imageUrl.mimetype,
-  });
-  formData.append('filetype', 'JPG');
-  formData.append('language', 'fre');
-  formData.append('isOverlayRequired', 'false');
-
+  
   try {
+    const formData = new FormData();
+    formData.append('url', imageUrl.data, {
+      filename: imageUrl.name,
+      contentType: imageUrl.mimetype,
+    });
+    formData.append('filetype', 'JPG');
+    formData.append('language', 'fre');
+    formData.append('isOverlayRequired', 'false');
+
+    console.log("📤 Envoi vers OCR.space...");
     const ocrRes = await fetch('https://api.ocr.space/parse/image', {
       method: 'POST',
       body: formData,
@@ -81,71 +184,130 @@ router.post('/ocr', async (req, res) => {
     });
 
     const data = await ocrRes.json();
-    console.log(data);
+    console.log(" OCR Response:", data);
     const parsedText = data?.ParsedResults?.[0]?.ParsedText || '';
+    console.log(" Texte extrait:", parsedText);
 
+    //  FONCTION IA CORRIGÉE
     async function extractText(prompt) {
       try {
+        console.log("🤖 Envoi vers Hugging Face...");
         const response = await hf.chatCompletion({
-          model: 'mistralai/Mixtral-8x7B-Instruct-v0.1',
+          model: 'mistralai/Mistral-7B-Instruct-v0.3',
           messages: [{ role: 'user', content: prompt }],
+          max_tokens: 150,
+          temperature: 0.1
         });
         return response.choices[0].message.content;
       } catch (err) {
-        console.error('Erreur Hugging Face:', err);
+        console.error('💥 Erreur Hugging Face:', err);
         return null;
       }
     }
-    // les ordes à donner au robot
-    const prompt = `
-    Extrait le prénom (first name of the *recipient*), le nom (last name of the *recipient*), le numeros de  tracking et le numéro de téléphone du texte suivant.
-    Pour le numéro de téléphone, cherche spécifiquement celui qui est précédé par "Tel : " ou "Téléphone :", assure toi que chaque numéros de telephone est cohérent en France (06, 07 ou 336, 337) de tel sorte que l'on puisse envoyer un SMS.
-    le tracking est toujours au format "1Z" suivi de 11 caractères.
-    Si une information (prénom, nom, tracking, téléphone) n'est pas trouvée, laisse sa valeur vide ("").
-    Retourne la réponse uniquement en JSON strict, sans texte supplémentaire ni formatage Markdown (pas de \`\`\`json).
-  
-    Exemple:
-    Input: "Nom: Dupont, Prénom: Jean, Adresse: 123 Rue de la Paix, Tel: 0123456789", trackingNumber: "1Z23456789"
-    Output: {"prenom": "Jean", "nom": "Dupont", "trackingNumber": "1Z23456789", "telephone": "0123456789" }
+    
+    //  PROMPT ULTRA-STRICT POUR JSON
+    const prompt = `MISSION: Extraire les données d'étiquette de colis en JSON.
 
-    Input: "Entreprise ABC, Service Client, trackingNumber: 1Z753159, Contact: 0687654321"
-    Output: {"prenom": "", "nom": "", "trackingNumber": "1Z753159", "telephone": "0687654321"}
+TEXTE: "${parsedText}"
 
-    Input : ${parsedText}
-    Output: ?
-    `;
+INSTRUCTIONS:
+1. Trouve le PRÉNOM et NOM du destinataire
+2. Trouve le TÉLÉPHONE (06, 07, +336, +337)  
+3. Trouve le TRACKING 
+4. RÉPONDS UNIQUEMENT le JSON ci-dessous
 
+RÉPONDS EXACTEMENT CECI (remplace les valeurs):
+{"prenom": "HARMONY", "nom": "FLAMANT", "trackingNumber": "1Z123456789", "telephone": "0666925781"}
+
+JSON SEULEMENT:`;
+
+    let extractedData = {};
+    
+    //  ESSAYER L'IA D'ABORD
     const raw = await extractText(prompt);
-    console.log('Raw Response:', raw);
-    let extractedData;
-
-    try {
-      extractedData = JSON.parse(raw);
-    } catch (err) {
-      extractedData = { error: 'JSON mal formé', rawResponse: raw };
+    console.log('🤖 Réponse IA brute:', raw);
+    
+    if (raw) {
+      try {
+        // 🔧 EXTRACTION JSON AGRESSIVE
+        let cleanResponse = raw.trim();
+        
+        // Supprimer tout avant le premier {
+        const startIndex = cleanResponse.indexOf('{');
+        if (startIndex !== -1) {
+          cleanResponse = cleanResponse.substring(startIndex);
+          
+          // Supprimer tout après le dernier }
+          const endIndex = cleanResponse.lastIndexOf('}');
+          if (endIndex !== -1) {
+            cleanResponse = cleanResponse.substring(0, endIndex + 1);
+          }
+        }
+        
+        console.log('🧹 JSON extrait:', cleanResponse);
+        
+        if (cleanResponse.startsWith('{') && cleanResponse.endsWith('}')) {
+          extractedData = JSON.parse(cleanResponse);
+          console.log(' Données extraites par IA:', extractedData);
+        } else {
+          throw new Error('Pas de JSON valide trouvé');
+        }
+        
+      } catch (parseError) {
+        console.log(' Erreur parsing IA:', parseError.message);
+        console.log(' Passage en extraction manuelle...');
+        extractedData = extractManually(parsedText);
+      }
+    } else {
+      console.log(' IA non disponible, extraction manuelle...');
+      extractedData = extractManually(parsedText);
     }
-      console.log('Extracted Data:', extractedData.rawResponse);
-      DataToSave = extractedData.rawResponse;
+
+    //  VALIDATION ET NETTOYAGE DES DONNÉES
+    const finalData = {
+      prenom: (extractedData.prenom || '').trim(),
+      nom: (extractedData.nom || '').trim(),
+      telephone: cleanPhone(extractedData.telephone || ''),
+      trackingNumber: cleanTracking(extractedData.trackingNumber || ''),
+      transporteur: detectTransporteur(parsedText)
+    };
+
+    console.log(' Données finales:', finalData);
+
+    //  CRÉATION DU COLIS
     const newColis = new Colis({
-      nom: extractedData.nom || '',
-      prenom: extractedData.prenom || '',
-      phone: extractedData.telephone || '',
-      trackingNumber: extractedData.trackingNumber || '',
-      transporteur: extractedData.transporteur || '',
-      poids: extractedData.poids || '',
-      date: extractedData.date || new Date(),
-      extractedFromOCR: extractedData,
+      nom: finalData.nom,
+      prenom: finalData.prenom,
+      phone: finalData.telephone,
+      trackingNumber: finalData.trackingNumber,
+      transporteur: finalData.transporteur,
+      poids: '',
+      date: new Date(),
+      extractedFromOCR: {
+        originalText: parsedText,
+        aiResponse: raw,
+        extractedData: finalData
+      }
     });
-    console.log('Nouveau colis créé:', newColis);
+
+    console.log(' Sauvegarde du colis...');
     await newColis.save();
+    console.log(' Colis sauvé avec ID:', newColis._id);
+    
     res.json({
       success: true,
       ocrText: parsedText,
-      extractedData,
+      extractedData: finalData,
       colisId: newColis._id,
     });
+    
   } catch (err) {
-    res.status(500).json({ success: false, message: 'Erreur OCR ou AI', error: err.message });
+    console.error(' Erreur globale OCR:', err);
+    res.status(500).json({ 
+      success: false, 
+      message: 'Erreur OCR ou AI', 
+      error: err.message 
+    });
   }
 });
 
@@ -192,11 +354,10 @@ router.get('/stats', async (req, res) => {
   try {
     const colis = await Colis.find();
 
-    // Regrouper par période (semaine/mois/année à adapter si besoin)
     const stats = [0, 0, 0, 0];
     colis.forEach(c => {
       const date = new Date(c.date);
-      const month = date.getMonth(); // 0 à 11
+      const month = date.getMonth();
       if (month < 3) stats[0]++;
       else if (month < 6) stats[1]++;
       else if (month < 9) stats[2]++;
@@ -204,7 +365,6 @@ router.get('/stats', async (req, res) => {
     });
 
     const best = Math.max(...stats);
-
     res.json({ result: true, data: stats, best });
   } catch (error) {
     console.error('Erreur /colis/stats :', error);
@@ -217,15 +377,14 @@ router.get('/mes-colis/:nom/:prenom', async (req, res) => {
   try {
     const { nom, prenom } = req.params;
     
-    console.log("🔍 Recherche colis pour:", nom, prenom);
+    console.log(" Recherche colis pour:", nom, prenom);
     
     const colis = await Colis.find({
       nom: { $regex: new RegExp(`^${escapeRegex(nom)}$`, 'i') },
       prenom: { $regex: new RegExp(`^${escapeRegex(prenom)}$`, 'i') }
-    }).sort({ date: -1 }); // Plus récents en premier
+    }).sort({ date: -1 });
 
     console.log("📦 Colis trouvés:", colis.length);
-    
     res.json({ result: true, colis });
   } catch (error) {
     console.error('Erreur récupération colis client:', error);
@@ -233,18 +392,17 @@ router.get('/mes-colis/:nom/:prenom', async (req, res) => {
   }
 });
 
-// ✅ ROUTE DE TEST POUR DEBUG
+//  ROUTE DE TEST POUR DEBUG
 router.get('/test-colis/:trackingNumber', async (req, res) => {
   try {
     const trackingNumber = req.params.trackingNumber;
-    console.log("🧪 TEST - Recherche colis:", trackingNumber);
-    console.log("🧪 TEST - Type tracking:", typeof trackingNumber);
+    console.log(" TEST - Recherche colis:", trackingNumber);
     
     const colis = await Colis.findOne({ trackingNumber: trackingNumber });
-    console.log("📦 TEST - Colis trouvé:", colis ? "OUI" : "NON");
+    console.log(" TEST - Colis trouvé:", colis ? "OUI" : "NON");
     
     if (colis) {
-      console.log("📋 TEST - Détails:", {
+      console.log(" TEST - Détails:", {
         _id: colis._id,
         trackingNumber: colis.trackingNumber,
         typeTracking: typeof colis.trackingNumber
@@ -264,30 +422,16 @@ router.put('/reserver-rdv/:trackingNumber', async (req, res) => {
     const { rdvDate, relayId } = req.body;
     const trackingNumber = req.params.trackingNumber;
     
-    console.log("📅 SERVEUR - Réservation RDV:", trackingNumber, rdvDate);
-    console.log("🔍 SERVEUR - Recherche du colis...");
-    console.log("🔍 SERVEUR - Type tracking:", typeof trackingNumber);
+    console.log(" SERVEUR - Réservation RDV:", trackingNumber, rdvDate);
     
-    // Vérifier d'abord si le colis existe
     const colisExiste = await Colis.findOne({ trackingNumber: trackingNumber });
-    console.log("📦 SERVEUR - Colis trouvé:", colisExiste ? "OUI" : "NON");
-    
-    if (colisExiste) {
-      console.log("📋 SERVEUR - Détails du colis:", {
-        _id: colisExiste._id,
-        nom: colisExiste.nom,
-        prenom: colisExiste.prenom,
-        trackingNumber: colisExiste.trackingNumber,
-        typeTracking: typeof colisExiste.trackingNumber
-      });
-    }
+    console.log(" SERVEUR - Colis trouvé:", colisExiste ? "OUI" : "NON");
     
     if (!colisExiste) {
-      console.log("❌ SERVEUR - Colis non trouvé avec tracking:", trackingNumber);
+      console.log(" SERVEUR - Colis non trouvé avec tracking:", trackingNumber);
       return res.status(404).json({ result: false, error: 'Colis non trouvé' });
     }
     
-    // Mettre à jour le colis
     const updated = await Colis.findOneAndUpdate(
       { trackingNumber: trackingNumber },
       { 
@@ -299,11 +443,11 @@ router.put('/reserver-rdv/:trackingNumber', async (req, res) => {
       { new: true }
     );
     
-    console.log("✅ SERVEUR - RDV confirmé pour:", updated.trackingNumber);
+    console.log(" SERVEUR - RDV confirmé pour:", updated.trackingNumber);
     res.json({ result: true, colis: updated });
     
   } catch (err) {
-    console.error("❌ SERVEUR - Erreur réservation RDV:", err);
+    console.error(" SERVEUR - Erreur réservation RDV:", err);
     res.status(500).json({ result: false, error: 'Erreur serveur' });
   }
 });
